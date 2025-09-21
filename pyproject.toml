@@ -1,0 +1,51 @@
+[tool.poetry]
+name = "engine-cli"
+version = "1.0.0"
+description = "Engine Framework CLI - Command Line Interface for AI Agent Orchestration"
+authors = ["Engine Framework Team <engine@example.com>"]
+readme = "README.md"
+packages = [{include = "engine_cli", from = "src"}]
+license = "MIT"
+homepage = "https://github.com/engine-agi/engine-cli"
+repository = "https://github.com/engine-agi/engine-cli"
+keywords = ["cli", "ai", "agents", "orchestration", "framework", "terminal"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Shells",
+    "Topic :: Utilities",
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+engine-core = {path = "../engine-core", develop = true}
+click = "^8.1.7"
+rich = "^13.7.0"
+typer = "^0.9.0"
+pyyaml = "^6.0.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+pytest-asyncio = "^0.21.1"
+pytest-cov = "^4.1.0"
+black = "^23.11.0"
+isort = "^5.12.0"
+mypy = "^1.7.1"
+flake8 = "^6.1.0"
+pre-commit = "^3.6.0"
+httpx = "^0.25.2"
+pytest-mock = "^3.12.0"
+factory-boy = "^3.3.0"
+
+[tool.poetry.scripts]
+engine = "engine_cli.main:app"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
