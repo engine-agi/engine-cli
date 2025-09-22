@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "engine-cli"
-version = "1.0.0"
+version = "1.0.1"
 description = "Engine Framework CLI - Command Line Interface for AI Agent Orchestration"
 authors = ["Engine Framework Team <engine@example.com>"]
 readme = "README.md"
@@ -24,11 +24,12 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-engine-core = "^1.0.0"
+engine-core = "^1.0.1"
 click = "^8.1.7"
-rich = "^13.7.0"
-typer = "^0.9.0"
 pyyaml = "^6.0.1"
+rich = "^12.6.0"
+prompt-toolkit = "^3.0.39"
+pydantic = "^2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"
@@ -44,7 +45,12 @@ pytest-mock = "^3.12.0"
 factory-boy = "^3.3.0"
 
 [tool.poetry.scripts]
-engine = "engine_cli.main:app"
+engine = "engine_cli.main:cli"
+
+[[tool.poetry.source]]
+name = "testpypi"
+url = "https://test.pypi.org/simple/"
+priority = "primary"
 
 [build-system]
 requires = ["poetry-core"]

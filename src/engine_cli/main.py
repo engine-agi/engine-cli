@@ -87,7 +87,7 @@ def _get_command_module(name: str):
 
 
 @click.group()
-@click.version_option("1.0.0", prog_name="Engine CLI")
+@click.version_option("1.0.1", prog_name="Engine CLI")
 def cli():
     """Engine Framework CLI - AI Agent Orchestration System."""
     pass
@@ -105,7 +105,7 @@ def version():
 
     # Create version table
     version_table = table("Component Versions", ["Component", "Version"])
-    version_table.add_row("Engine CLI", "1.0.0")
+    version_table.add_row("Engine CLI", "1.0.1")
     version_table.add_row("Engine Core", core_version)
     print_table(version_table)
 
