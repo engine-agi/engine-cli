@@ -19,6 +19,7 @@ A powerful terminal interface for managing AI agents, teams, workflows, and orch
 - **📚 Memory Management**: Hierarchical memory system with semantic search
 - **🎨 Rich Terminal UI**: Beautiful, interactive command-line interface with colors and tables
 - **🚀 Production Ready**: Comprehensive error handling and validation
+- **⚡ Performance Optimized**: < 2s startup time with lazy loading and smart caching
 
 ## 📦 Installation
 
@@ -48,24 +49,57 @@ pip install -e .
 pip install -e ".[dev]"
 ```
 
-## Usage
+## 📚 Documentation
+
+### 📖 Complete CLI Manual
+For comprehensive documentation including all commands, examples, and troubleshooting:
+
+- **[Documentation Index](docs/index.md)** - Complete documentation overview and navigation
+- **[CLI Manual](docs/README.md)** - Complete command reference with examples
+- **[Practical Examples](docs/examples.md)** - Real-world usage scenarios and tutorials
+- **[Troubleshooting Guide](docs/troubleshooting.md)** - Common issues and solutions
+- **[Unix Man Pages](../../docs/man/)** - Traditional Unix manual pages (`man engine`)
+- **[Interactive Help](#usage)** - Built-in help system (`engine --help`)
+- **[Examples Repository](../../engine-examples/)** - Practical usage examples
+
+### 🚀 Quick Examples
 
 ```bash
-# Show help
+# Get started quickly
 engine --help
 
-# Create a new agent
-engine agent create --name "my-agent" --model "claude-3.5-sonnet"
-
-# List all agents
+# Create and manage agents
+engine agent create --name "code-reviewer" --model "claude-3.5-sonnet"
 engine agent list
 
-# Create a team
-engine team create --name "dev-team" --leader "agent-1"
+# Work with teams and workflows
+engine team create --name "dev-team"
+engine workflow run --id "my-workflow"
 
-# Start a workflow
-engine workflow run --id "workflow-1"
+# Monitor system status
+engine status
+engine advanced monitor
 ```
+
+### 🔧 Troubleshooting
+
+Common issues and solutions:
+
+```bash
+# Enable verbose output for debugging
+engine --verbose [command]
+
+# Check configuration
+engine config show
+
+# View system status
+engine status
+
+# Get detailed help
+engine [command] --help
+```
+
+For detailed troubleshooting guides, see the **[Troubleshooting Guide](docs/troubleshooting.md)**.
 
 ## Features
 
