@@ -5,14 +5,14 @@ description = "Engine Framework CLI - Command Line Interface for AI Agent Orches
 authors = ["Engine Framework Team <engine@example.com>"]
 readme = "README.md"
 packages = [{include = "engine_cli", from = "src"}]
-license = "MIT"
+license = "AGPL-3.0"
 homepage = "https://github.com/engine-agi/engine-cli"
 repository = "https://github.com/engine-agi/engine-cli"
 keywords = ["cli", "ai", "agents", "orchestration", "framework", "terminal"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
@@ -24,7 +24,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-engine-core = {path = "../engine-core", develop = true}
+engine-core = "^1.0.0"
 click = "^8.1.7"
 rich = "^13.7.0"
 typer = "^0.9.0"
