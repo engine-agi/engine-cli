@@ -1,0 +1,22 @@
+author: null
+created_at: '2025-09-22T22:58:34.353775'
+default_scope: global
+description: Protocol for analysis tasks
+id: Analysis Protocol
+name: Analysis Protocol
+strict_validation: false
+supported_command_types:
+- analysis
+- generation
+- transformation
+- validation
+- execution
+- coordination
+- query
+- control
+supported_intents:
+- analyze
+- query
+- read
+tags: []
+version: 1.0.0

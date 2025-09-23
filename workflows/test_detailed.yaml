@@ -1,0 +1,23 @@
+config:
+  description: null
+  id: test_detailed
+  metadata: {}
+  name: test_detailed
+  version: 1.0.0
+created_at: '2025-09-23T02:18:56.956803'
+description: null
+edge_count: 1
+edges: []
+id: test_detailed
+name: test_detailed
+version: 1.0.0
+vertex_count: 2
+vertices:
+- agent_id: senior_dev
+  id: analysis
+  instruction: Analyze the requirements
+  type: agent
+- agent_id: backend_dev
+  id: implementation
+  instruction: Implement the solution
+  type: agent

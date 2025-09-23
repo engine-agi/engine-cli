@@ -1,0 +1,14 @@
+book: null
+created_at: '2025-09-22T21:49:30.756431'
+id: senior-dev
+model: claude-3.5-sonnet
+name: senior-dev
+persona: null
+protocol: null
+speciality: Senior Development
+stack:
+- python
+- react
+- postgresql
+tools: []
+workflow: null

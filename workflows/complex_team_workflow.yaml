@@ -1,0 +1,39 @@
+config:
+  description: null
+  id: complex_team_workflow
+  metadata: {}
+  name: complex_team_workflow
+  version: 1.0.0
+created_at: '2025-09-23T02:20:10.221852'
+description: null
+edge_count: 3
+edges:
+- from: planning
+  to: development
+- from: planning
+  to: frontend
+- from: development
+  to: frontend
+id: complex_team_workflow
+name: complex_team_workflow
+version: 1.0.0
+vertex_count: 3
+vertices:
+- agent_id: product_manager
+  id: planning
+  instruction: Define project scope
+  type: agent
+- id: development
+  tasks:
+  - task: design_api
+  - task: implement_backend
+  - task: test_integration
+  team_id: backend_team
+  type: team
+- id: frontend
+  tasks:
+  - task: create_ui
+  - task: implement_components
+  - task: integrate_api
+  team_id: frontend_team
+  type: team
