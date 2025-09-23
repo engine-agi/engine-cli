@@ -57,23 +57,23 @@ def status():
         core_available = False
 
     if core_available:
-        # Check individual modules with lazy loading
+        # Check individual modules with lazy loading using public APIs
         status_checks = {}
 
         try:
-            from engine_core.core.agents import agent as agent_module
+            from engine_core import AgentBuilder
             status_checks["Agent module"] = True
         except ImportError:
             status_checks["Agent module"] = False
 
         try:
-            from engine_core.core.teams import team as team_module
+            from engine_core import TeamBuilder
             status_checks["Team module"] = True
         except ImportError:
             status_checks["Team module"] = False
 
         try:
-            from engine_core.core.workflows import workflow as workflow_module
+            from engine_core import WorkflowBuilder
             status_checks["Workflow module"] = True
         except ImportError:
             status_checks["Workflow module"] = False

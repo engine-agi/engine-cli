@@ -1,0 +1,94 @@
+{
+  "book_id": "agent_test-agent-lifecycle",
+  "title": "Agent: test-agent-lifecycle",
+  "description": "Agent configuration for test-agent-lifecycle",
+  "author": "Engine CLI",
+  "project_id": "engine_cli_agents",
+  "content": {
+    "agent_config": {
+      "id": "test-agent-lifecycle",
+      "name": "test-agent-lifecycle",
+      "model": "gpt-4",
+      "speciality": "Development",
+      "persona": null,
+      "stack": [],
+      "tools": [],
+      "protocol": null,
+      "workflow": null,
+      "book": null,
+      "created_at": "2025-09-23 14:14:07.859967"
+    },
+    "metadata": {
+      "created_at": "2025-09-23 14:14:07.859967",
+      "version": "1.0",
+      "type": "agent_configuration"
+    }
+  },
+  "tags": [
+    "agent",
+    "configuration",
+    "gpt-4"
+  ],
+  "categories": [
+    "agents"
+  ],
+  "created_at": "2025-09-23 14:14:07.860283",
+  "book_object": {
+    "book_id": "agent_test-agent-lifecycle",
+    "title": "Agent: test-agent-lifecycle",
+    "description": "Agent configuration for test-agent-lifecycle",
+    "author": "Engine CLI",
+    "project_id": "engine_cli_agents",
+    "metadata": {
+      "created_at": "2025-09-23T17:14:07.860098",
+      "updated_at": "2025-09-23T17:14:07.860104",
+      "created_by": null,
+      "updated_by": null,
+      "version": 1,
+      "content_size": 0,
+      "checksum": null,
+      "tags": [
+        "agent",
+        "gpt-4",
+        "configuration"
+      ],
+      "categories": [
+        "agents"
+      ],
+      "status": "draft",
+      "access_level": "internal"
+    },
+    "settings": {
+      "is_public": false,
+      "allow_comments": false,
+      "enable_versioning": true,
+      "enable_search": true,
+      "search_index_enabled": false
+    },
+    "references": [],
+    "chapters": [],
+    "statistics": {
+      "chapter_count": 0,
+      "page_count": 0,
+      "section_count": 0,
+      "word_count": 0,
+      "character_count": 0,
+      "content_size": 0,
+      "last_updated": "2025-09-23T17:14:07.860104",
+      "version": 1,
+      "tags": [
+        "agent",
+        "gpt-4",
+        "configuration"
+      ],
+      "categories": [
+        "agents"
+      ]
+    },
+    "table_of_contents": {
+      "book_id": "agent_test-agent-lifecycle",
+      "title": "Agent: test-agent-lifecycle",
+      "chapters": []
+    }
+  }
+}

@@ -1,6 +1,0 @@
-agents: test-agent-simple
-description: ''
-id: test-simple
-leader: ''
-name: test-simple
-strategy: hierarchical

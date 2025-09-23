@@ -10,7 +10,7 @@ import json
 from engine_cli.formatting import success, error, header, key_value, table, print_table
 
 # Import engine core components
-from engine_core.core.tools.tool_builder import ToolBuilder
+from engine_core import ToolBuilder
 
 
 class ToolStorage:

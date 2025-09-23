@@ -9,6 +9,9 @@ import json
 # Import Rich formatting
 from engine_cli.formatting import success, error, header, key_value, table, print_table
 
+# Import new Book-based storage
+from engine_cli.storage.agent_book_storage import AgentBookStorage
+
 
 class AgentStorage:
     """Simple agent storage manager."""
@@ -55,8 +58,9 @@ class AgentStorage:
         return False
 
 
-# Global storage instance
-agent_storage = AgentStorage()
+# Global storage instances
+agent_storage = AgentStorage()  # Legacy storage for backward compatibility
+agent_book_storage = AgentBookStorage()  # New Book-based storage
 
 
 @click.group()
@@ -80,7 +84,7 @@ def cli():
 def create(name, model, speciality, persona, stack, tools, protocol, workflow, book, save, output):
     """Create a new AI agent with all 11 configurable modules."""
     try:
-        from engine_core.core.agents.agent_builder import AgentBuilder
+        from engine_core import AgentBuilder
 
         builder = AgentBuilder()
         builder = builder.with_id(name)
@@ -146,9 +150,6 @@ def create(name, model, speciality, persona, stack, tools, protocol, workflow, b
 
         # Save agent if requested
         if save or output:
-            import yaml
-            import os
-            
             agent_data = {
                 "id": agent.id,
                 "name": agent.name,
@@ -162,19 +163,20 @@ def create(name, model, speciality, persona, stack, tools, protocol, workflow, b
                 "book": agent.book,
                 "created_at": str(datetime.now())
             }
-            
+
             if output:
+                # Use legacy YAML format for custom output path
+                import yaml
                 output_path = output
+                with open(output_path, 'w') as f:
+                    yaml.dump(agent_data, f, default_flow_style=False)
+                success(f"Agent configuration saved to: {output_path}")
             else:
-                # Create agents directory if it doesn't exist
-                agents_dir = os.path.join(os.getcwd(), "agents")
-                os.makedirs(agents_dir, exist_ok=True)
-                output_path = os.path.join(agents_dir, f"{name}.yaml")
-            
-            with open(output_path, 'w') as f:
-                yaml.dump(agent_data, f, default_flow_style=False)
-            
-            success(f"Agent configuration saved to: {output_path}")
+                # Use new Book-based storage
+                if agent_book_storage.save_agent(agent_data):
+                    success(f"Agent '{name}' saved using Book system")
+                else:
+                    error("Failed to save agent using Book system")
 
     except ImportError:
         error("Engine Core not available. Please install engine-core first.")
@@ -187,12 +189,17 @@ def create(name, model, speciality, persona, stack, tools, protocol, workflow, b
 def list(format):
     """List all saved agents."""
     try:
-        agents = agent_storage.list_agents()
-        
+        # Try new Book-based storage first
+        agents = agent_book_storage.list_agents()
+
+        # If no agents found in Book storage, try legacy storage
+        if not agents:
+            agents = agent_storage.list_agents()
+
         if not agents:
             click.echo("No agents found. Create one with: engine agent create <name>")
             return
-        
+
         if format == 'json':
             click.echo(json.dumps(agents, indent=2))
         elif format == 'yaml':
@@ -201,7 +208,7 @@ def list(format):
             # Table format
             from engine_cli.formatting import table, print_table
             agent_table = table("Agents", ["ID", "Name", "Model", "Speciality", "Stack"])
-            
+
             for agent in agents:
                 stack = ', '.join(agent.get('stack', [])) if agent.get('stack') else ''
                 agent_table.add_row(
@@ -211,7 +218,7 @@ def list(format):
                     agent.get('speciality', ''),
                     stack
                 )
-            
+
             print_table(agent_table)
             success(f"Found {len(agents)} agent(s)")
 
@@ -225,12 +232,18 @@ def list(format):
 def show(name, format):
     """Show details of a specific agent."""
     try:
-        agent = agent_storage.get_agent(name)
-        
+        # Try new Book-based storage first
+        agent = agent_book_storage.get_agent(name)
+
+        # If not found, try legacy storage
+        if not agent:
+            agent = agent_storage.get_agent(name)
+
         if not agent:
             error(f"Agent '{name}' not found")
-            return
-        
+            import sys
+            sys.exit(1)
+
         if format == 'json':
             click.echo(json.dumps(agent, indent=2))
         elif format == 'yaml':
@@ -279,39 +292,44 @@ def show(name, format):
 def delete(name, force):
     """Delete an agent."""
     try:
-        # Check if agent exists
-        agent = agent_storage.get_agent(name)
+        # Check if agent exists (try both storages)
+        agent = agent_book_storage.get_agent(name) or agent_storage.get_agent(name)
         if not agent:
             error(f"Agent '{name}' not found")
-            return
-        
+            import sys
+            sys.exit(1)
+
         if not force:
             click.echo(f"⚠ This will permanently delete agent '{name}'.")
             if not click.confirm("Do you want to continue?"):
                 click.echo("Operation cancelled.")
                 return
-        
-        if agent_storage.delete_agent(name):
+
+        # Try to delete from Book storage first, then legacy storage
+        deleted = agent_book_storage.delete_agent(name) or agent_storage.delete_agent(name)
+
+        if deleted:
             success(f"Agent '{name}' deleted successfully")
         else:
             error(f"Failed to delete agent '{name}'")
 
     except Exception as e:
         error(f"Error deleting agent: {e}")
+@click.command()
 @click.argument("name")
 @click.argument("task")
 @click.option("--async", "async_exec", is_flag=True, help="Execute asynchronously")
 def execute(name, task, async_exec):
     """Execute a task with a specific agent."""
     try:
-        # Load agent from storage
-        agent_data = agent_storage.get_agent(name)
+        # Load agent from storage (try Book storage first)
+        agent_data = agent_book_storage.get_agent(name) or agent_storage.get_agent(name)
         if not agent_data:
             error(f"Agent '{name}' not found")
             return
-        
+
         # Rebuild agent from stored data
-        from engine_core.core.agents.agent_builder import AgentBuilder
+        from engine_core import AgentBuilder
         
         builder = AgentBuilder()
         builder = builder.with_id(agent_data['id'])

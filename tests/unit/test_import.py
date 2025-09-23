@@ -10,8 +10,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 def test_import_main():
     """Test that main CLI module can be imported."""
-    from engine_cli.main import app
-    assert app is not None
+    from engine_cli.main import cli
+    assert cli is not None
 
 
 def test_import_commands():
@@ -30,17 +30,9 @@ def test_import_commands():
 @pytest.mark.asyncio
 async def test_cli_basic_functionality():
     """Test basic CLI functionality without external dependencies."""
-    from engine_cli.main import app
+    from engine_cli.main import cli
 
     # Test that the app can be invoked (this would normally show help)
-    # We mock typer.echo to avoid actual output
-    with patch('typer.echo') as mock_echo:
-        try:
-            # This should not raise an exception - just test that app exists
-            assert app is not None
-        except SystemExit:
-            # CLI apps often call sys.exit(0) for --help
-            pass
-
-    # Just verify the app object exists
-    assert app is not None
+    # Just verify the cli object exists and is callable
+    assert cli is not None
+    assert callable(cli)

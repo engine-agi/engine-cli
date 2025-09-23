@@ -1,0 +1,50 @@
+# Engine CLI - Specific Configuration
+# This file contains CLI-specific settings that are not shared with other components
+
+# CLI Interface Settings
+cli:
+  colors: true
+  interactive: true
+  history_size: 1000
+  table_style: "rounded"
+  progress_bar: true
+
+# Command Defaults
+commands:
+  agent:
+    default_model: "claude-3.5-sonnet"
+    default_stack: ["python"]
+    save_directory: "./agents"
+
+  team:
+    save_directory: "./teams"
+    default_strategy: "hierarchical"
+
+  workflow:
+    save_directory: "./workflows"
+    default_engine: "pregel"
+
+  book:
+    save_directory: "./books"
+    default_content_type: "text"
+
+# Output Formatting
+formatting:
+  json_indent: 2
+  yaml_flow_style: false
+  table_max_width: 120
+
+# Local Storage
+storage:
+  agents_dir: "./agents"
+  teams_dir: "./teams"
+  workflows_dir: "./workflows"
+  books_dir: "./books"
+  configs_dir: "./configs"
+
+# CLI-specific Features
+features:
+  auto_complete: true
+  syntax_highlighting: true
+  rich_output: true
+  emoji_support: true

@@ -5,13 +5,29 @@ from datetime import datetime
 import os
 import yaml
 import json
+import asyncio
 
 # Import Rich formatting
-from engine_cli.formatting import success, error, header, key_value, table, print_table
+from engine_cli.formatting import success, error, header, key_value, table, print_table, warning
 
 # Import engine core components
-from engine_core.core.workflows.workflow_builder import WorkflowBuilder
-from engine_core.core.workflows.workflow_engine import WorkflowEngine
+from engine_core import WorkflowBuilder, WorkflowEngine
+
+# Import state manager
+from engine_cli.storage.workflow_state_manager import workflow_state_manager, WorkflowExecutionState
+
+# Import WorkflowExecutionService (lazy import to avoid core dependencies)
+def _get_workflow_execution_service():
+    """Lazy import of WorkflowExecutionService."""
+    try:
+        from engine_core.services.workflow_service import WorkflowExecutionService, PostgreSQLWorkflowExecutionRepository
+        # For now, use mock repository since full PostgreSQL setup is complex
+        from engine_core.services.workflow_service import MockWorkflowRepository
+        
+        mock_repo = MockWorkflowRepository()
+        return WorkflowExecutionService(mock_repo)
+    except ImportError:
+        return None
 
 # Lazy imports to avoid database dependencies
 def _get_workflow_enums():
@@ -684,7 +700,8 @@ def show(name):
 
         if not workflow_data:
             error(f"Workflow '{name}' not found")
-            return
+            import sys
+            sys.exit(1)
 
         # Display workflow header
         header(f"Workflow: {workflow_data.get('name', name)}")
@@ -758,6 +775,8 @@ def delete(name, force):
             success(f"Workflow '{name}' deleted successfully")
         else:
             error(f"Workflow '{name}' not found or could not be deleted")
+            import sys
+            sys.exit(1)
 
     except Exception as e:
         error(f"Failed to delete workflow: {e}")
@@ -786,34 +805,150 @@ def run(name, input_data):
 
         success(f"Running workflow '{name}'...")
 
+        # Get workflow execution service for persistence
+        execution_service = _get_workflow_execution_service()
+
+        # Create execution in state manager using existing event loop approach
+        execution_id = None
+        temp_loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(temp_loop)
+        try:
+            execution_id = temp_loop.run_until_complete(workflow_state_manager.create_execution(
+                workflow_id=name,
+                workflow_name=workflow_data.get('name', name),
+                input_data=input_dict
+            ))
+
+            click.echo(f"📋 Volatile Execution ID: {execution_id}")
+
+            # Update state to running
+            temp_loop.run_until_complete(workflow_state_manager.update_execution_state(
+                execution_id=execution_id,
+                state=WorkflowExecutionState.RUNNING
+            ))
+
+        finally:
+            temp_loop.close()
+
         # Try to resolve and execute the workflow
         resolved_workflow = workflow_resolver.resolve_workflow(workflow_data)
 
         if resolved_workflow:
             # Execute the resolved workflow directly
-            import asyncio
             async def execute_workflow():
-                result = await resolved_workflow.execute(input_dict)
-                return result
+                # Create persistent execution record if service is available
+                execution_record = None
+                if execution_service:
+                    try:
+                        execution_record = await execution_service.create_execution(
+                            workflow_id=name,
+                            workflow_name=workflow_data.get('name', name),
+                            input_data=input_dict
+                        )
+                        click.echo(f"📋 Persistent Execution ID: {execution_record.execution_id}")
+                    except Exception as e:
+                        warning(f"Could not create persistent execution record: {e}")
 
-            # Run the async execution
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
+                try:
+                    # Update progress as we start
+                    await workflow_state_manager.update_execution_state(
+                        execution_id=execution_id,
+                        state=WorkflowExecutionState.RUNNING,
+                        progress_percentage=10.0
+                    )
+
+                    # Mark persistent execution as started
+                    if execution_service and execution_record:
+                        try:
+                            await execution_service.start_execution(execution_record.execution_id)
+                        except Exception as e:
+                            warning(f"Could not update persistent execution: {e}")
+
+                    result = await resolved_workflow.execute(input_dict)
+
+                    # Update final state
+                    await workflow_state_manager.update_execution_state(
+                        execution_id=execution_id,
+                        state=WorkflowExecutionState.COMPLETED,
+                        progress_percentage=100.0
+                    )
+
+                    await workflow_state_manager.set_execution_output(
+                        execution_id=execution_id,
+                        output_data=result
+                    )
+
+                    # Mark persistent execution as completed
+                    if execution_service and execution_record:
+                        try:
+                            await execution_service.complete_execution(
+                                execution_record.execution_id,
+                                success=True,
+                                output_data=result
+                            )
+                        except Exception as e:
+                            warning(f"Could not complete persistent execution: {e}")
+
+                    return result
+
+                except Exception as exec_error:
+                    # Set error state
+                    await workflow_state_manager.set_execution_error(
+                        execution_id=execution_id,
+                        error_message=str(exec_error)
+                    )
+
+                    # Mark persistent execution as failed
+                    if execution_service and execution_record:
+                        try:
+                            await execution_service.fail_execution(
+                                execution_record.execution_id,
+                                str(exec_error)
+                            )
+                        except Exception as e:
+                            warning(f"Could not fail persistent execution: {e}")
+
+                    raise
+
+            # Run the async execution using asyncio.run
             try:
-                result = loop.run_until_complete(execute_workflow())
+                result = asyncio.run(execute_workflow())
 
                 success("Workflow execution completed!")
                 click.echo("📊 Execution Result:")
+                click.echo(f"   Execution ID: {execution_id}")
                 click.echo(f"   Result: {result}")
 
-            finally:
-                loop.close()
+            except Exception as e:
+                error(f"Workflow execution failed: {e}")
+                return
         else:
-            # Fallback to simulation
+            # Fallback to simulation - still track state
+            asyncio.run(workflow_state_manager.update_execution_state(
+                execution_id=execution_id,
+                state=WorkflowExecutionState.RUNNING,
+                progress_percentage=50.0
+            ))
+
             click.echo("📊 Execution Simulation (could not resolve workflow):")
+            click.echo(f"   Execution ID: {execution_id}")
             click.echo(f"   Input: {input_dict}")
             click.echo("   Status: simulated execution completed")
-            click.echo("   Result: {'status': 'success', 'output': 'simulated workflow result'}")
+            simulated_result = {"status": "success", "output": "simulated workflow result"}
+
+            # Complete the execution
+            asyncio.run(workflow_state_manager.update_execution_state(
+                execution_id=execution_id,
+                state=WorkflowExecutionState.COMPLETED,
+                progress_percentage=100.0
+            ))
+
+            asyncio.run(workflow_state_manager.set_execution_output(
+                execution_id=execution_id,
+                output_data=simulated_result
+            ))
+
+            click.echo(f"   Result: {simulated_result}")
             success("Workflow execution completed (simulated)")
 
     except Exception as e:
@@ -868,3 +1003,217 @@ def test(name, input_data):
 
     except Exception as e:
         error(f"Failed to test workflow: {e}")
+
+
+@cli.command()
+@click.argument("execution_id", required=False)
+@click.option("--workflow", help="Filter by workflow ID")
+@click.option("--active", is_flag=True, help="Show only active executions")
+@click.option("--limit", default=10, help="Limit number of results")
+def status(execution_id, workflow, active, limit):
+    """Show workflow execution status."""
+    try:
+        if execution_id:
+            # Show specific execution status
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                status = loop.run_until_complete(workflow_state_manager.get_execution_status(execution_id))
+
+                if not status:
+                    error(f"Execution '{execution_id}' not found")
+                    return
+
+                success(f"Execution Status: {execution_id}")
+
+                # Create status table
+                status_table = table("Execution Details", ["Property", "Value"])
+                status_table.add_row("Execution ID", status.execution_id)
+                status_table.add_row("Workflow ID", status.workflow_id)
+                status_table.add_row("Workflow Name", status.workflow_name)
+                status_table.add_row("State", status.state.value.upper())
+                status_table.add_row("Progress", f"{status.progress_percentage:.1f}%")
+                status_table.add_row("Start Time", status.start_time.strftime("%Y-%m-%d %H:%M:%S"))
+                if status.end_time:
+                    status_table.add_row("End Time", status.end_time.strftime("%Y-%m-%d %H:%M:%S"))
+                if status.current_vertex:
+                    status_table.add_row("Current Vertex", status.current_vertex)
+                status_table.add_row("Input Data", str(status.input_data)[:100] + "..." if len(str(status.input_data)) > 100 else str(status.input_data))
+                if status.output_data:
+                    status_table.add_row("Output Data", str(status.output_data)[:100] + "..." if len(str(status.output_data)) > 100 else str(status.output_data))
+                if status.error_message:
+                    status_table.add_row("Error", status.error_message)
+
+                print_table(status_table)
+
+                # Show vertex states if available
+                if status.vertex_states:
+                    click.echo("\n🔍 Vertex States:")
+                    vertex_table = table("Vertex Execution Status", ["Vertex ID", "State", "Last Update", "Output/Error"])
+                    for vertex_id, vertex_state in status.vertex_states.items():
+                        state = vertex_state.get('state', 'unknown')
+                        updated = vertex_state.get('updated_at', 'unknown')
+                        output = vertex_state.get('output_data', '')
+                        error = vertex_state.get('error_message', '')
+                        info = output[:50] + "..." if len(str(output)) > 50 else str(output)
+                        if error:
+                            info = f"ERROR: {error[:50]}..."
+                        vertex_table.add_row(vertex_id, state.upper(), updated, info)
+                    print_table(vertex_table)
+
+            finally:
+                loop.close()
+
+        elif active:
+            # Show active executions
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                executions = loop.run_until_complete(workflow_state_manager.get_active_executions())
+
+                if not executions:
+                    click.echo("No active executions found")
+                    return
+
+                success(f"Active Executions ({len(executions)})")
+
+                active_table = table("Active Workflow Executions", ["Execution ID", "Workflow", "Progress", "Current Vertex", "Started"])
+                for status in executions:
+                    active_table.add_row(
+                        status.execution_id,
+                        f"{status.workflow_name} ({status.workflow_id})",
+                        f"{status.progress_percentage:.1f}%",
+                        status.current_vertex or "N/A",
+                        status.start_time.strftime("%H:%M:%S")
+                    )
+                print_table(active_table)
+
+            finally:
+                loop.close()
+
+        elif workflow:
+            # Show executions for specific workflow
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                executions = loop.run_until_complete(workflow_state_manager.get_workflow_executions(workflow, limit))
+
+                if not executions:
+                    click.echo(f"No executions found for workflow '{workflow}'")
+                    return
+
+                success(f"Executions for Workflow '{workflow}' ({len(executions)})")
+
+                workflow_table = table("Workflow Executions", ["Execution ID", "State", "Progress", "Started", "Ended"])
+                for status in executions:
+                    end_time = status.end_time.strftime("%H:%M:%S") if status.end_time else "Running"
+                    workflow_table.add_row(
+                        status.execution_id,
+                        status.state.value.upper(),
+                        f"{status.progress_percentage:.1f}%",
+                        status.start_time.strftime("%H:%M:%S"),
+                        end_time
+                    )
+                print_table(workflow_table)
+
+            finally:
+                loop.close()
+
+        else:
+            # Show recent executions overview
+            click.echo("Usage:")
+            click.echo("  status <execution_id>     - Show specific execution details")
+            click.echo("  status --active           - Show currently running executions")
+            click.echo("  status --workflow <id>    - Show executions for specific workflow")
+            click.echo("  status --limit <n>        - Limit results (default: 10)")
+
+    except Exception as e:
+        error(f"Failed to get execution status: {e}")
+
+
+
+@cli.command()
+@click.argument("workflow_id", required=False)
+@click.option("--limit", default=20, help="Maximum number of executions to show")
+@click.option("--status", "status_filter", help="Filter by execution status (pending, running, completed, failed)")
+def history(workflow_id, limit, status_filter):
+    """Show execution history for workflows."""
+    try:
+        execution_service = _get_workflow_execution_service()
+        
+        if not execution_service:
+            error("Workflow execution service not available")
+            return
+
+        import asyncio
+        
+        async def show_history():
+            try:
+                if workflow_id:
+                    # Show history for specific workflow
+                    executions = await execution_service.get_workflow_executions(
+                        workflow_id=workflow_id,
+                        limit=limit
+                    )
+                    
+                    if not executions:
+                        click.echo(f"No execution history found for workflow '{workflow_id}'")
+                        return
+                    
+                    success(f"Execution History for Workflow '{workflow_id}' ({len(executions)})")
+                    
+                    history_table = table("Execution History", [
+                        "Execution ID", "Status", "Started", "Duration", "Success"
+                    ])
+                    
+                    for execution in executions:
+                        duration = "N/A"
+                        if execution.duration_seconds:
+                            duration = f"{execution.duration_seconds:.1f}s"
+                        
+                        success_status = "N/A"
+                        if execution.success is not None:
+                            success_status = "✓" if execution.success else "✗"
+                        
+                        started = "N/A"
+                        if hasattr(execution, 'started_at') and execution.started_at:
+                            started = execution.started_at.strftime("%Y-%m-%d %H:%M:%S")
+                        
+                        history_table.add_row(
+                            execution.execution_id[:16] + "...",
+                            getattr(execution, 'status', 'unknown').upper(),
+                            started,
+                            duration,
+                            success_status
+                        )
+                    
+                    print_table(history_table)
+                    
+                    # Show analytics
+                    try:
+                        analytics = await execution_service.get_execution_analytics(workflow_id)
+                        click.echo("\n📊 Analytics:")
+                        click.echo(f"   Total Executions: {analytics.get('total_executions', 0)}")
+                        click.echo(f"   Success Rate: {analytics.get('success_rate', 0):.1%}")
+                        click.echo(f"   Average Duration: {analytics.get('average_duration', 0):.1f}s")
+                    except Exception as e:
+                        warning(f"Could not load analytics: {e}")
+                        
+                else:
+                    # Show recent executions across all workflows
+                    # This would need a method to get recent executions
+                    click.echo("Recent executions across all workflows:")
+                    click.echo("(Feature not yet implemented - use --workflow <id> to see specific workflow history)")
+                    
+            except Exception as e:
+                error(f"Failed to retrieve execution history: {e}")
+        
+        # Run the async function
+        asyncio.run(show_history())
+        
+    except Exception as e:
+        error(f"Failed to show execution history: {e}")
+
+
+if __name__ == "__main__":
+    cli()

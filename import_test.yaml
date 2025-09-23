@@ -1,6 +1,0 @@
-core:
-  debug: false
-  log_level: DEBUG
-api:
-  base_url: http://test-import.com
-  timeout: 60

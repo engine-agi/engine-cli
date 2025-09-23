@@ -1,0 +1,15 @@
+config:
+  description: Test workflow for persistence
+  id: test_workflow
+  metadata: {}
+  name: test_workflow
+  version: 1.0.0
+created_at: '2025-09-23T14:43:46.359399'
+description: null
+edge_count: 0
+edges: []
+id: test_workflow
+name: test_workflow
+version: 1.0.0
+vertex_count: 1
+vertices: []

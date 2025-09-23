@@ -1,6 +1,0 @@
-agent_ids:
-- error-getting-agents
-coordination_strategy: hierarchical
-description: null
-id: test-error
-name: test-error

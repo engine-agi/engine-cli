@@ -1,7 +1,0 @@
-agents: []
-coordination_strategy: TeamCoordinationStrategy.HIERARCHICAL
-created_at: '2025-09-22T22:28:06.072383'
-description: null
-id: test-team-debug
-leader: null
-name: test-team-debug

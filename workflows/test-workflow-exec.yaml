@@ -1,0 +1,19 @@
+config:
+  description: null
+  id: test-workflow-exec
+  metadata: {}
+  name: test-workflow-exec
+  version: 1.0.0
+created_at: '2025-09-23T17:14:08.071276'
+description: null
+edge_count: 0
+edges: []
+id: test-workflow-exec
+name: test-workflow-exec
+version: 1.0.0
+vertex_count: 1
+vertices:
+- agent_id: test-agent-exec
+  id: task
+  instruction: Process this test input
+  type: agent

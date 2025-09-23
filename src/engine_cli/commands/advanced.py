@@ -289,7 +289,7 @@ def health(component: Optional[str], detailed: bool):
 
             if detailed:
                 click.echo()
-                info("Component Details:")
+                click.echo("Component Details:")
                 for comp_name, comp_info in health_status["components"].items():
                     status_icon = "✓" if comp_info["status"] == "healthy" else "⚠" if comp_info["status"] == "warning" else "✗"
                     click.echo(f"  {status_icon} {comp_name}: {comp_info['message']}")
@@ -314,7 +314,7 @@ def logs(lines: int, level: Optional[str], component: Optional[str]):
             filters.append(f"component={component}")
 
         if filters:
-            info(f"Filters: {', '.join(filters)}")
+            click.echo(f"Filters: {', '.join(filters)}")
 
         # Mock log entries
         mock_logs = [
@@ -332,7 +332,7 @@ def logs(lines: int, level: Optional[str], component: Optional[str]):
         for log_line in filtered_logs:
             click.echo(log_line)
 
-        info(f"Showing {len(filtered_logs)} log entries")
+        click.echo(f"Showing {len(filtered_logs)} log entries")
 
     except Exception as e:
         error(f"Log viewing failed: {e}")
