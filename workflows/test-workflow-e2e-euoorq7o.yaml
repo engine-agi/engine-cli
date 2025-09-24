@@ -1,0 +1,15 @@
+config:
+  description: Test workflow for E2E testing
+  id: test-workflow-e2e-euoorq7o
+  metadata: {}
+  name: test-workflow-e2e-euoorq7o
+  version: 1.0.0
+created_at: '2025-09-24T17:43:29.451269'
+description: null
+edge_count: 0
+edges: []
+id: test-workflow-e2e-euoorq7o
+name: test-workflow-e2e-euoorq7o
+version: 1.0.0
+vertex_count: 1
+vertices: []

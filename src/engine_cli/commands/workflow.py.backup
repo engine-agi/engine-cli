@@ -35,9 +35,9 @@ def _get_workflow_execution_service():
     try:
         # For now, use mock repository since full PostgreSQL setup is complex
         from engine_core.services.workflow_service import (
-            WorkflowExecutionService,  # type: ignore
+            MockWorkflowRepository,
+            WorkflowExecutionService,
         )
-        from engine_core.services.workflow_service import MockWorkflowRepository
 
         mock_repo = MockWorkflowRepository()
         return WorkflowExecutionService(mock_repo)
@@ -187,8 +187,7 @@ class WorkflowResolver:
         """Lazy load agent storage."""
         if self.agent_storage is None:
             try:
-                # Temporarily disabled - will be implemented when agent commands
-                # are available
+                # Temporarily disabled - will be implemented when agent commands are available
                 # from engine_cli.commands.agent import get_agent_storage
                 # self.agent_storage = get_agent_storage()
                 pass
@@ -542,6 +541,210 @@ def create(name, description, version, simple, agent, team, edge, config, save, 
 
     except Exception as e:
         error(f"Failed to create workflow: {e}")
+
+
+@cli.command()
+def list():
+    """Create a new workflow."""
+    try:
+        builder = CLIWorkflowBuilder()  # Initialize with default builder
+
+        # Load from config file if provided
+        if config:
+            with open(config, "r", encoding="utf-8") as f:
+                config_data = yaml.safe_load(f)
+
+            # Apply config data
+            workflow_config = config_data.get("workflow", {})
+            builder = builder.with_id(workflow_config.get("id", name))
+            builder = builder.with_name(workflow_config.get("name", name))
+            builder = builder.with_description(
+                workflow_config.get("description", description or "")
+            )
+            builder = builder.with_version(workflow_config.get("version", version))
+
+            # Add vertices from config
+            vertices = config_data.get("vertices", [])
+            for vertex in vertices:
+                vertex_type = vertex.get("type")
+                vertex_id = vertex.get("id")
+
+                if vertex_type == "agent":
+                    agent_id = vertex.get("agent_id")
+                    instruction = vertex.get("instruction", "")
+                    builder = builder.add_agent_vertex(vertex_id, agent_id, instruction)
+                elif vertex_type == "team":
+                    team_id = vertex.get("team_id")
+                    tasks = vertex.get("tasks", [])
+                    builder = builder.add_team_vertex(vertex_id, team_id, tasks)
+                elif vertex_type == "function":
+                    # For function vertices in config, we'd need to define them
+                    # For now, skip or add placeholder
+                    pass
+
+            # Add edges from config
+            edges = config_data.get("edges", [])
+            for edge_config in edges:
+                from_vertex = edge_config.get("from")
+                to_vertex = edge_config.get("to")
+                if from_vertex and to_vertex:
+                    builder = builder.add_edge(from_vertex, to_vertex)
+        else:
+            # Manual configuration
+            builder = builder.with_id(name)
+            builder = builder.with_name(name)
+
+            if description:
+                builder = builder.with_description(description)
+
+            if version:
+                builder = builder.with_version(version)
+
+            # Add agent vertices
+            for agent_spec in agent:
+                parts = agent_spec.split(":", 2)
+                if len(parts) < 3:
+                    error(
+                        f"Invalid agent specification: {agent_spec}. Use format: vertex_id:agent_id:instruction"
+                    )
+                    return
+                vertex_id, agent_id, instruction = parts
+                builder = builder.add_agent_vertex(vertex_id, agent_id, instruction)
+
+            # Add team vertices
+            for team_spec in team:
+                parts = team_spec.split(":", 2)
+                if len(parts) < 3:
+                    error(
+                        f"Invalid team specification: {team_spec}. Use format: vertex_id:team_id:task1,task2"
+                    )
+                    return
+                vertex_id, team_id, tasks_str = parts
+                tasks = [{"task": task.strip()} for task in tasks_str.split(",")]
+                builder = builder.add_team_vertex(vertex_id, team_id, tasks)
+
+            # Add edges
+            for edge_spec in edge:
+                if ":" not in edge_spec:
+                    error(
+                        f"Invalid edge specification: {edge_spec}. Use format: from_vertex:to_vertex"
+                    )
+                    return
+                from_vertex, to_vertex = edge_spec.split(":", 1)
+                builder = builder.add_edge(from_vertex, to_vertex)
+
+            # Add a simple function vertex if requested (and no other vertices specified)
+            if simple and not agent and not team:
+
+                async def demo_function(input_data):
+                    return {"result": f"Executed by {name}", "input": input_data}
+
+                builder = builder.add_function_vertex("demo_task", demo_function)
+
+        workflow = builder.build()
+
+        success(f"Workflow '{name}' created successfully!")
+
+        # Create table with workflow details
+        workflow_table = table("Workflow Details", ["Property", "Value"])
+        workflow_table.add_row("ID", workflow.id)
+        workflow_table.add_row("Name", workflow.name)
+        workflow_table.add_row(
+            "Description", getattr(workflow.config, "description", "")
+        )
+        workflow_table.add_row("Version", getattr(workflow.config, "version", "1.0.0"))
+        workflow_table.add_row("Vertices", str(workflow.vertex_count))
+        workflow_table.add_row("Edges", str(workflow.edge_count))
+        workflow_table.add_row("State", workflow.state.value)
+        print_table(workflow_table)
+
+        # Save if requested
+        if save:
+            if workflow_storage.save_workflow(workflow, builder):
+                success(
+                    f"Workflow saved to {workflow_storage.workflows_dir}/{workflow.id}.yaml"
+                )
+            else:
+                error("Failed to save workflow")
+
+        # Output to file if requested
+        if output:
+            try:
+                workflow_data = workflow.to_dict()
+                with open(output, "w", encoding="utf-8") as f:
+                    yaml.safe_dump(
+                        workflow_data, f, default_flow_style=False, allow_unicode=True
+                    )
+                success(f"Workflow configuration saved to {output}")
+            except Exception as e:
+                error(f"Failed to save workflow to file: {e}")
+
+    except Exception as e:
+        error(f"Failed to create workflow: {e}")
+
+        if version:
+            builder = builder.with_version(version)
+
+        # Add agent vertices
+        for agent_spec in agent:
+            parts = agent_spec.split(":", 2)
+            if len(parts) < 3:
+                error(
+                    f"Invalid agent specification: {agent_spec}. Use format: vertex_id:agent_id:instruction"
+                )
+                return
+            vertex_id, agent_id, instruction = parts
+            # For CLI, we'll store the agent_id and instruction for later resolution
+            # This is a simplified approach - full resolution would require loading agents
+            builder = builder.add_agent_vertex(vertex_id, agent_id, instruction)
+
+        # Add team vertices
+        for team_spec in team:
+            parts = team_spec.split(":", 2)
+            if len(parts) < 3:
+                error(
+                    f"Invalid team specification: {team_spec}. Use format: vertex_id:team_id:task1,task2"
+                )
+                return
+            vertex_id, team_id, tasks_str = parts
+            tasks = [{"task": task.strip()} for task in tasks_str.split(",")]
+            # For CLI, we'll store the team_id and tasks for later resolution
+            builder = builder.add_team_vertex(vertex_id, team_id, tasks)
+
+        # Add edges
+        for edge_spec in edge:
+            if ":" not in edge_spec:
+                error(
+                    f"Invalid edge specification: {edge_spec}. Use format: from_vertex:to_vertex"
+                )
+                return
+            from_vertex, to_vertex = edge_spec.split(":", 1)
+            builder = builder.add_edge(from_vertex, to_vertex)
+
+        # Add a simple function vertex if requested (and no other vertices specified)
+        if simple and not agent and not team:
+
+            async def demo_function(input_data):
+                return {"result": f"Executed by {name}", "input": input_data}
+
+            builder = builder.add_function_vertex("demo_task", demo_function)
+
+        workflow = builder.build()
+
+        success(f"Workflow '{name}' created successfully!")
+
+        # Create table with workflow details
+        workflow_table = table("Workflow Details", ["Property", "Value"])
+        workflow_table.add_row("ID", workflow.id)
+        workflow_table.add_row("Name", workflow.name)
+        workflow_table.add_row(
+            "Description", getattr(workflow.config, "description", "")
+        )
+        workflow_table.add_row("Version", getattr(workflow.config, "version", "1.0.0"))
+        workflow_table.add_row("Vertices", str(workflow.vertex_count))
+        workflow_table.add_row("Edges", str(workflow.edge_count))
+        workflow_table.add_row("State", workflow.state.value)
+        print_table(workflow_table)
 
 
 @cli.command()

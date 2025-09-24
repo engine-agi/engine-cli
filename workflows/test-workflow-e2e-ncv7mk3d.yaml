@@ -1,0 +1,15 @@
+config:
+  description: Test workflow for E2E testing
+  id: test-workflow-e2e-ncv7mk3d
+  metadata: {}
+  name: test-workflow-e2e-ncv7mk3d
+  version: 1.0.0
+created_at: '2025-09-24T16:33:54.468558'
+description: null
+edge_count: 0
+edges: []
+id: test-workflow-e2e-ncv7mk3d
+name: test-workflow-e2e-ncv7mk3d
+version: 1.0.0
+vertex_count: 1
+vertices: []

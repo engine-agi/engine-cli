@@ -4,16 +4,9 @@ import click
 
 # Import Rich formatting
 from engine_cli.formatting import error as error_msg
-from engine_cli.formatting import (
-    header,
-    info,
-    print_table,
-    separator,
-)
+from engine_cli.formatting import header, info, print_table, separator
 from engine_cli.formatting import success as success_msg
-from engine_cli.formatting import (
-    table,
-)
+from engine_cli.formatting import table
 
 # Import interactive mode
 from engine_cli.interactive import start_interactive

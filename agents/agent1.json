@@ -16,10 +16,10 @@
       "protocol": null,
       "workflow": null,
       "book": null,
-      "created_at": "2025-09-23 14:14:07.928856"
+      "created_at": "2025-09-24 14:43:29.380158"
     },
     "metadata": {
-      "created_at": "2025-09-23 14:14:07.928856",
+      "created_at": "2025-09-24 14:43:29.380158",
       "version": "1.0",
       "type": "agent_configuration"
     }
@@ -32,7 +32,7 @@
   "categories": [
     "agents"
   ],
-  "created_at": "2025-09-23 14:14:07.929271",
+  "created_at": "2025-09-24 14:43:29.380433",
   "book_object": {
     "book_id": "agent_agent1",
     "title": "Agent: agent1",
@@ -40,16 +40,16 @@
     "author": "Engine CLI",
     "project_id": "engine_cli_agents",
     "metadata": {
-      "created_at": "2025-09-23T17:14:07.928981",
-      "updated_at": "2025-09-23T17:14:07.929000",
+      "created_at": "2025-09-24T17:43:29.380210",
+      "updated_at": "2025-09-24T17:43:29.380214",
       "created_by": null,
       "updated_by": null,
       "version": 1,
       "content_size": 0,
       "checksum": null,
       "tags": [
-        "agent",
         "configuration",
+        "agent",
         "claude-3.5-sonnet"
       ],
       "categories": [
@@ -74,11 +74,11 @@
       "word_count": 0,
       "character_count": 0,
       "content_size": 0,
-      "last_updated": "2025-09-23T17:14:07.929000",
+      "last_updated": "2025-09-24T17:43:29.380214",
       "version": 1,
       "tags": [
-        "agent",
         "configuration",
+        "agent",
         "claude-3.5-sonnet"
       ],
       "categories": [

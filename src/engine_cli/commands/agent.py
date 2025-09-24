@@ -408,13 +408,16 @@ def execute(name, task, async_exec):
             )
             click.echo(f"✅ Task completed in {duration:.2f}s")
             click.echo(
-                f"📄 Response: {result.messages[-1].content if result.messages else 'No response'}"
+                "📄 Response: {}".format(
+                    result.messages[-1].content if result.messages else "No response"
+                )
             )
 
             return result
 
         if async_exec:
-            # Run in background (this is simplified - in real implementation would use proper async handling)
+            # Run in background (this is simplified - in real implementation
+            # would use proper async handling)
             import threading
 
             def run_async():

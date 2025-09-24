@@ -6,14 +6,14 @@ Engine CLI - Command Line Interface for Engine Framework
 import sys
 from pathlib import Path
 
+import click
+from rich.console import Console
+from rich.theme import Theme
+
 # Add src to path for development
 src_path = Path(__file__).parent.parent.parent
 if str(src_path) not in sys.path:
     sys.path.insert(0, str(src_path))
-
-import click
-from rich.console import Console
-from rich.theme import Theme
 
 # Custom theme for Engine CLI
 engine_theme = Theme(

@@ -16,10 +16,10 @@
       "protocol": null,
       "workflow": null,
       "book": null,
-      "created_at": "2025-09-23 14:14:07.983765"
+      "created_at": "2025-09-24 14:43:29.446335"
     },
     "metadata": {
-      "created_at": "2025-09-23 14:14:07.983765",
+      "created_at": "2025-09-24 14:43:29.446335",
       "version": "1.0",
       "type": "agent_configuration"
     }
@@ -32,7 +32,7 @@
   "categories": [
     "agents"
   ],
-  "created_at": "2025-09-23 14:14:07.984113",
+  "created_at": "2025-09-24 14:43:29.446538",
   "book_object": {
     "book_id": "agent_test-agent-integrity",
     "title": "Agent: test-agent-integrity",
@@ -40,16 +40,16 @@
     "author": "Engine CLI",
     "project_id": "engine_cli_agents",
     "metadata": {
-      "created_at": "2025-09-23T17:14:07.983911",
-      "updated_at": "2025-09-23T17:14:07.983918",
+      "created_at": "2025-09-24T17:43:29.446402",
+      "updated_at": "2025-09-24T17:43:29.446407",
       "created_by": null,
       "updated_by": null,
       "version": 1,
       "content_size": 0,
       "checksum": null,
       "tags": [
-        "agent",
         "configuration",
+        "agent",
         "claude-3.5-sonnet"
       ],
       "categories": [
@@ -74,11 +74,11 @@
       "word_count": 0,
       "character_count": 0,
       "content_size": 0,
-      "last_updated": "2025-09-23T17:14:07.983918",
+      "last_updated": "2025-09-24T17:43:29.446407",
       "version": 1,
       "tags": [
-        "agent",
         "configuration",
+        "agent",
         "claude-3.5-sonnet"
       ],
       "categories": [

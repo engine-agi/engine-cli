@@ -2,7 +2,8 @@
 Book Management Commands - Integration with BookService.
 
 This module provides CLI commands for managing books, chapters, pages, and sections
-through the BookService, which handles hierarchical memory management in the Engine Framework.
+through the BookService, which handles hierarchical memory management in the
+Engine Framework.
 
 Commands integrate with:
 - BookService for business logic and state management
@@ -23,14 +24,12 @@ from ..formatting import error, header, key_value, print_table, success, table
 
 # Import BookService and related components
 try:
-    from engine_core import (
-        AccessLevel,
-        BookBuilder,
-        ContentStatus,
-        ContentType,
-        SearchQuery,
-        SearchScope,
-    )
+    from engine_core import AccessLevel  # type: ignore
+    from engine_core import ContentStatus  # type: ignore
+    from engine_core import ContentType  # type: ignore
+    from engine_core import SearchQuery  # type: ignore
+    from engine_core import SearchScope  # type: ignore
+    from engine_core import BookBuilder
     from engine_core.services.book_service import BookService
 
     BOOK_SERVICE_AVAILABLE = True
@@ -54,9 +53,10 @@ def get_book_service():
     """Get or create BookService instance."""
     global _book_service
     if _book_service is None:
-        if not BOOK_SERVICE_AVAILABLE:
+        if not BOOK_SERVICE_AVAILABLE or BookService is None:
             raise click.ClickException(
-                "BookService not available. Ensure backend services are properly installed."
+                "BookService not available. Ensure backend services are "
+                "properly installed."
             )
         _book_service = BookService()
     return _book_service
@@ -242,15 +242,14 @@ def add_chapter(book_id: str, chapter_id: str, title: str, description: str = ""
 
             chapter_id_result = await service.add_chapter(
                 book_id=book_id,
-                chapter_id=chapter_id,
                 title=title,
                 description=description,
             )
 
             if chapter_id_result:
-                success(f"Chapter '{chapter_id}' added to book '{book_id}'")
+                success(f"Chapter '{chapter_id_result}' added to book '{book_id}'")
             else:
-                error(f"Failed to add chapter '{chapter_id}' to book '{book_id}'")
+                error(f"Failed to add chapter to book '{book_id}'")
 
         except Exception as e:
             error(f"Error adding chapter: {str(e)}")
@@ -276,7 +275,9 @@ def list_chapters(book_id: str):
                         stats = chapter.to_dict()["statistics"]
                         click.echo(f"  • {chapter.title} ({chapter.chapter_id})")
                         click.echo(
-                            f"    {stats['page_count']} pages, {stats['section_count']} sections, {stats['word_count']} words"
+                            f"    {stats['page_count']} pages, "
+                            f"{stats['section_count']} sections, "
+                            f"{stats['word_count']} words"
                         )
                 else:
                     click.echo("No chapters in this book.")
@@ -302,13 +303,17 @@ def search(book_id: str, query: str, max_results: int = 10):
         error("Book service not available. Please install engine-core.")
         return
 
+    if SearchQuery is None or SearchScope is None:
+        error("Search functionality not available in current engine-core version.")
+        return
+
     async def _search():
         try:
             service = get_book_service()
 
-            search_query = SearchQuery(
+            search_query = SearchQuery(  # type: ignore
                 query_text=query,
-                scope=SearchScope.GLOBAL,
+                scope=SearchScope.GLOBAL,  # type: ignore
                 max_results=max_results,
                 semantic_search=False,
             )
@@ -330,7 +335,8 @@ def search(book_id: str, query: str, max_results: int = 10):
 
                     if result.content_snippet:
                         click.echo(
-                            f"  Snippet: {result.content_snippet[:100]}{'...' if len(result.content_snippet) > 100 else ''}"
+                            f"  Snippet: {result.content_snippet[:100]}"
+                            f"{'...' if len(result.content_snippet) > 100 else ''}"
                         )
 
                     if result.highlights:

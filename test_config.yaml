@@ -12,9 +12,9 @@ cli:
   history_size: 1000
   interactive: true
 core:
-  debug: true
+  debug: false
   log_level: INFO
-  version: 1.0.0
+  version: 1.0.1
 database:
   max_overflow: 20
   pool_size: 10
