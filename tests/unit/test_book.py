@@ -369,29 +369,37 @@ class TestSearchCLICommands:
         """Test searching content in a book"""
         from engine_cli.commands.book import search
 
-        result = cli_runner.invoke(search, [
-            'test_book',
-            'test query',
-            '--max-results', '5'
-        ])
+        # Mock BOOK_SERVICE_AVAILABLE and required classes
+        with patch('engine_cli.commands.book.BOOK_SERVICE_AVAILABLE', True), \
+             patch('engine_cli.commands.book.SearchQuery', MockSearchQuery), \
+             patch('engine_cli.commands.book.SearchScope', MockSearchScope):
+            result = cli_runner.invoke(search, [
+                'test_book',
+                'test query',
+                '--max-results', '5'
+            ])
 
-        assert result.exit_code == 0
-        assert "Search Results for" in result.output
+            assert result.exit_code == 0
+            assert "Search Results for" in result.output
 
     def test_search_book_no_results(self, cli_runner, mock_book_service, mock_book_enums, mock_imports):
         """Test searching with no results"""
-        # Mock empty search results
-        mock_book_service.search_books = AsyncMock(return_value=[])
-
         from engine_cli.commands.book import search
 
-        result = cli_runner.invoke(search, [
-            'test_book',
-            'nonexistent query'
-        ])
+        # Mock BOOK_SERVICE_AVAILABLE and required classes
+        with patch('engine_cli.commands.book.BOOK_SERVICE_AVAILABLE', True), \
+             patch('engine_cli.commands.book.SearchQuery', MockSearchQuery), \
+             patch('engine_cli.commands.book.SearchScope', MockSearchScope):
+            # Mock empty search results
+            mock_book_service.search_books = AsyncMock(return_value=[])
 
-        assert result.exit_code == 0
-        assert "No results found" in result.output
+            result = cli_runner.invoke(search, [
+                'test_book',
+                'nonexistent query'
+            ])
+
+            assert result.exit_code == 0
+            assert "No results found" in result.output
 
 class TestBookUtilityFunctions:
     """Test utility functions"""

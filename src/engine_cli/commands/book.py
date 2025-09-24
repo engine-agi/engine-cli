@@ -40,6 +40,11 @@ except ImportError:
     BOOK_SERVICE_AVAILABLE = False
     BookService = None
     BookBuilder = None
+    ContentType = None
+    AccessLevel = None
+    ContentStatus = None
+    SearchScope = None
+    SearchQuery = None
 
 
 # Global service instance
@@ -294,6 +299,9 @@ def list_chapters(book_id: str):
 @click.option("--max-results", "-m", type=int, default=10, help="Maximum results")
 def search(book_id: str, query: str, max_results: int = 10):
     """Search content in a book."""
+    if not BOOK_SERVICE_AVAILABLE:
+        error("Book service not available. Please install engine-core.")
+        return
 
     async def _search():
         try:
