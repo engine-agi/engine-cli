@@ -420,11 +420,8 @@ def clear():
         cli_cache.clear_cache()
         success("All caches cleared successfully")
 
-        # Also clear in-memory cache
-        import engine_cli.main
-
-        engine_cli.main._command_cache.clear()
-        success("In-memory command cache cleared")
+        # Note: No in-memory command cache to clear at this time
+        # The CLI uses file-based caching only
 
     except Exception as e:
         error(f"Cache clearing failed: {e}")
