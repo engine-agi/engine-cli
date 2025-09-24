@@ -1,4 +1,5 @@
 """Example commands."""
+
 import click
 
 
@@ -16,12 +17,19 @@ def hello():
 
 
 @cli.command()
-@click.option("--level", type=click.Choice(['beginner', 'intermediate', 'advanced']), default='beginner', help="Example difficulty level")
+@click.option(
+    "--level",
+    type=click.Choice(["beginner", "intermediate", "advanced"]),
+    default="beginner",
+    help="Example difficulty level",
+)
 def list(level):
     """List available examples."""
     try:
         click.echo(f"⚠ Examples listing for level '{level}' not yet implemented")
-        click.echo("This will list all available examples organized by difficulty level")
+        click.echo(
+            "This will list all available examples organized by difficulty level"
+        )
     except Exception as e:
         click.echo(f"✗ Error listing examples: {e}")
 

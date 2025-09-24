@@ -1,11 +1,17 @@
 """Configuration management commands."""
+
 import click
 from pathlib import Path
 from typing import Optional
 
 from engine_cli.config import (
-    load_config, save_config, show_config, create_default_config,
-    get_config_value, set_config_value, config_manager
+    load_config,
+    save_config,
+    show_config,
+    create_default_config,
+    get_config_value,
+    set_config_value,
+    config_manager,
 )
 from engine_cli.formatting import success, error, info, header, key_value
 
@@ -17,8 +23,9 @@ def cli():
 
 
 @cli.command()
-@click.option('--file', '-f', 'config_file', type=click.Path(),
-              help='Configuration file to load')
+@click.option(
+    "--file", "-f", "config_file", type=click.Path(), help="Configuration file to load"
+)
 def show(config_file):
     """Show current configuration."""
     try:
@@ -30,10 +37,15 @@ def show(config_file):
 
 
 @cli.command()
-@click.argument('key')
-@click.argument('value')
-@click.option('--file', '-f', 'config_file', type=click.Path(),
-              help='Configuration file to update')
+@click.argument("key")
+@click.argument("value")
+@click.option(
+    "--file",
+    "-f",
+    "config_file",
+    type=click.Path(),
+    help="Configuration file to update",
+)
 def set(key, value, config_file):
     """Set a configuration value."""
     try:
@@ -56,7 +68,7 @@ def set(key, value, config_file):
 
 
 @cli.command()
-@click.argument('key')
+@click.argument("key")
 def get(key):
     """Get a configuration value."""
     try:
@@ -70,17 +82,23 @@ def get(key):
 
 
 @cli.command()
-@click.option('--file', '-f', 'config_file', type=click.Path(),
-              help='Configuration file to create')
-@click.option('--force', '-y', is_flag=True,
-              help='Overwrite existing configuration file')
+@click.option(
+    "--file",
+    "-f",
+    "config_file",
+    type=click.Path(),
+    help="Configuration file to create",
+)
+@click.option(
+    "--force", "-y", is_flag=True, help="Overwrite existing configuration file"
+)
 def init(config_file, force):
     """Create default configuration file."""
     try:
         if config_file:
             config_path = Path(config_file)
         else:
-            config_path = Path.home() / '.engine' / 'config.yaml'
+            config_path = Path.home() / ".engine" / "config.yaml"
 
         if config_path.exists() and not force:
             error(f"Configuration file already exists: {config_path}")
@@ -101,7 +119,7 @@ def init(config_file, force):
 
 
 @cli.command()
-@click.argument('config_file', type=click.Path(exists=True))
+@click.argument("config_file", type=click.Path(exists=True))
 def validate(config_file):
     """Validate configuration file."""
     try:
@@ -119,8 +137,9 @@ def validate(config_file):
 
 
 @cli.command()
-@click.option('--file', '-f', 'config_file', type=click.Path(),
-              help='Configuration file to edit')
+@click.option(
+    "--file", "-f", "config_file", type=click.Path(), help="Configuration file to edit"
+)
 def edit(config_file):
     """Edit configuration file in default editor."""
     try:
@@ -144,7 +163,7 @@ def edit(config_file):
         import subprocess
         import os
 
-        editor = os.environ.get('EDITOR', 'nano')
+        editor = os.environ.get("EDITOR", "nano")
         try:
             subprocess.run([editor, str(config_path)], check=True)
             success(f"Configuration edited: {config_path}")
@@ -177,7 +196,7 @@ def paths():
 
 
 @cli.command()
-@click.argument('section', required=False)
+@click.argument("section", required=False)
 def reset(section):
     """Reset configuration to defaults."""
     try:

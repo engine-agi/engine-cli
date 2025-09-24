@@ -1,4 +1,5 @@
 """Advanced CLI commands for bulk operations and utilities."""
+
 import click
 import json
 import yaml
@@ -23,17 +24,17 @@ def bulk():
 
 
 @bulk.command()
-@click.argument('names', nargs=-1, required=True)
-@click.option('--model', default='claude-3.5-sonnet', help='Model for agents')
-@click.option('--stack', multiple=True, help='Tech stack items')
-@click.option('--parallel', is_flag=True, help='Create agents in parallel')
+@click.argument("names", nargs=-1, required=True)
+@click.option("--model", default="claude-3.5-sonnet", help="Model for agents")
+@click.option("--stack", multiple=True, help="Tech stack items")
+@click.option("--parallel", is_flag=True, help="Create agents in parallel")
 def create_agents(names: List[str], model: str, stack: List[str], parallel: bool):
     """Create multiple agents at once."""
     try:
         header(f"Creating {len(names)} agents")
 
         if not stack:
-            stack = ['python', 'javascript']
+            stack = ["python", "javascript"]
 
         for i, name in enumerate(names, 1):
             try:
@@ -41,7 +42,9 @@ def create_agents(names: List[str], model: str, stack: List[str], parallel: bool
 
                 # Here we would call the actual agent creation logic
                 # For now, just simulate
-                click.echo(f"✓ Agent '{name}' created with model '{model}' and stack {list(stack)}")
+                click.echo(
+                    f"✓ Agent '{name}' created with model '{model}' and stack {list(stack)}"
+                )
 
             except Exception as e:
                 error(f"Failed to create agent '{name}': {e}")
@@ -53,9 +56,11 @@ def create_agents(names: List[str], model: str, stack: List[str], parallel: bool
 
 
 @bulk.command()
-@click.argument('pattern', required=True)
-@click.option('--action', type=click.Choice(['start', 'stop', 'delete']), required=True)
-@click.option('--dry-run', is_flag=True, help='Show what would be done without executing')
+@click.argument("pattern", required=True)
+@click.option("--action", type=click.Choice(["start", "stop", "delete"]), required=True)
+@click.option(
+    "--dry-run", is_flag=True, help="Show what would be done without executing"
+)
 def agents(pattern: str, action: str, dry_run: bool):
     """Perform action on multiple agents matching pattern."""
     try:
@@ -95,9 +100,9 @@ def config_ops():
 
 
 @config_ops.command()
-@click.argument('output_file', type=click.Path())
-@click.option('--format', type=click.Choice(['yaml', 'json']), default='yaml')
-@click.option('--sections', multiple=True, help='Specific sections to export')
+@click.argument("output_file", type=click.Path())
+@click.option("--format", type=click.Choice(["yaml", "json"]), default="yaml")
+@click.option("--sections", multiple=True, help="Specific sections to export")
 def export(output_file: str, format: str, sections: List[str]):
     """Export current configuration to file."""
     try:
@@ -123,36 +128,42 @@ def export(output_file: str, format: str, sections: List[str]):
         # Determine output path
         output_path = Path(output_file)
         if not output_path.suffix:
-            output_path = output_path.with_suffix(f'.{format}')
+            output_path = output_path.with_suffix(f".{format}")
 
         # Export configuration
-        with open(output_path, 'w', encoding='utf-8') as f:
-            if format == 'yaml':
+        with open(output_path, "w", encoding="utf-8") as f:
+            if format == "yaml":
                 yaml.dump(config_dict, f, default_flow_style=False, indent=2)
             else:
                 json.dump(config_dict, f, indent=2)
 
         success(f"Configuration exported to {output_path}")
-        info(f"Exported sections: {', '.join(config_dict.keys()) if config_dict else 'none'}")
+        info(
+            f"Exported sections: {', '.join(config_dict.keys()) if config_dict else 'none'}"
+        )
 
     except Exception as e:
         error(f"Configuration export failed: {e}")
 
 
 @config_ops.command()
-@click.argument('input_file', type=click.Path(exists=True))
-@click.option('--merge', is_flag=True, help='Merge with existing config instead of replacing')
-@click.option('--dry-run', is_flag=True, help='Show what would be imported without applying')
+@click.argument("input_file", type=click.Path(exists=True))
+@click.option(
+    "--merge", is_flag=True, help="Merge with existing config instead of replacing"
+)
+@click.option(
+    "--dry-run", is_flag=True, help="Show what would be imported without applying"
+)
 def import_config(input_file: str, merge: bool, dry_run: bool):
     """Import configuration from file."""
     try:
         input_path = Path(input_file)
 
         # Load configuration from file
-        with open(input_path, 'r', encoding='utf-8') as f:
-            if input_path.suffix in ['.yaml', '.yml']:
+        with open(input_path, "r", encoding="utf-8") as f:
+            if input_path.suffix in [".yaml", ".yml"]:
                 imported_config = yaml.safe_load(f)
-            elif input_path.suffix == '.json':
+            elif input_path.suffix == ".json":
                 imported_config = json.load(f)
             else:
                 error(f"Unsupported file format: {input_path.suffix}")
@@ -175,7 +186,9 @@ def import_config(input_file: str, merge: bool, dry_run: bool):
             current_dict = current_config.dict()
             for section, values in imported_config.items():
                 if section in current_dict:
-                    if isinstance(current_dict[section], dict) and isinstance(values, dict):
+                    if isinstance(current_dict[section], dict) and isinstance(
+                        values, dict
+                    ):
                         current_dict[section].update(values)
                     else:
                         current_dict[section] = values
@@ -185,6 +198,7 @@ def import_config(input_file: str, merge: bool, dry_run: bool):
 
         # Save imported configuration
         from engine_cli.config import EngineConfig
+
         config_obj = EngineConfig(**imported_config)
         save_config(config_obj)
 
@@ -197,8 +211,8 @@ def import_config(input_file: str, merge: bool, dry_run: bool):
 
 # Enhanced Monitoring
 @cli.command()
-@click.option('--watch', is_flag=True, help='Watch mode - update every 2 seconds')
-@click.option('--json', 'json_output', is_flag=True, help='Output in JSON format')
+@click.option("--watch", is_flag=True, help="Watch mode - update every 2 seconds")
+@click.option("--json", "json_output", is_flag=True, help="Output in JSON format")
 def monitor(watch: bool, json_output: bool):
     """Real-time system monitoring."""
     try:
@@ -213,39 +227,29 @@ def monitor(watch: bool, json_output: bool):
 
         # Mock system metrics
         metrics = {
-            "agents": {
-                "total": 5,
-                "active": 3,
-                "idle": 2
-            },
-            "workflows": {
-                "running": 2,
-                "completed": 15,
-                "failed": 1
-            },
-            "system": {
-                "cpu_usage": "45%",
-                "memory_usage": "2.1GB",
-                "uptime": "2h 30m"
-            },
+            "agents": {"total": 5, "active": 3, "idle": 2},
+            "workflows": {"running": 2, "completed": 15, "failed": 1},
+            "system": {"cpu_usage": "45%", "memory_usage": "2.1GB", "uptime": "2h 30m"},
             "api": {
                 "requests_total": 1250,
                 "avg_response_time": "120ms",
-                "error_rate": "0.5%"
-            }
+                "error_rate": "0.5%",
+            },
         }
 
         if json_output:
             click.echo(json.dumps(metrics, indent=2))
         else:
             # Display in formatted way
-            key_value({
-                "Active Agents": f"{metrics['agents']['active']}/{metrics['agents']['total']}",
-                "Running Workflows": metrics['workflows']['running'],
-                "CPU Usage": metrics['system']['cpu_usage'],
-                "Memory Usage": metrics['system']['memory_usage'],
-                "API Response Time": metrics['api']['avg_response_time']
-            })
+            key_value(
+                {
+                    "Active Agents": f"{metrics['agents']['active']}/{metrics['agents']['total']}",
+                    "Running Workflows": metrics["workflows"]["running"],
+                    "CPU Usage": metrics["system"]["cpu_usage"],
+                    "Memory Usage": metrics["system"]["memory_usage"],
+                    "API Response Time": metrics["api"]["avg_response_time"],
+                }
+            )
 
             if watch:
                 info("Monitoring active... (simulated)")
@@ -257,8 +261,8 @@ def monitor(watch: bool, json_output: bool):
 
 
 @cli.command()
-@click.option('--component', help='Specific component to check')
-@click.option('--detailed', is_flag=True, help='Show detailed health information')
+@click.option("--component", help="Specific component to check")
+@click.option("--detailed", is_flag=True, help="Show detailed health information")
 def health(component: Optional[str], detailed: bool):
     """Comprehensive health check."""
     try:
@@ -271,14 +275,18 @@ def health(component: Optional[str], detailed: bool):
                 "api": {"status": "healthy", "message": "API responding normally"},
                 "database": {"status": "warning", "message": "High connection count"},
                 "cache": {"status": "healthy", "message": "Redis operational"},
-                "workers": {"status": "healthy", "message": "3/3 workers active"}
-            }
+                "workers": {"status": "healthy", "message": "3/3 workers active"},
+            },
         }
 
         if component:
             if component in health_status["components"]:
                 comp = health_status["components"][component]
-                status_icon = "✓" if comp["status"] == "healthy" else "⚠" if comp["status"] == "warning" else "✗"
+                status_icon = (
+                    "✓"
+                    if comp["status"] == "healthy"
+                    else "⚠" if comp["status"] == "warning" else "✗"
+                )
                 click.echo(f"{status_icon} {component}: {comp['message']}")
             else:
                 error(f"Component '{component}' not found")
@@ -291,7 +299,11 @@ def health(component: Optional[str], detailed: bool):
                 click.echo()
                 click.echo("Component Details:")
                 for comp_name, comp_info in health_status["components"].items():
-                    status_icon = "✓" if comp_info["status"] == "healthy" else "⚠" if comp_info["status"] == "warning" else "✗"
+                    status_icon = (
+                        "✓"
+                        if comp_info["status"] == "healthy"
+                        else "⚠" if comp_info["status"] == "warning" else "✗"
+                    )
                     click.echo(f"  {status_icon} {comp_name}: {comp_info['message']}")
 
     except Exception as e:
@@ -299,9 +311,13 @@ def health(component: Optional[str], detailed: bool):
 
 
 @cli.command()
-@click.option('--lines', default=50, help='Number of log lines to show')
-@click.option('--level', type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']), help='Filter by log level')
-@click.option('--component', help='Filter by component')
+@click.option("--lines", default=50, help="Number of log lines to show")
+@click.option(
+    "--level",
+    type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR"]),
+    help="Filter by log level",
+)
+@click.option("--component", help="Filter by component")
 def logs(lines: int, level: Optional[str], component: Optional[str]):
     """View system logs with filtering."""
     try:
@@ -398,6 +414,7 @@ def clear():
 
         # Also clear in-memory cache
         import engine_cli.main
+
         engine_cli.main._command_cache.clear()
         success("In-memory command cache cleared")
 

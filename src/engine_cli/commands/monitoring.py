@@ -1,4 +1,5 @@
 """System monitoring commands."""
+
 import click
 
 

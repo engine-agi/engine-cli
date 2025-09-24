@@ -1,4 +1,5 @@
 """Protocol management commands."""
+
 import click
 from typing import List, Optional, Dict, Any
 from datetime import datetime
@@ -11,8 +12,11 @@ from engine_cli.formatting import success, error, header, key_value, table, prin
 
 # Import engine core components
 from engine_core import (
-    ProtocolBuilder, IntentCategory, CommandType, 
-    ContextScope, CommandContext
+    ProtocolBuilder,
+    IntentCategory,
+    CommandType,
+    ContextScope,
+    CommandContext,
 )
 
 
@@ -28,9 +32,9 @@ class ProtocolStorage:
         protocols = []
         if os.path.exists(self.protocols_dir):
             for file in os.listdir(self.protocols_dir):
-                if file.endswith('.yaml'):
+                if file.endswith(".yaml"):
                     try:
-                        with open(os.path.join(self.protocols_dir, file), 'r') as f:
+                        with open(os.path.join(self.protocols_dir, file), "r") as f:
                             protocol_data = yaml.safe_load(f)
                             if protocol_data:
                                 protocols.append(protocol_data)
@@ -43,7 +47,7 @@ class ProtocolStorage:
         protocol_file = os.path.join(self.protocols_dir, f"{protocol_id}.yaml")
         if os.path.exists(protocol_file):
             try:
-                with open(protocol_file, 'r') as f:
+                with open(protocol_file, "r") as f:
                     return yaml.safe_load(f)
             except Exception:
                 return None
@@ -84,11 +88,30 @@ def cli():
 @click.option("--tags", help="Protocol tags (comma-separated)")
 @click.option("--intents", help="Supported intents (comma-separated)")
 @click.option("--command-types", help="Supported command types (comma-separated)")
-@click.option("--scope", type=click.Choice(['global', 'project', 'session', 'command']), default='global', help="Default context scope")
+@click.option(
+    "--scope",
+    type=click.Choice(["global", "project", "session", "command"]),
+    default="global",
+    help="Default context scope",
+)
 @click.option("--strict-validation", is_flag=True, help="Enable strict validation")
 @click.option("--save", is_flag=True, help="Save protocol to storage")
-@click.option("--output", type=click.Path(), help="Output file for protocol configuration")
-def create(name, description, author, version, tags, intents, command_types, scope, strict_validation, save, output):
+@click.option(
+    "--output", type=click.Path(), help="Output file for protocol configuration"
+)
+def create(
+    name,
+    description,
+    author,
+    version,
+    tags,
+    intents,
+    command_types,
+    scope,
+    strict_validation,
+    save,
+    output,
+):
     """Create a new protocol."""
     try:
         builder = ProtocolBuilder()
@@ -105,13 +128,13 @@ def create(name, description, author, version, tags, intents, command_types, sco
             builder = builder.with_version(version)
 
         if tags:
-            tags_list = [tag.strip() for tag in tags.split(',')]
+            tags_list = [tag.strip() for tag in tags.split(",")]
             builder = builder.with_tags(tags_list)
 
         # Configure intents
         if intents:
             intent_list = []
-            for intent_name in intents.split(','):
+            for intent_name in intents.split(","):
                 intent_name = intent_name.strip().upper()
                 if hasattr(IntentCategory, intent_name):
                     intent_list.append(getattr(IntentCategory, intent_name))
@@ -121,7 +144,7 @@ def create(name, description, author, version, tags, intents, command_types, sco
         # Configure command types
         if command_types:
             cmd_type_list = []
-            for cmd_type in command_types.split(','):
+            for cmd_type in command_types.split(","):
                 cmd_type = cmd_type.strip().upper()
                 if hasattr(CommandType, cmd_type):
                     cmd_type_list.append(getattr(CommandType, cmd_type))
@@ -144,13 +167,37 @@ def create(name, description, author, version, tags, intents, command_types, sco
         protocol_table.add_row("ID", protocol.id)
         protocol_table.add_row("Name", protocol.name)
         protocol_table.add_row("Description", protocol.description)
-        protocol_table.add_row("Version", getattr(protocol.configuration, 'version', '1.0.0'))
-        protocol_table.add_row("Author", getattr(protocol.configuration, 'author', 'Unknown'))
-        protocol_table.add_row("Tags", ', '.join(getattr(protocol.configuration, 'tags', [])))
-        protocol_table.add_row("Supported Intents", ', '.join([i.value for i in getattr(protocol.configuration, 'supported_intents', [])]))
-        protocol_table.add_row("Command Types", ', '.join([ct.value for ct in getattr(protocol.configuration, 'supported_command_types', [])]))
-        default_scope = getattr(protocol.configuration, 'default_scope', None)
-        scope_display = default_scope.value if default_scope else 'global'
+        protocol_table.add_row(
+            "Version", getattr(protocol.configuration, "version", "1.0.0")
+        )
+        protocol_table.add_row(
+            "Author", getattr(protocol.configuration, "author", "Unknown")
+        )
+        protocol_table.add_row(
+            "Tags", ", ".join(getattr(protocol.configuration, "tags", []))
+        )
+        protocol_table.add_row(
+            "Supported Intents",
+            ", ".join(
+                [
+                    i.value
+                    for i in getattr(protocol.configuration, "supported_intents", [])
+                ]
+            ),
+        )
+        protocol_table.add_row(
+            "Command Types",
+            ", ".join(
+                [
+                    ct.value
+                    for ct in getattr(
+                        protocol.configuration, "supported_command_types", []
+                    )
+                ]
+            ),
+        )
+        default_scope = getattr(protocol.configuration, "default_scope", None)
+        scope_display = default_scope.value if default_scope else "global"
         protocol_table.add_row("Default Scope", scope_display)
         print_table(protocol_table)
 
@@ -161,14 +208,26 @@ def create(name, description, author, version, tags, intents, command_types, sco
                     "id": protocol.id,
                     "name": protocol.name,
                     "description": protocol.description,
-                    "version": getattr(protocol.configuration, 'version', '1.0.0'),
-                    "author": getattr(protocol.configuration, 'author', None),
-                    "tags": getattr(protocol.configuration, 'tags', []),
-                    "supported_intents": [i.value for i in getattr(protocol.configuration, 'supported_intents', [])],
-                    "supported_command_types": [ct.value for ct in getattr(protocol.configuration, 'supported_command_types', [])],
-                    "default_scope": default_scope.value if default_scope else 'global',
-                    "strict_validation": getattr(protocol.configuration, 'strict_validation', False),
-                    "created_at": datetime.now().isoformat()
+                    "version": getattr(protocol.configuration, "version", "1.0.0"),
+                    "author": getattr(protocol.configuration, "author", None),
+                    "tags": getattr(protocol.configuration, "tags", []),
+                    "supported_intents": [
+                        i.value
+                        for i in getattr(
+                            protocol.configuration, "supported_intents", []
+                        )
+                    ],
+                    "supported_command_types": [
+                        ct.value
+                        for ct in getattr(
+                            protocol.configuration, "supported_command_types", []
+                        )
+                    ],
+                    "default_scope": default_scope.value if default_scope else "global",
+                    "strict_validation": getattr(
+                        protocol.configuration, "strict_validation", False
+                    ),
+                    "created_at": datetime.now().isoformat(),
                 }
 
                 # Ensure protocols directory exists
@@ -176,7 +235,7 @@ def create(name, description, author, version, tags, intents, command_types, sco
                 os.makedirs(protocols_dir, exist_ok=True)
 
                 protocol_file = os.path.join(protocols_dir, f"{name}.yaml")
-                with open(protocol_file, 'w') as f:
+                with open(protocol_file, "w") as f:
                     yaml.safe_dump(protocol_data, f, default_flow_style=False)
 
                 success(f"Protocol saved to {protocol_file}")
@@ -189,11 +248,17 @@ def create(name, description, author, version, tags, intents, command_types, sco
     except Exception as e:
         error(f"Failed to create protocol: {e}")
         import traceback
+
         traceback.print_exc()
 
 
 @cli.command()
-@click.option("--format", type=click.Choice(['table', 'json', 'yaml']), default='table', help="Output format")
+@click.option(
+    "--format",
+    type=click.Choice(["table", "json", "yaml"]),
+    default="table",
+    help="Output format",
+)
 @click.option("--tag", help="Filter by tag")
 @click.option("--author", help="Filter by author")
 def list(format, tag, author):
@@ -203,32 +268,36 @@ def list(format, tag, author):
 
         # Apply filters
         if tag:
-            protocols = [p for p in protocols if tag in p.get('tags', [])]
+            protocols = [p for p in protocols if tag in p.get("tags", [])]
         if author:
-            protocols = [p for p in protocols if p.get('author') == author]
+            protocols = [p for p in protocols if p.get("author") == author]
 
         if not protocols:
-            click.echo("No protocols found. Create one with: engine protocol create <name>")
+            click.echo(
+                "No protocols found. Create one with: engine protocol create <name>"
+            )
             return
 
-        if format == 'json':
+        if format == "json":
             click.echo(json.dumps(protocols, indent=2))
-        elif format == 'yaml':
+        elif format == "yaml":
             click.echo(yaml.dump(protocols, default_flow_style=False))
         else:
             # Table format
-            protocol_table = table("Protocols", ["ID", "Name", "Version", "Author", "Tags"])
+            protocol_table = table(
+                "Protocols", ["ID", "Name", "Version", "Author", "Tags"]
+            )
             for protocol in protocols:
-                tags_str = ', '.join(protocol.get('tags', []))[:25]
-                if len(','.join(protocol.get('tags', []))) > 25:
-                    tags_str += '...'
+                tags_str = ", ".join(protocol.get("tags", []))[:25]
+                if len(",".join(protocol.get("tags", []))) > 25:
+                    tags_str += "..."
 
                 protocol_table.add_row(
-                    protocol.get('id', ''),
-                    protocol.get('name', ''),
-                    protocol.get('version', '1.0.0'),
-                    protocol.get('author', ''),
-                    tags_str
+                    protocol.get("id", ""),
+                    protocol.get("name", ""),
+                    protocol.get("version", "1.0.0"),
+                    protocol.get("author", ""),
+                    tags_str,
                 )
 
             print_table(protocol_table)
@@ -240,7 +309,12 @@ def list(format, tag, author):
 
 @cli.command()
 @click.argument("name")
-@click.option("--format", type=click.Choice(['table', 'json', 'yaml']), default='table', help="Output format")
+@click.option(
+    "--format",
+    type=click.Choice(["table", "json", "yaml"]),
+    default="table",
+    help="Output format",
+)
 def show(name, format):
     """Show details of a specific protocol."""
     try:
@@ -250,37 +324,41 @@ def show(name, format):
             error(f"Protocol '{name}' not found")
             return
 
-        if format == 'json':
+        if format == "json":
             click.echo(json.dumps(protocol, indent=2))
-        elif format == 'yaml':
+        elif format == "yaml":
             click.echo(yaml.dump(protocol, default_flow_style=False))
         else:
             # Table format - show as key-value pairs
             protocol_info = {
-                "ID": protocol.get('id', ''),
-                "Name": protocol.get('name', ''),
-                "Description": protocol.get('description', ''),
-                "Version": protocol.get('version', '1.0.0'),
-                "Author": protocol.get('author', ''),
+                "ID": protocol.get("id", ""),
+                "Name": protocol.get("name", ""),
+                "Description": protocol.get("description", ""),
+                "Version": protocol.get("version", "1.0.0"),
+                "Author": protocol.get("author", ""),
             }
 
-            if protocol.get('tags'):
-                protocol_info["Tags"] = ', '.join(protocol['tags'])
+            if protocol.get("tags"):
+                protocol_info["Tags"] = ", ".join(protocol["tags"])
 
-            if protocol.get('supported_intents'):
-                protocol_info["Supported Intents"] = ', '.join(protocol['supported_intents'])
+            if protocol.get("supported_intents"):
+                protocol_info["Supported Intents"] = ", ".join(
+                    protocol["supported_intents"]
+                )
 
-            if protocol.get('supported_command_types'):
-                protocol_info["Command Types"] = ', '.join(protocol['supported_command_types'])
+            if protocol.get("supported_command_types"):
+                protocol_info["Command Types"] = ", ".join(
+                    protocol["supported_command_types"]
+                )
 
-            if protocol.get('default_scope'):
-                protocol_info["Default Scope"] = protocol['default_scope']
+            if protocol.get("default_scope"):
+                protocol_info["Default Scope"] = protocol["default_scope"]
 
-            if protocol.get('strict_validation'):
-                protocol_info["Strict Validation"] = str(protocol['strict_validation'])
+            if protocol.get("strict_validation"):
+                protocol_info["Strict Validation"] = str(protocol["strict_validation"])
 
-            if protocol.get('created_at'):
-                protocol_info["Created"] = protocol['created_at']
+            if protocol.get("created_at"):
+                protocol_info["Created"] = protocol["created_at"]
 
             key_value(protocol_info, f"Protocol: {name}")
 
@@ -345,13 +423,15 @@ def test(name, command, context):
 
         # Create mock context for testing
         test_context = CommandContext(
-            user_id=context_data.get('user_id', 'test_user'),
-            session_id=context_data.get('session_id', 'test_session'),
-            project_id=context_data.get('project_id', 'test_project')
+            user_id=context_data.get("user_id", "test_user"),
+            session_id=context_data.get("session_id", "test_session"),
+            project_id=context_data.get("project_id", "test_project"),
         )
 
         click.echo(f"🔍 Testing command parsing: '{command}'")
-        click.echo(f"📋 Context: user={test_context.user_id}, session={test_context.session_id}")
+        click.echo(
+            f"📋 Context: user={test_context.user_id}, session={test_context.session_id}"
+        )
 
         # Mock parsing result since we can't actually run async parsing in CLI
         mock_result = {
@@ -361,18 +441,14 @@ def test(name, command, context):
             "intent_category": "development",
             "confidence": 0.85,
             "command_type": "task_execution",
-            "parameters": {
-                "action": "analyze",
-                "target": "codebase",
-                "scope": "full"
-            },
+            "parameters": {"action": "analyze", "target": "codebase", "scope": "full"},
             "validation_errors": [],
             "suggestions": ["Consider specifying the analysis depth"],
             "execution_plan": {
                 "steps": 3,
                 "estimated_duration": 2.5,
-                "required_agents": ["code_analyzer", "reviewer"]
-            }
+                "required_agents": ["code_analyzer", "reviewer"],
+            },
         }
 
         click.echo("📥 Mock parsing result:")
