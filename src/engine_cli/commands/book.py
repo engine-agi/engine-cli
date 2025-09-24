@@ -26,9 +26,14 @@ from ..formatting import success, error, header, table, print_table, key_value
 try:
     from engine_core.services.book_service import BookService
     from engine_core import (
-        BookBuilder, ContentType, AccessLevel, ContentStatus,
-        SearchScope, SearchQuery
+        BookBuilder,
+        ContentType,
+        AccessLevel,
+        ContentStatus,
+        SearchScope,
+        SearchQuery,
     )
+
     BOOK_SERVICE_AVAILABLE = True
 
 except ImportError:
@@ -59,24 +64,27 @@ def format_book_table(books: List[Any]) -> None:
         click.echo("No books found.")
         return
 
-    tbl = table("Books", ["ID", "Title", "Chapters", "Pages", "Sections", "Status", "Created"])
+    tbl = table(
+        "Books", ["ID", "Title", "Chapters", "Pages", "Sections", "Status", "Created"]
+    )
 
     for book in books:
         stats = book.get_statistics()
         tbl.add_row(
             book.book_id,
             book.title,
-            str(stats['chapter_count']),
-            str(stats['page_count']),
-            str(stats['section_count']),
+            str(stats["chapter_count"]),
+            str(stats["page_count"]),
+            str(stats["section_count"]),
             book.metadata.status.value,
-            book.metadata.created_at.strftime("%Y-%m-%d")
+            book.metadata.created_at.strftime("%Y-%m-%d"),
         )
 
     print_table(tbl)
 
 
 # === BOOK COMMANDS ===
+
 
 @click.group()
 def cli():
@@ -89,21 +97,21 @@ book = cli
 
 
 @cli.command()
-@click.argument('book_id')
-@click.argument('title')
-@click.option('--description', '-d', help='Book description')
-@click.option('--author', '-a', help='Book author')
-def create(book_id: str, title: str, description: str = "", author: Optional[str] = None):
+@click.argument("book_id")
+@click.argument("title")
+@click.option("--description", "-d", help="Book description")
+@click.option("--author", "-a", help="Book author")
+def create(
+    book_id: str, title: str, description: str = "", author: Optional[str] = None
+):
     """Create a new book."""
+
     async def _create():
         try:
             service = get_book_service()
 
             book = await service.create_book(
-                book_id=book_id,
-                title=title,
-                description=description,
-                author=author
+                book_id=book_id, title=title, description=description, author=author
             )
 
             if book:
@@ -121,9 +129,10 @@ def create(book_id: str, title: str, description: str = "", author: Optional[str
 
 
 @cli.command()
-@click.argument('book_id')
+@click.argument("book_id")
 def show(book_id: str):
     """Show book information."""
+
     async def _show():
         try:
             service = get_book_service()
@@ -132,24 +141,30 @@ def show(book_id: str):
             if book:
                 click.echo(f"\n{header(f'Book: {book.title}')}")
 
-                key_value({
-                    "ID": book.book_id,
-                    "Title": book.title,
-                    "Description": book.description or 'No description',
-                    "Author": book.author or 'Unknown',
-                    "Status": book.metadata.status.value,
-                    "Created": book.metadata.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-                    "Version": str(book.metadata.version)
-                })
+                key_value(
+                    {
+                        "ID": book.book_id,
+                        "Title": book.title,
+                        "Description": book.description or "No description",
+                        "Author": book.author or "Unknown",
+                        "Status": book.metadata.status.value,
+                        "Created": book.metadata.created_at.strftime(
+                            "%Y-%m-%d %H:%M:%S"
+                        ),
+                        "Version": str(book.metadata.version),
+                    }
+                )
 
                 stats = book.get_statistics()
                 click.echo(f"\n{header('Statistics')}")
-                key_value({
-                    "Chapters": str(stats['chapter_count']),
-                    "Pages": str(stats['page_count']),
-                    "Sections": str(stats['section_count']),
-                    "Words": str(stats['word_count'])
-                })
+                key_value(
+                    {
+                        "Chapters": str(stats["chapter_count"]),
+                        "Pages": str(stats["page_count"]),
+                        "Sections": str(stats["section_count"]),
+                        "Words": str(stats["word_count"]),
+                    }
+                )
             else:
                 error(f"Book '{book_id}' not found")
 
@@ -162,6 +177,7 @@ def show(book_id: str):
 @cli.command()
 def list():
     """List all books."""
+
     async def _list():
         try:
             service = get_book_service()
@@ -180,10 +196,11 @@ def list():
 
 
 @cli.command()
-@click.argument('book_id')
-@click.option('--force', '-f', is_flag=True, help='Force deletion without confirmation')
+@click.argument("book_id")
+@click.option("--force", "-f", is_flag=True, help="Force deletion without confirmation")
 def delete(book_id: str, force: bool = False):
     """Delete a book."""
+
     async def _delete():
         try:
             service = get_book_service()
@@ -206,13 +223,15 @@ def delete(book_id: str, force: bool = False):
 
 # === CHAPTER COMMANDS ===
 
+
 @cli.command()
-@click.argument('book_id')
-@click.argument('chapter_id')
-@click.argument('title')
-@click.option('--description', '-d', help='Chapter description')
+@click.argument("book_id")
+@click.argument("chapter_id")
+@click.argument("title")
+@click.option("--description", "-d", help="Chapter description")
 def add_chapter(book_id: str, chapter_id: str, title: str, description: str = ""):
     """Add a chapter to a book."""
+
     async def _add_chapter():
         try:
             service = get_book_service()
@@ -221,7 +240,7 @@ def add_chapter(book_id: str, chapter_id: str, title: str, description: str = ""
                 book_id=book_id,
                 chapter_id=chapter_id,
                 title=title,
-                description=description
+                description=description,
             )
 
             if chapter_id_result:
@@ -236,21 +255,25 @@ def add_chapter(book_id: str, chapter_id: str, title: str, description: str = ""
 
 
 @cli.command()
-@click.argument('book_id')
+@click.argument("book_id")
 def list_chapters(book_id: str):
     """List chapters in a book."""
+
     async def _list_chapters():
         try:
             service = get_book_service()
             book = await service.get_book(book_id)
 
             if book:
-                click.echo(f"\n{header(f'Chapters in \"{book.title}\"')}")
+                title = f'Chapters in "{book.title}"'
+                click.echo(f"\n{header(title)}")
                 if book.chapters:
                     for chapter in book.chapters:
-                        stats = chapter.to_dict()['statistics']
+                        stats = chapter.to_dict()["statistics"]
                         click.echo(f"  • {chapter.title} ({chapter.chapter_id})")
-                        click.echo(f"    {stats['page_count']} pages, {stats['section_count']} sections, {stats['word_count']} words")
+                        click.echo(
+                            f"    {stats['page_count']} pages, {stats['section_count']} sections, {stats['word_count']} words"
+                        )
                 else:
                     click.echo("No chapters in this book.")
             else:
@@ -264,12 +287,14 @@ def list_chapters(book_id: str):
 
 # === SEARCH COMMANDS ===
 
+
 @cli.command()
-@click.argument('book_id')
-@click.argument('query')
-@click.option('--max-results', '-m', type=int, default=10, help='Maximum results')
+@click.argument("book_id")
+@click.argument("query")
+@click.option("--max-results", "-m", type=int, default=10, help="Maximum results")
 def search(book_id: str, query: str, max_results: int = 10):
     """Search content in a book."""
+
     async def _search():
         try:
             service = get_book_service()
@@ -278,7 +303,7 @@ def search(book_id: str, query: str, max_results: int = 10):
                 query_text=query,
                 scope=SearchScope.GLOBAL,
                 max_results=max_results,
-                semantic_search=False
+                semantic_search=False,
             )
 
             results = await service.search_books(search_query)
@@ -287,15 +312,19 @@ def search(book_id: str, query: str, max_results: int = 10):
                 click.echo(f"\n{header(f'Search Results for \"{query}\"')}")
                 for i, result in enumerate(results, 1):
                     click.echo(f"\nResult {i}:")
-                    key_value({
-                        "Type": result.content_type.title(),
-                        "Title": result.title,
-                        "ID": result.content_id,
-                        "Relevance": f"{result.relevance_score:.2f}"
-                    })
+                    key_value(
+                        {
+                            "Type": result.content_type.title(),
+                            "Title": result.title,
+                            "ID": result.content_id,
+                            "Relevance": f"{result.relevance_score:.2f}",
+                        }
+                    )
 
                     if result.content_snippet:
-                        click.echo(f"  Snippet: {result.content_snippet[:100]}{'...' if len(result.content_snippet) > 100 else ''}")
+                        click.echo(
+                            f"  Snippet: {result.content_snippet[:100]}{'...' if len(result.content_snippet) > 100 else ''}"
+                        )
 
                     if result.highlights:
                         click.echo(f"  Highlights: {', '.join(result.highlights[:3])}")
