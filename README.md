@@ -111,19 +111,70 @@ For detailed troubleshooting guides, see the **[Troubleshooting Guide](docs/trou
 - **Memory System**: Manage hierarchical memory with semantic search
 - **Rich Terminal UI**: Beautiful, interactive command-line interface
 
-## Development
+## 🛠️ Development
 
 This package depends on `engine-core` for the core framework functionality.
 
+### 📋 Development Setup
+
 ```bash
+# Clone the repository
+git clone https://github.com/engine-agi/engine-cli.git
+cd engine-cli
+
 # Install in development mode
-poetry install
+pip install -e ".[dev]"
 
-# Run tests
-poetry run pytest
+# Install pre-commit hooks (recommended)
+pre-commit install
+```
 
+### 🔧 Pre-commit Hooks
+
+This project uses [pre-commit](https://pre-commit.com/) to ensure code quality and consistency. The following hooks are automatically configured:
+
+- **Black**: Code formatting (88 character line length)
+- **isort**: Import sorting with Black profile
+- **Trailing Whitespace**: Removes trailing whitespace
+- **End of File**: Ensures files end with a newline
+- **Large Files**: Prevents accidentally committing large files
+
+**The hooks run automatically on every commit.** If they fail, your commit will be blocked until the issues are fixed.
+
+To run hooks manually on all files:
+```bash
+pre-commit run --all-files
+```
+
+To run hooks on staged files only:
+```bash
+pre-commit run
+```
+
+### 🧪 Testing
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=engine_cli --cov-report=html
+
+# Run specific test file
+pytest tests/unit/test_agent.py
+
+# Run integration tests
+pytest tests/integration/
+```
+
+### 📦 Building
+
+```bash
 # Build package
 poetry build
+
+# Or with pip
+python -m build
 ```
 
 ## 📄 License
