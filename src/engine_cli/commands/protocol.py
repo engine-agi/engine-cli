@@ -1,14 +1,14 @@
 """Protocol management commands."""
 
 import click
-from typing import List, Optional, Dict, Any
-from datetime import datetime
 import os
 import yaml
 import json
+from typing import List, Optional
+from datetime import datetime
 
 # Import Rich formatting
-from engine_cli.formatting import success, error, header, key_value, table, print_table
+from engine_cli.formatting import success, error, key_value, table, print_table
 
 # Import engine core components
 from engine_core import (

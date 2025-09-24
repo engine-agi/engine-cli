@@ -1,11 +1,10 @@
 """Workflow management commands."""
 
 import click
-from typing import List, Optional, Dict, Any
-from datetime import datetime
 import os
 import yaml
 import json
+from typing import List, Optional, Any, Dict
 
 # Import Rich formatting
 from engine_cli.formatting import success, error, header, key_value, table, print_table
@@ -509,37 +508,7 @@ def create(name, description, version, simple, agent, team, edge, config, save, 
 
 
 @cli.command()
-@click.argument("name")
-@click.option("--description", help="Workflow description")
-@click.option("--version", default="1.0.0", help="Workflow version")
-@click.option(
-    "--simple", is_flag=True, help="Create a simple workflow with one function vertex"
-)
-@click.option(
-    "--agent",
-    multiple=True,
-    help="Add agent vertex (format: vertex_id:agent_id:instruction)",
-)
-@click.option(
-    "--team",
-    multiple=True,
-    help="Add team vertex (format: vertex_id:team_id:task1,task2)",
-)
-@click.option(
-    "--edge",
-    multiple=True,
-    help="Add edge between vertices (format: from_vertex:to_vertex)",
-)
-@click.option(
-    "--config",
-    type=click.Path(exists=True),
-    help="Load workflow configuration from YAML file",
-)
-@click.option("--save", is_flag=True, help="Save workflow to storage")
-@click.option(
-    "--output", type=click.Path(), help="Output file for workflow configuration"
-)
-def create(name, description, version, simple, agent, team, edge, config, save, output):
+def list():
     """Create a new workflow."""
     try:
         builder = CLIWorkflowBuilder()  # Initialize with default builder

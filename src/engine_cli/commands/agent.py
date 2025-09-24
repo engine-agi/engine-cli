@@ -8,7 +8,7 @@ import yaml
 import json
 
 # Import Rich formatting
-from engine_cli.formatting import success, error, header, key_value, table, print_table
+from engine_cli.formatting import success, error, key_value, print_table, table
 
 # Import new Book-based storage
 from engine_cli.storage.agent_book_storage import AgentBookStorage
@@ -227,8 +227,6 @@ def list(format):
             click.echo(yaml.dump(agents, default_flow_style=False))
         else:
             # Table format
-            from engine_cli.formatting import table, print_table
-
             agent_table = table(
                 "Agents", ["ID", "Name", "Model", "Speciality", "Stack"]
             )

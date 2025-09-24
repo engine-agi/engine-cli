@@ -2,7 +2,6 @@
 
 import click
 from pathlib import Path
-from typing import Optional
 
 from engine_cli.config import (
     load_config,

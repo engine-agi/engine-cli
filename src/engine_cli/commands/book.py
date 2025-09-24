@@ -15,9 +15,7 @@ Hierarchy: Book -> Chapter -> Page -> Section
 
 import click
 import asyncio
-from typing import List, Optional, Dict, Any
-from datetime import datetime
-import json
+from typing import List, Optional, Any
 
 # Import Rich formatting
 from ..formatting import success, error, header, table, print_table, key_value

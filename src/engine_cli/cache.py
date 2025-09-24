@@ -1,5 +1,4 @@
 """CLI Performance Cache - Cache system for CLI commands and modules."""
-import os
 import json
 import hashlib
 from pathlib import Path
@@ -12,7 +11,9 @@ class CLICache:
     def __init__(self, cache_dir: Optional[str] = None):
         self.cache_dir = Path(cache_dir) if cache_dir else Path.home() / ".engine" / "cache"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
-        self.commands_cache_file = self.cache_dir / "commands.json"
+        self.commands_cache_file = (
+            self.cache_dir / "commands.json"
+        )
         self.modules_cache_file = self.cache_dir / "modules.json"
 
     def _get_file_hash(self, file_path: str) -> str:
