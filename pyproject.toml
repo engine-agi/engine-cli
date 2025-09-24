@@ -23,7 +23,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.11,<3.14"
 engine-core = "^1.0.1"
 click = "^8.1.7"
 pyyaml = "^6.0.1"
@@ -32,15 +32,10 @@ prompt-toolkit = "^3.0.39"
 pydantic = "^2.0.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.4.3"
+pytest = "8.4.2"
 
 [tool.poetry.scripts]
 engine = "engine_cli.main:cli"
-
-[[tool.poetry.source]]
-name = "testpypi"
-url = "https://test.pypi.org/simple/"
-priority = "primary"
 
 [build-system]
 requires = ["poetry-core"]
