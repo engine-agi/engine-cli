@@ -1,17 +1,19 @@
 """Unit tests for WorkflowExecutionService and PostgreSQL repository."""
-import pytest
+
 import asyncio
 from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
+
 # Import the service and models
 try:
-    from engine_core.services.workflow_service import (
-        WorkflowExecutionService,
-        PostgreSQLWorkflowExecutionRepository,
-        MockWorkflowRepository
-    )
     from engine_core.models.workflow import WorkflowExecution, WorkflowExecutionStatus
+    from engine_core.services.workflow_service import (
+        MockWorkflowRepository,
+        PostgreSQLWorkflowExecutionRepository,
+        WorkflowExecutionService,
+    )
 except ImportError:
     pytest.skip("Workflow execution service not available", allow_module_level=True)
 
@@ -42,7 +44,7 @@ class TestWorkflowExecutionService:
             workflow_id="test_workflow",
             workflow_name="Test Workflow",
             user_id="user123",
-            input_data={"test": "data"}
+            input_data={"test": "data"},
         )
 
         # Assert
@@ -68,7 +70,12 @@ class TestWorkflowExecutionService:
         assert result == mock_execution
         mock_repository.update_workflow_execution.assert_called_once_with(
             "exec_123",
-            {"status": WorkflowExecutionStatus.RUNNING.value, "started_at": mock_repository.update_workflow_execution.call_args[1]["updates"]["started_at"]}
+            {
+                "status": WorkflowExecutionStatus.RUNNING.value,
+                "started_at": mock_repository.update_workflow_execution.call_args[1][
+                    "updates"
+                ]["started_at"],
+            },
         )
 
     @pytest.mark.asyncio
@@ -81,9 +88,7 @@ class TestWorkflowExecutionService:
 
         # Execute
         result = await execution_service.complete_execution(
-            "exec_123",
-            success=True,
-            output_data={"result": "success"}
+            "exec_123", success=True, output_data={"result": "success"}
         )
 
         # Assert
@@ -101,8 +106,7 @@ class TestWorkflowExecutionService:
 
         # Execute
         result = await execution_service.fail_execution(
-            "exec_123",
-            "Test error message"
+            "exec_123", "Test error message"
         )
 
         # Assert
@@ -117,7 +121,7 @@ class TestWorkflowExecutionService:
         mock_repository.get_execution_analytics.return_value = {
             "total_executions": 10,
             "successful_executions": 8,
-            "success_rate": 0.8
+            "success_rate": 0.8,
         }
 
         # Execute
@@ -155,14 +159,15 @@ class TestPostgreSQLWorkflowExecutionRepository:
         mock_session.refresh.return_value = None
 
         # Mock the WorkflowExecution constructor
-        with patch('engine_core.services.workflow_service.WorkflowExecution') as mock_wf_exec:
+        with patch(
+            "engine_core.services.workflow_service.WorkflowExecution"
+        ) as mock_wf_exec:
             mock_wf_exec.return_value = mock_execution
 
             # Execute
-            result = await repository.create_workflow_execution({
-                "workflow_id": "test_workflow",
-                "execution_id": "test_exec"
-            })
+            result = await repository.create_workflow_execution(
+                {"workflow_id": "test_workflow", "execution_id": "test_exec"}
+            )
 
             # Assert
             assert result == mock_execution
@@ -207,7 +212,9 @@ class TestPostgreSQLWorkflowExecutionRepository:
         mock_session.execute.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_get_execution_analytics_no_executions(self, repository, mock_session_factory):
+    async def test_get_execution_analytics_no_executions(
+        self, repository, mock_session_factory
+    ):
         """Test getting analytics when no executions exist."""
         # Setup mocks
         mock_session = AsyncMock()
@@ -221,17 +228,19 @@ class TestPostgreSQLWorkflowExecutionRepository:
 
         # Assert
         expected = {
-            'total_executions': 0,
-            'successful_executions': 0,
-            'failed_executions': 0,
-            'success_rate': 0.0,
-            'average_duration': 0.0,
-            'last_execution_at': None
+            "total_executions": 0,
+            "successful_executions": 0,
+            "failed_executions": 0,
+            "success_rate": 0.0,
+            "average_duration": 0.0,
+            "last_execution_at": None,
         }
         assert result == expected
 
     @pytest.mark.asyncio
-    async def test_get_execution_analytics_with_executions(self, repository, mock_session_factory):
+    async def test_get_execution_analytics_with_executions(
+        self, repository, mock_session_factory
+    ):
         """Test getting analytics with executions."""
         # Setup mocks
         mock_session = AsyncMock()
@@ -256,11 +265,11 @@ class TestPostgreSQLWorkflowExecutionRepository:
         result = await repository.get_execution_analytics("workflow_123")
 
         # Assert
-        assert result['total_executions'] == 2
-        assert result['successful_executions'] == 1
-        assert result['failed_executions'] == 1
-        assert result['success_rate'] == 0.5
-        assert result['average_duration'] == 7.5  # (10 + 5) / 2
+        assert result["total_executions"] == 2
+        assert result["successful_executions"] == 1
+        assert result["failed_executions"] == 1
+        assert result["success_rate"] == 0.5
+        assert result["average_duration"] == 7.5  # (10 + 5) / 2
 
 
 class TestMockWorkflowRepository:
@@ -277,7 +286,7 @@ class TestMockWorkflowRepository:
         workflow_data = {
             "id": "test_workflow",
             "name": "Test Workflow",
-            "description": "A test workflow"
+            "description": "A test workflow",
         }
 
         result = await mock_repo.create_workflow(workflow_data)

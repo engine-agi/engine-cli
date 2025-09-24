@@ -1,31 +1,31 @@
 """Workflow management commands."""
 
-import click
-from typing import List, Optional, Dict, Any
-from datetime import datetime
-import os
-import yaml
-import json
 import asyncio
+import json
+import os
+from typing import Any, Dict, List, Optional
 
-# Import Rich formatting
-from engine_cli.formatting import (
-    success,
-    error,
-    header,
-    key_value,
-    table,
-    print_table,
-    warning,
-)
+import click
+import yaml
 
 # Import engine core components
 from engine_core import WorkflowBuilder
 
+# Import Rich formatting
+from engine_cli.formatting import (
+    error,
+    header,
+    key_value,
+    print_table,
+    success,
+    table,
+    warning,
+)
+
 # Import state manager
 from engine_cli.storage.workflow_state_manager import (
-    workflow_state_manager,
     WorkflowExecutionState,
+    workflow_state_manager,
 )
 
 
@@ -33,13 +33,11 @@ from engine_cli.storage.workflow_state_manager import (
 def _get_workflow_execution_service():
     """Lazy import of WorkflowExecutionService."""
     try:
-        from engine_core.services.workflow_service import (
-            WorkflowExecutionService,
-            PostgreSQLWorkflowExecutionRepository,
-        )
-
         # For now, use mock repository since full PostgreSQL setup is complex
-        from engine_core.services.workflow_service import MockWorkflowRepository
+        from engine_core.services.workflow_service import (
+            MockWorkflowRepository,
+            WorkflowExecutionService,
+        )
 
         mock_repo = MockWorkflowRepository()
         return WorkflowExecutionService(mock_repo)

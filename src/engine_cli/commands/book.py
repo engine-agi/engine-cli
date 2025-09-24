@@ -13,24 +13,25 @@ Commands integrate with:
 Hierarchy: Book -> Chapter -> Page -> Section
 """
 
-import click
 import asyncio
-from typing import List, Optional, Any
+from typing import Any, List, Optional
+
+import click
 
 # Import Rich formatting
-from ..formatting import success, error, header, table, print_table, key_value
+from ..formatting import error, header, key_value, print_table, success, table
 
 # Import BookService and related components
 try:
-    from engine_core.services.book_service import BookService
     from engine_core import (
-        BookBuilder,
-        ContentType,
         AccessLevel,
+        BookBuilder,
         ContentStatus,
-        SearchScope,
+        ContentType,
         SearchQuery,
+        SearchScope,
     )
+    from engine_core.services.book_service import BookService
 
     BOOK_SERVICE_AVAILABLE = True
 

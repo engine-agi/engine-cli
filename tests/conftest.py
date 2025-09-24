@@ -1,14 +1,15 @@
 """Shared pytest fixtures and configuration for engine-cli."""
 
-import pytest
-import sys
 import os
+import sys
 from unittest.mock import MagicMock
+
+import pytest
 from click.testing import CliRunner
 
 # Add src to path
 project_root = os.path.dirname(os.path.dirname(__file__))
-src_path = os.path.join(project_root, 'src')
+src_path = os.path.join(project_root, "src")
 if src_path not in sys.path:
     sys.path.insert(0, src_path)
 
@@ -22,11 +23,11 @@ def cli_runner() -> CliRunner:
 @pytest.fixture
 def mock_config(mocker) -> MagicMock:
     """Mock configuration loading."""
-    mock_config = mocker.patch('engine_cli.config.load_config')
+    mock_config = mocker.patch("engine_cli.config.load_config")
     mock_config.return_value = {
         "api_url": "http://localhost:8000",
         "api_key": "test-key",
-        "timeout": 30
+        "timeout": 30,
     }
     return mock_config
 
@@ -34,7 +35,7 @@ def mock_config(mocker) -> MagicMock:
 @pytest.fixture
 def mock_api_client(mocker) -> MagicMock:
     """Mock API client for CLI tests."""
-    mock_client = mocker.patch('engine_cli.api.EngineAPI')
+    mock_client = mocker.patch("engine_cli.api.EngineAPI")
     mock_instance = MagicMock()
     mock_client.return_value = mock_instance
     return mock_instance
@@ -49,7 +50,7 @@ def sample_cli_args() -> dict:
         "workflow_id": "test-workflow",
         "config_file": "test-config.yaml",
         "output_format": "json",
-        "verbose": True
+        "verbose": True,
     }
 
 

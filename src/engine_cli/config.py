@@ -1,94 +1,126 @@
 """Configuration system for Engine CLI."""
-import os
+
 import json
-from pathlib import Path
-from typing import Dict, Any, Optional, Union, List
+import os
 from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
 
 import yaml
 from pydantic import BaseModel, Field, ValidationError, validator
 
-from engine_cli.formatting import error, warning, info, success
+from engine_cli.formatting import error, info, success, warning
 
 
 class EngineConfig(BaseModel):
     """Main configuration model for Engine CLI."""
 
     # Core settings
-    core: Dict[str, Any] = Field(default_factory=dict, description="Core engine settings")
+    core: Dict[str, Any] = Field(
+        default_factory=dict, description="Core engine settings"
+    )
 
     # CLI settings
-    cli: Dict[str, Any] = Field(default_factory=dict, description="CLI-specific settings")
+    cli: Dict[str, Any] = Field(
+        default_factory=dict, description="CLI-specific settings"
+    )
 
     # API settings
-    api: Dict[str, Any] = Field(default_factory=dict, description="API connection settings")
+    api: Dict[str, Any] = Field(
+        default_factory=dict, description="API connection settings"
+    )
 
     # Database settings
-    database: Dict[str, Any] = Field(default_factory=dict, description="Database configuration")
+    database: Dict[str, Any] = Field(
+        default_factory=dict, description="Database configuration"
+    )
 
     # Logging settings
-    logging: Dict[str, Any] = Field(default_factory=dict, description="Logging configuration")
+    logging: Dict[str, Any] = Field(
+        default_factory=dict, description="Logging configuration"
+    )
 
     # Agent defaults
-    agent_defaults: Dict[str, Any] = Field(default_factory=dict, description="Default agent settings")
+    agent_defaults: Dict[str, Any] = Field(
+        default_factory=dict, description="Default agent settings"
+    )
 
     # Team defaults
-    team_defaults: Dict[str, Any] = Field(default_factory=dict, description="Default team settings")
+    team_defaults: Dict[str, Any] = Field(
+        default_factory=dict, description="Default team settings"
+    )
 
     # Workflow defaults
-    workflow_defaults: Dict[str, Any] = Field(default_factory=dict, description="Default workflow settings")
+    workflow_defaults: Dict[str, Any] = Field(
+        default_factory=dict, description="Default workflow settings"
+    )
 
     # Tool defaults
-    tool_defaults: Dict[str, Any] = Field(default_factory=dict, description="Default tool settings")
+    tool_defaults: Dict[str, Any] = Field(
+        default_factory=dict, description="Default tool settings"
+    )
 
     # Protocol defaults
-    protocol_defaults: Dict[str, Any] = Field(default_factory=dict, description="Default protocol settings")
+    protocol_defaults: Dict[str, Any] = Field(
+        default_factory=dict, description="Default protocol settings"
+    )
 
     # Book defaults
-    book_defaults: Dict[str, Any] = Field(default_factory=dict, description="Default book settings")
+    book_defaults: Dict[str, Any] = Field(
+        default_factory=dict, description="Default book settings"
+    )
 
     # Project defaults
-    project_defaults: Dict[str, Any] = Field(default_factory=dict, description="Default project settings")
+    project_defaults: Dict[str, Any] = Field(
+        default_factory=dict, description="Default project settings"
+    )
 
     # Monitoring settings
-    monitoring: Dict[str, Any] = Field(default_factory=dict, description="Monitoring configuration")
+    monitoring: Dict[str, Any] = Field(
+        default_factory=dict, description="Monitoring configuration"
+    )
 
     class Config:
         """Pydantic configuration."""
+
         validate_assignment = True
         extra = "allow"  # Allow extra fields for extensibility
 
-    @validator('core')
+    @validator("core")
     def validate_core_config(cls, v):
         """Validate core configuration."""
         if not isinstance(v, dict):
             raise ValueError("Core config must be a dictionary")
         return v
 
-    @validator('api')
+    @validator("api")
     def validate_api_config(cls, v):
         """Validate API configuration."""
         if not isinstance(v, dict):
             raise ValueError("API config must be a dictionary")
 
         # Validate URL format if present
-        if 'base_url' in v:
-            url = v['base_url']
-            if not (url.startswith('http://') or url.startswith('https://')):
+        if "base_url" in v:
+            url = v["base_url"]
+            if not (url.startswith("http://") or url.startswith("https://")):
                 raise ValueError("API base_url must start with http:// or https://")
 
         return v
 
-    @validator('database')
+    @validator("database")
     def validate_database_config(cls, v):
         """Validate database configuration."""
         if not isinstance(v, dict):
             raise ValueError("Database config must be a dictionary")
 
         # Validate database URL if present
-        if 'url' in v:
-            url = v['url']
-            if not (url.startswith('postgresql://') or url.startswith('sqlite://') or url.startswith('mysql://')):
+        if "url" in v:
+            url = v["url"]
+            if not (
+                url.startswith("postgresql://")
+                or url.startswith("sqlite://")
+                or url.startswith("mysql://")
+            ):
                 warning(f"Database URL format may be invalid: {url}")
 
         return v
@@ -99,14 +131,16 @@ class ConfigManager:
     """Configuration manager for Engine CLI."""
 
     # Configuration file paths (in order of precedence)
-    config_paths: List[Path] = field(default_factory=lambda: [
-        Path.home() / '.engine' / 'config.yaml',  # Global config
-        Path.home() / '.engine' / 'config.json',  # Global config (JSON)
-        Path.cwd() / '.engine.yaml',              # Local config
-        Path.cwd() / '.engine.json',              # Local config (JSON)
-        Path.cwd() / 'engine.yaml',               # Project config
-        Path.cwd() / 'engine.json',               # Project config (JSON)
-    ])
+    config_paths: List[Path] = field(
+        default_factory=lambda: [
+            Path.home() / ".engine" / "config.yaml",  # Global config
+            Path.home() / ".engine" / "config.json",  # Global config (JSON)
+            Path.cwd() / ".engine.yaml",  # Local config
+            Path.cwd() / ".engine.json",  # Local config (JSON)
+            Path.cwd() / "engine.yaml",  # Project config
+            Path.cwd() / "engine.json",  # Project config (JSON)
+        ]
+    )
 
     # Environment variable prefix
     env_prefix: str = "ENGINE_"
@@ -121,10 +155,12 @@ class ConfigManager:
 
     def ensure_config_dir(self):
         """Ensure configuration directory exists."""
-        config_dir = Path.home() / '.engine'
+        config_dir = Path.home() / ".engine"
         config_dir.mkdir(exist_ok=True)
 
-    def load_config(self, config_file: Optional[Union[str, Path]] = None) -> EngineConfig:
+    def load_config(
+        self, config_file: Optional[Union[str, Path]] = None
+    ) -> EngineConfig:
         """Load configuration from file and environment variables."""
         if config_file:
             config_file = Path(config_file)
@@ -160,13 +196,15 @@ class ConfigManager:
     def _load_from_file(self, file_path: Path) -> EngineConfig:
         """Load configuration from a specific file."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                if file_path.suffix in ['.yaml', '.yml']:
+            with open(file_path, "r", encoding="utf-8") as f:
+                if file_path.suffix in [".yaml", ".yml"]:
                     data = yaml.safe_load(f) or {}
-                elif file_path.suffix == '.json':
+                elif file_path.suffix == ".json":
                     data = json.load(f)
                 else:
-                    raise ValueError(f"Unsupported config file format: {file_path.suffix}")
+                    raise ValueError(
+                        f"Unsupported config file format: {file_path.suffix}"
+                    )
 
             # Validate and create config
             config = EngineConfig(**data)
@@ -186,7 +224,7 @@ class ConfigManager:
 
         # Set values using dot notation directly on config
         for key, value in env_vars.items():
-            keys = key.split('.')
+            keys = key.split(".")
             self._set_nested_value(config.__dict__, keys, value)
 
         return config
@@ -201,27 +239,31 @@ class ConfigManager:
                 # Remove prefix: ENGINE_API_BASE_URL -> API_BASE_URL
                 config_key = key[prefix_len:]
                 # Split into section and field: API_BASE_URL -> ['API', 'BASE_URL']
-                parts = config_key.split('_', 1)
+                parts = config_key.split("_", 1)
                 if len(parts) == 2:
                     section, field = parts
                     # Convert to dot notation: API + BASE_URL -> api.base_url
                     section = section.lower()
-                    field = field.lower()  # Keep underscores as-is, don't convert to dots
+                    field = (
+                        field.lower()
+                    )  # Keep underscores as-is, don't convert to dots
                     full_key = f"{section}.{field}"
                     env_vars[full_key] = value
 
         return env_vars
 
-    def _set_nested_value(self, config_dict: Dict[str, Any], keys: List[str], value: Any):
+    def _set_nested_value(
+        self, config_dict: Dict[str, Any], keys: List[str], value: Any
+    ):
         """Set a nested value in the configuration dictionary."""
         if len(keys) == 1:
             # Convert string values to appropriate types
             if isinstance(value, str):
-                if value.lower() in ('true', 'false'):
-                    value = value.lower() == 'true'
+                if value.lower() in ("true", "false"):
+                    value = value.lower() == "true"
                 elif value.isdigit():
                     value = int(value)
-                elif value.replace('.', '').isdigit():
+                elif value.replace(".", "").isdigit():
                     try:
                         value = float(value)
                     except ValueError:
@@ -236,10 +278,12 @@ class ConfigManager:
 
             self._set_nested_value(config_dict[keys[0]], keys[1:], value)
 
-    def save_config(self, config: EngineConfig, file_path: Optional[Union[str, Path]] = None):
+    def save_config(
+        self, config: EngineConfig, file_path: Optional[Union[str, Path]] = None
+    ):
         """Save configuration to file."""
         if file_path is None:
-            file_path = self._config_file or (Path.home() / '.engine' / 'config.yaml')
+            file_path = self._config_file or (Path.home() / ".engine" / "config.yaml")
 
         file_path = Path(file_path)
         file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -247,13 +291,15 @@ class ConfigManager:
         try:
             data = config.dict()
 
-            with open(file_path, 'w', encoding='utf-8') as f:
-                if file_path.suffix in ['.yaml', '.yml']:
+            with open(file_path, "w", encoding="utf-8") as f:
+                if file_path.suffix in [".yaml", ".yml"]:
                     yaml.dump(data, f, default_flow_style=False, indent=2)
-                elif file_path.suffix == '.json':
+                elif file_path.suffix == ".json":
                     json.dump(data, f, indent=2)
                 else:
-                    raise ValueError(f"Unsupported config file format: {file_path.suffix}")
+                    raise ValueError(
+                        f"Unsupported config file format: {file_path.suffix}"
+                    )
 
             success(f"Configuration saved to {file_path}")
             self._config_file = file_path
@@ -267,7 +313,7 @@ class ConfigManager:
         if self._config is None:
             self.load_config()
 
-        keys = key.split('.')
+        keys = key.split(".")
         value = self._config.__dict__
 
         try:
@@ -282,7 +328,7 @@ class ConfigManager:
         if self._config is None:
             self.load_config()
 
-        keys = key.split('.')
+        keys = key.split(".")
         self._set_nested_value(self._config.__dict__, keys, value)
 
     def show_config(self):
@@ -308,44 +354,34 @@ class ConfigManager:
             if values:  # Only show non-empty sections
                 key_value(values, f"{section.title()} Settings")
 
-    def create_default_config(self, file_path: Optional[Union[str, Path]] = None) -> EngineConfig:
+    def create_default_config(
+        self, file_path: Optional[Union[str, Path]] = None
+    ) -> EngineConfig:
         """Create a default configuration."""
         default_config = EngineConfig(
-            core={
-                "version": "1.0.1",
-                "debug": False,
-                "log_level": "INFO"
-            },
-            cli={
-                "interactive": True,
-                "colors": True,
-                "history_size": 1000
-            },
-            api={
-                "base_url": "http://localhost:8000",
-                "timeout": 30,
-                "retries": 3
-            },
+            core={"version": "1.0.1", "debug": False, "log_level": "INFO"},
+            cli={"interactive": True, "colors": True, "history_size": 1000},
+            api={"base_url": "http://localhost:8000", "timeout": 30, "retries": 3},
             database={
                 "url": "sqlite:///engine.db",
                 "pool_size": 10,
-                "max_overflow": 20
+                "max_overflow": 20,
             },
             logging={
                 "level": "INFO",
                 "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-                "file": "engine.log"
+                "file": "engine.log",
             },
             agent_defaults={
                 "model": "claude-3.5-sonnet",
                 "temperature": 0.7,
-                "max_tokens": 4096
+                "max_tokens": 4096,
             },
             monitoring={
                 "enabled": True,
                 "metrics_port": 9090,
-                "health_check_interval": 30
-            }
+                "health_check_interval": 30,
+            },
         )
 
         if file_path:

@@ -1,19 +1,33 @@
 """Engine CLI - Command Line Interface for AI Agent Orchestration."""
-import click
-from typing import Optional, List
-import sys
+
 import os
-import yaml
+import sys
 from datetime import datetime
+from typing import List, Optional
+
+import click
+import yaml
+
+# Import cache system
+from engine_cli.cache import cli_cache
 
 # Import Rich formatting
-from engine_cli.formatting import header, success as success_msg, error as error_msg, table, print_table, key_value, info, separator
+from engine_cli.formatting import error as error_msg
+from engine_cli.formatting import (
+    header,
+    info,
+    key_value,
+    print_table,
+    separator,
+)
+from engine_cli.formatting import success as success_msg
+from engine_cli.formatting import (
+    table,
+)
 
 # Import interactive mode
 from engine_cli.interactive import start_interactive
 
-# Import cache system
-from engine_cli.cache import cli_cache
 
 @click.group()
 @click.version_option("1.1.0", prog_name="Engine CLI")
@@ -50,6 +64,7 @@ def status():
     # Check core availability
     try:
         import engine_core
+
         success_msg("Engine Core is available")
         core_available = True
     except ImportError:
@@ -62,24 +77,28 @@ def status():
 
         try:
             from engine_core import AgentBuilder
+
             status_checks["Agent module"] = True
         except ImportError:
             status_checks["Agent module"] = False
 
         try:
             from engine_core import TeamBuilder
+
             status_checks["Team module"] = True
         except ImportError:
             status_checks["Team module"] = False
 
         try:
             from engine_core import WorkflowBuilder
+
             status_checks["Workflow module"] = True
         except ImportError:
             status_checks["Workflow module"] = False
 
         # Display status summary
         from engine_cli.formatting import status_summary
+
         status_summary(status_checks)
 
 
@@ -108,6 +127,7 @@ try:
         agent.add_command(cmd_obj)
 
 except ImportError as e:
+
     @agent.command()
     def error():
         """Agent commands not available."""
@@ -129,6 +149,7 @@ try:
     cli.add_command(team_cli, name="team")
 
 except ImportError as e:
+
     @team.command()
     def error():
         """Team commands not available."""
@@ -151,6 +172,7 @@ try:
         workflow.add_command(cmd_obj)
 
 except ImportError as e:
+
     @workflow.command()
     def error():
         """Workflow commands not available."""
@@ -173,6 +195,7 @@ try:
         tool.add_command(cmd_obj)
 
 except ImportError as e:
+
     @tool.command()
     def error():
         """Tool commands not available."""
@@ -195,6 +218,7 @@ try:
         protocol.add_command(cmd_obj)
 
 except ImportError as e:
+
     @protocol.command()
     def error():
         """Protocol commands not available."""
@@ -217,6 +241,7 @@ try:
         book.add_command(cmd_obj)
 
 except ImportError as e:
+
     @book.command()
     def error():
         """Book commands not available."""
@@ -239,6 +264,7 @@ try:
         project.add_command(cmd_obj)
 
 except ImportError as e:
+
     @project.command()
     def error():
         """Project commands not available."""
@@ -261,6 +287,7 @@ try:
         examples.add_command(cmd_obj)
 
 except ImportError as e:
+
     @examples.command()
     def error():
         """Examples commands not available."""
@@ -283,6 +310,7 @@ try:
         config.add_command(cmd_obj)
 
 except ImportError as e:
+
     @config.command()
     def error():
         """Config commands not available."""
@@ -305,6 +333,7 @@ try:
         advanced.add_command(cmd_obj)
 
 except ImportError as e:
+
     @advanced.command()
     def error():
         """Advanced commands not available."""
@@ -327,6 +356,7 @@ try:
         monitoring.add_command(cmd_obj)
 
 except ImportError as e:
+
     @monitoring.command()
     def error():
         """Monitoring commands not available."""

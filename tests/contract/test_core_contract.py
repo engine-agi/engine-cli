@@ -1,18 +1,17 @@
 """Contract tests for Engine CLI - Engine Core integration."""
 
 import pytest
-
 from engine_core import (
     AgentBuilder,
-    TeamBuilder,
-    WorkflowBuilder,
     BookBuilder,
     ProtocolBuilder,
+    TeamBuilder,
     ToolBuilder,
+    WorkflowBuilder,
     WorkflowEngine,
-    __version__ as core_version
 )
-from engine_core.core.teams.team_builder import TeamMemberRole, TeamCoordinationStrategy
+from engine_core import __version__ as core_version
+from engine_core.core.teams.team_builder import TeamCoordinationStrategy, TeamMemberRole
 from engine_core.models.tool import ToolType
 
 
@@ -98,28 +97,38 @@ class TestEngineCoreContract:
     @pytest.mark.contract
     def test_agent_builder_functional(self):
         """Test that AgentBuilder produces valid agents."""
-        agent = (AgentBuilder()
-                .with_id("test-agent")
-                .with_name("Test Agent")
-                .with_model("claude-3.5-sonnet")
-                .with_speciality("Testing")
-                .with_stack(["python", "pytest"])
-                .build())
+        agent = (
+            AgentBuilder()
+            .with_id("test-agent")
+            .with_name("Test Agent")
+            .with_model("claude-3.5-sonnet")
+            .with_speciality("Testing")
+            .with_stack(["python", "pytest"])
+            .build()
+        )
 
         assert agent is not None
         # Just verify the object was created successfully
-        assert hasattr(agent, 'id') or hasattr(agent, 'get_id') or str(agent).find("test-agent") >= 0
+        assert (
+            hasattr(agent, "id")
+            or hasattr(agent, "get_id")
+            or str(agent).find("test-agent") >= 0
+        )
 
     @pytest.mark.contract
     def test_team_builder_functional(self):
         """Test that TeamBuilder produces valid teams."""
         # Create a minimal valid team with required fields
-        team = (TeamBuilder()
-               .with_id("test-team")
-               .with_name("Test Team")
-               .add_member("test-leader", TeamMemberRole.LEADER)  # Add a leader to satisfy validation
-               .add_member("test-agent", TeamMemberRole.MEMBER)  # Add a member
-               .build())
+        team = (
+            TeamBuilder()
+            .with_id("test-team")
+            .with_name("Test Team")
+            .add_member(
+                "test-leader", TeamMemberRole.LEADER
+            )  # Add a leader to satisfy validation
+            .add_member("test-agent", TeamMemberRole.MEMBER)  # Add a member
+            .build()
+        )
 
         assert team is not None
         # Just verify the object was created successfully
@@ -129,17 +138,20 @@ class TestEngineCoreContract:
     def test_workflow_builder_functional(self):
         """Test that WorkflowBuilder produces valid workflows."""
         # Create an agent first to use in the workflow
-        agent = (AgentBuilder()
-                .with_id("test-agent")
-                .with_model("claude-3-haiku")
-                .build())
+        agent = (
+            AgentBuilder().with_id("test-agent").with_model("claude-3-haiku").build()
+        )
 
         # Create a minimal valid workflow with at least one vertex
-        workflow = (WorkflowBuilder()
-                   .with_id("test-workflow")
-                   .with_name("Test Workflow")
-                   .add_agent_vertex("task1", agent, "Test task")  # Add vertex to satisfy validation
-                   .build())
+        workflow = (
+            WorkflowBuilder()
+            .with_id("test-workflow")
+            .with_name("Test Workflow")
+            .add_agent_vertex(
+                "task1", agent, "Test task"
+            )  # Add vertex to satisfy validation
+            .build()
+        )
 
         assert workflow is not None
         # Just verify the object was created successfully
@@ -148,12 +160,14 @@ class TestEngineCoreContract:
     @pytest.mark.contract
     def test_book_builder_functional(self):
         """Test that BookBuilder produces valid books."""
-        book = (BookBuilder()
-               .with_id("test-book")
-               .with_title("Test Book")
-               .with_description("A test book")
-               .with_author("Test Author")
-               .build())
+        book = (
+            BookBuilder()
+            .with_id("test-book")
+            .with_title("Test Book")
+            .with_description("A test book")
+            .with_author("Test Author")
+            .build()
+        )
 
         assert book is not None
         # Just verify the object was created successfully
@@ -162,24 +176,32 @@ class TestEngineCoreContract:
     @pytest.mark.contract
     def test_protocol_builder_functional(self):
         """Test that ProtocolBuilder produces valid protocols."""
-        protocol = (ProtocolBuilder()
-                   .with_id("test-protocol")
-                   .with_name("Test Protocol")
-                   .build())
+        protocol = (
+            ProtocolBuilder()
+            .with_id("test-protocol")
+            .with_name("Test Protocol")
+            .build()
+        )
 
         assert protocol is not None
         # Just verify the object was created successfully
-        assert hasattr(protocol, 'id') or hasattr(protocol, 'get_id') or str(protocol).find("test-protocol") >= 0
+        assert (
+            hasattr(protocol, "id")
+            or hasattr(protocol, "get_id")
+            or str(protocol).find("test-protocol") >= 0
+        )
 
     @pytest.mark.contract
     def test_tool_builder_functional(self):
         """Test that ToolBuilder produces valid tools."""
-        tool = (ToolBuilder()
-               .with_id("test-tool")
-               .with_name("Test Tool")
-               .with_description("A test tool")
-               .with_type(ToolType.CLI)  # Add required type
-               .build())
+        tool = (
+            ToolBuilder()
+            .with_id("test-tool")
+            .with_name("Test Tool")
+            .with_description("A test tool")
+            .with_type(ToolType.CLI)  # Add required type
+            .build()
+        )
 
         assert tool is not None
         # Just verify the object was created successfully
@@ -189,10 +211,9 @@ class TestEngineCoreContract:
     def test_agent_builder_minimal_contract(self):
         """Test minimal AgentBuilder contract (required fields only)."""
         # According to spec, only id and model are required
-        agent = (AgentBuilder()
-                .with_id("minimal-agent")
-                .with_model("claude-3-haiku")
-                .build())
+        agent = (
+            AgentBuilder().with_id("minimal-agent").with_model("claude-3-haiku").build()
+        )
 
         assert agent is not None
         # Just verify the object was created successfully
@@ -202,16 +223,26 @@ class TestEngineCoreContract:
     def test_builder_method_chaining(self):
         """Test that all builders support method chaining."""
         # Test AgentBuilder chaining
-        agent = AgentBuilder().with_id("chain-test").with_model("gpt-4").with_name("Chain Test").build()
+        agent = (
+            AgentBuilder()
+            .with_id("chain-test")
+            .with_model("gpt-4")
+            .with_name("Chain Test")
+            .build()
+        )
         assert agent is not None
 
         # Test WorkflowBuilder chaining with required vertex
-        workflow_agent = AgentBuilder().with_id("wf-agent").with_model("claude-3-haiku").build()
-        workflow = (WorkflowBuilder()
-                   .with_id("chain-workflow")
-                   .with_name("Chain Workflow")
-                   .add_agent_vertex("task1", workflow_agent, "Test task")
-                   .build())
+        workflow_agent = (
+            AgentBuilder().with_id("wf-agent").with_model("claude-3-haiku").build()
+        )
+        workflow = (
+            WorkflowBuilder()
+            .with_id("chain-workflow")
+            .with_name("Chain Workflow")
+            .add_agent_vertex("task1", workflow_agent, "Test task")
+            .build()
+        )
         assert workflow is not None
 
     @pytest.mark.contract

@@ -1,14 +1,15 @@
 """Agent management commands."""
 
-import click
-from typing import Optional, List
-from datetime import datetime
-import os
-import yaml
 import json
+import os
+from datetime import datetime
+from typing import List, Optional
+
+import click
+import yaml
 
 # Import Rich formatting
-from engine_cli.formatting import success, error, key_value, print_table, table
+from engine_cli.formatting import error, key_value, print_table, success, table
 
 # Import new Book-based storage
 from engine_cli.storage.agent_book_storage import AgentBookStorage

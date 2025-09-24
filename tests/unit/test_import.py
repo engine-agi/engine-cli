@@ -1,22 +1,25 @@
 """Test CLI imports and basic functionality."""
-import pytest
-from unittest.mock import patch
-import sys
+
 import os
+import sys
+from unittest.mock import patch
+
+import pytest
 
 # Add src to path for testing
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 
 def test_import_main():
     """Test that main CLI module can be imported."""
     from engine_cli.main import cli
+
     assert cli is not None
 
 
 def test_import_commands():
     """Test that all command modules can be imported."""
-    from engine_cli.commands import agent, team, workflow, tool, protocol, book
+    from engine_cli.commands import agent, book, protocol, team, tool, workflow
 
     # Verify modules are imported
     assert agent is not None

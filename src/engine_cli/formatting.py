@@ -1,16 +1,25 @@
 """Rich formatting utilities for Engine CLI."""
-from rich.console import Console
-from rich.table import Table
-from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
-from rich.panel import Panel
-from rich.text import Text
-from rich.columns import Columns
-from rich import box
-from typing import List, Dict, Any, Optional
+
+from typing import Any, Dict, List, Optional
+
 import click
+from rich import box
+from rich.columns import Columns
+from rich.console import Console
+from rich.panel import Panel
+from rich.progress import (
+    BarColumn,
+    Progress,
+    SpinnerColumn,
+    TextColumn,
+    TimeElapsedColumn,
+)
+from rich.table import Table
+from rich.text import Text
 
 # Initialize Rich console
 console = Console()
+
 
 class CLIRichFormatter:
     """Rich formatting utilities for CLI output."""
@@ -39,19 +48,32 @@ class CLIRichFormatter:
     def print_header(title: str, subtitle: Optional[str] = None):
         """Print a formatted header."""
         if subtitle:
-            panel = Panel(f"[bold cyan]{title}[/bold cyan]\n[dim]{subtitle}[/dim]",
-                         border_style="cyan", padding=(1, 2))
+            panel = Panel(
+                f"[bold cyan]{title}[/bold cyan]\n[dim]{subtitle}[/dim]",
+                border_style="cyan",
+                padding=(1, 2),
+            )
         else:
-            panel = Panel(f"[bold cyan]{title}[/bold cyan]",
-                         border_style="cyan", padding=(1, 2))
+            panel = Panel(
+                f"[bold cyan]{title}[/bold cyan]", border_style="cyan", padding=(1, 2)
+            )
         console.print(panel)
 
     @staticmethod
-    def create_table(title: str = "", columns: Optional[List[str]] = None,
-                    show_header: bool = True, box_style=box.ROUNDED) -> Table:
+    def create_table(
+        title: str = "",
+        columns: Optional[List[str]] = None,
+        show_header: bool = True,
+        box_style=box.ROUNDED,
+    ) -> Table:
         """Create a formatted table."""
-        table = Table(title=title, show_header=show_header, box=box_style,
-                     header_style="bold cyan", title_style="bold magenta")
+        table = Table(
+            title=title,
+            show_header=show_header,
+            box=box_style,
+            header_style="bold cyan",
+            title_style="bold magenta",
+        )
 
         if columns:
             for col in columns:
@@ -78,8 +100,12 @@ class CLIRichFormatter:
             console.print(f"{key_str}: {value_str}")
 
     @staticmethod
-    def print_list(items: List[str], title: Optional[str] = None,
-                  bullet: str = "•", style: str = "white"):
+    def print_list(
+        items: List[str],
+        title: Optional[str] = None,
+        bullet: str = "•",
+        style: str = "white",
+    ):
         """Print a list with bullets."""
         if title:
             console.print(f"[bold cyan]{title}:[/bold cyan]")
@@ -128,11 +154,11 @@ class CLIRichFormatter:
 
         for key, value in metrics.items():
             if isinstance(value, (int, float)):
-                if key.lower().endswith(('count', 'total', 'size', 'length')):
+                if key.lower().endswith(("count", "total", "size", "length")):
                     value_str = f"[green]{value:,}[/green]"
-                elif key.lower().endswith(('rate', 'percentage', 'ratio')):
+                elif key.lower().endswith(("rate", "percentage", "ratio")):
                     value_str = f"[yellow]{value:.2f}[/yellow]"
-                elif key.lower().endswith(('time', 'duration', 'latency')):
+                elif key.lower().endswith(("time", "duration", "latency")):
                     value_str = f"[blue]{value:.3f}s[/blue]"
                 else:
                     value_str = f"[white]{value}[/white]"
@@ -141,60 +167,82 @@ class CLIRichFormatter:
 
             console.print(f"[cyan]{key}:[/cyan] {value_str}")
 
+
 # Convenience functions for easy importing
 def success(message: str):
     """Print success message."""
     CLIRichFormatter.print_success(message)
 
+
 def error(message: str):
     """Print error message."""
     CLIRichFormatter.print_error(message)
+
 
 def warning(message: str):
     """Print warning message."""
     CLIRichFormatter.print_warning(message)
 
+
 def info(message: str):
     """Print info message."""
     CLIRichFormatter.print_info(message)
+
 
 def header(title: str, subtitle: Optional[str] = None):
     """Print header."""
     CLIRichFormatter.print_header(title, subtitle)
 
-def table(title: str = "", columns: Optional[List[str]] = None,
-         show_header: bool = True, box_style=box.ROUNDED) -> Table:
+
+def table(
+    title: str = "",
+    columns: Optional[List[str]] = None,
+    show_header: bool = True,
+    box_style=box.ROUNDED,
+) -> Table:
     """Create table."""
     return CLIRichFormatter.create_table(title, columns, show_header, box_style)
+
 
 def print_table(table: Table):
     """Print table."""
     CLIRichFormatter.print_table(table)
 
+
 def key_value(data: Dict[str, Any], title: Optional[str] = None):
     """Print key-value pairs."""
     CLIRichFormatter.print_key_value_pairs(data, title)
 
-def list_items(items: List[str], title: Optional[str] = None,
-              bullet: str = "•", style: str = "white"):
+
+def list_items(
+    items: List[str],
+    title: Optional[str] = None,
+    bullet: str = "•",
+    style: str = "white",
+):
     """Print list."""
     CLIRichFormatter.print_list(items, title, bullet, style)
+
 
 def progress(description: str = "Processing...") -> Progress:
     """Create progress bar."""
     return CLIRichFormatter.create_progress(description)
 
+
 def columns(items: List[str], equal: bool = True, expand: bool = False):
     """Print columns."""
     CLIRichFormatter.print_columns(items, equal, expand)
+
 
 def separator(char: str = "─", length: int = 50, style: str = "dim"):
     """Print separator."""
     CLIRichFormatter.print_separator(char, length, style)
 
+
 def status_summary(statuses: Dict[str, bool], title: str = "Status Summary"):
     """Print status summary."""
     CLIRichFormatter.print_status_summary(statuses, title)
+
 
 def metrics(data: Dict[str, Any], title: str = "Metrics"):
     """Print metrics."""

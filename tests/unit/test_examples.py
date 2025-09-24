@@ -1,9 +1,11 @@
 import pytest
 from click.testing import CliRunner
 
+
 @pytest.fixture
 def cli_runner():
     return CliRunner()
+
 
 class TestExamplesCLICommands:
     """Test CLI commands for examples management"""
@@ -25,40 +27,49 @@ class TestExamplesCLICommands:
         result = cli_runner.invoke(list)
 
         assert result.exit_code == 0
-        assert "Examples listing for level 'beginner' not yet implemented" in result.output
+        assert (
+            "Examples listing for level 'beginner' not yet implemented" in result.output
+        )
 
     def test_list_command_beginner_level(self, cli_runner):
         """Test list command with beginner level"""
         from engine_cli.commands.examples import list
 
-        result = cli_runner.invoke(list, ['--level', 'beginner'])
+        result = cli_runner.invoke(list, ["--level", "beginner"])
 
         assert result.exit_code == 0
-        assert "Examples listing for level 'beginner' not yet implemented" in result.output
+        assert (
+            "Examples listing for level 'beginner' not yet implemented" in result.output
+        )
 
     def test_list_command_intermediate_level(self, cli_runner):
         """Test list command with intermediate level"""
         from engine_cli.commands.examples import list
 
-        result = cli_runner.invoke(list, ['--level', 'intermediate'])
+        result = cli_runner.invoke(list, ["--level", "intermediate"])
 
         assert result.exit_code == 0
-        assert "Examples listing for level 'intermediate' not yet implemented" in result.output
+        assert (
+            "Examples listing for level 'intermediate' not yet implemented"
+            in result.output
+        )
 
     def test_list_command_advanced_level(self, cli_runner):
         """Test list command with advanced level"""
         from engine_cli.commands.examples import list
 
-        result = cli_runner.invoke(list, ['--level', 'advanced'])
+        result = cli_runner.invoke(list, ["--level", "advanced"])
 
         assert result.exit_code == 0
-        assert "Examples listing for level 'advanced' not yet implemented" in result.output
+        assert (
+            "Examples listing for level 'advanced' not yet implemented" in result.output
+        )
 
     def test_list_command_invalid_level(self, cli_runner):
         """Test list command with invalid level"""
         from engine_cli.commands.examples import list
 
-        result = cli_runner.invoke(list, ['--level', 'invalid'])
+        result = cli_runner.invoke(list, ["--level", "invalid"])
 
         # Click should handle invalid choice and show error
         assert result.exit_code != 0 or "Invalid value for" in result.output
@@ -67,7 +78,7 @@ class TestExamplesCLICommands:
         """Test run command"""
         from engine_cli.commands.examples import run
 
-        result = cli_runner.invoke(run, ['basic_agent'])
+        result = cli_runner.invoke(run, ["basic_agent"])
 
         assert result.exit_code == 0
         assert "Running example 'basic_agent' not yet implemented" in result.output
@@ -76,7 +87,7 @@ class TestExamplesCLICommands:
         """Test run command with name containing spaces"""
         from engine_cli.commands.examples import run
 
-        result = cli_runner.invoke(run, ['my example name'])
+        result = cli_runner.invoke(run, ["my example name"])
 
         assert result.exit_code == 0
         assert "Running example 'my example name' not yet implemented" in result.output
@@ -85,7 +96,7 @@ class TestExamplesCLICommands:
         """Test create command without output directory"""
         from engine_cli.commands.examples import create
 
-        result = cli_runner.invoke(create, ['new_example'])
+        result = cli_runner.invoke(create, ["new_example"])
 
         assert result.exit_code == 0
         assert "Creating example 'new_example' not yet implemented" in result.output
@@ -95,7 +106,7 @@ class TestExamplesCLICommands:
         """Test create command with output directory"""
         from engine_cli.commands.examples import create
 
-        result = cli_runner.invoke(create, ['new_example', '--output', '/tmp/examples'])
+        result = cli_runner.invoke(create, ["new_example", "--output", "/tmp/examples"])
 
         assert result.exit_code == 0
         assert "Creating example 'new_example' not yet implemented" in result.output
@@ -105,7 +116,9 @@ class TestExamplesCLICommands:
         """Test create command with relative output directory"""
         from engine_cli.commands.examples import create
 
-        result = cli_runner.invoke(create, ['new_example', '--output', 'examples/my_project'])
+        result = cli_runner.invoke(
+            create, ["new_example", "--output", "examples/my_project"]
+        )
 
         assert result.exit_code == 0
         assert "Creating example 'new_example' not yet implemented" in result.output
@@ -145,7 +158,7 @@ class TestExamplesCLICommands:
         """Test run command error handling"""
         from engine_cli.commands.examples import run
 
-        result = cli_runner.invoke(run, ['test'])
+        result = cli_runner.invoke(run, ["test"])
         assert result.exit_code == 0
         # Error handling is basic - just ensures command doesn't crash
 
@@ -153,7 +166,7 @@ class TestExamplesCLICommands:
         """Test create command error handling"""
         from engine_cli.commands.examples import create
 
-        result = cli_runner.invoke(create, ['test'])
+        result = cli_runner.invoke(create, ["test"])
         assert result.exit_code == 0
         # Error handling is basic - just ensures command doesn't crash
 
@@ -169,7 +182,7 @@ class TestExamplesCLICommands:
         """Test that the CLI group exists and can be invoked"""
         from engine_cli.commands.examples import cli
 
-        result = cli_runner.invoke(cli, ['--help'])
+        result = cli_runner.invoke(cli, ["--help"])
 
         assert result.exit_code == 0
         assert "Example commands" in result.output
@@ -183,7 +196,7 @@ class TestExamplesCLICommands:
         """Test hello command help"""
         from engine_cli.commands.examples import hello
 
-        result = cli_runner.invoke(hello, ['--help'])
+        result = cli_runner.invoke(hello, ["--help"])
 
         assert result.exit_code == 0
         assert "Say hello" in result.output
@@ -192,7 +205,7 @@ class TestExamplesCLICommands:
         """Test list command help"""
         from engine_cli.commands.examples import list
 
-        result = cli_runner.invoke(list, ['--help'])
+        result = cli_runner.invoke(list, ["--help"])
 
         assert result.exit_code == 0
         assert "List available examples" in result.output
@@ -202,7 +215,7 @@ class TestExamplesCLICommands:
         """Test run command help"""
         from engine_cli.commands.examples import run
 
-        result = cli_runner.invoke(run, ['--help'])
+        result = cli_runner.invoke(run, ["--help"])
 
         assert result.exit_code == 0
         assert "Run a specific example" in result.output
@@ -211,7 +224,7 @@ class TestExamplesCLICommands:
         """Test create command help"""
         from engine_cli.commands.examples import create
 
-        result = cli_runner.invoke(create, ['--help'])
+        result = cli_runner.invoke(create, ["--help"])
 
         assert result.exit_code == 0
         assert "Create a new example project" in result.output
@@ -221,10 +234,11 @@ class TestExamplesCLICommands:
         """Test templates command help"""
         from engine_cli.commands.examples import templates
 
-        result = cli_runner.invoke(templates, ['--help'])
+        result = cli_runner.invoke(templates, ["--help"])
 
         assert result.exit_code == 0
         assert "List available example templates" in result.output
+
 
 if __name__ == "__main__":
     pytest.main([__file__])

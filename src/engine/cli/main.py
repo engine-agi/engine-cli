@@ -16,23 +16,26 @@ from rich.console import Console
 from rich.theme import Theme
 
 # Custom theme for Engine CLI
-engine_theme = Theme({
-    "info": "cyan",
-    "warning": "yellow",
-    "error": "red",
-    "success": "green",
-    "header": "bold magenta",
-    "command": "bold blue",
-})
+engine_theme = Theme(
+    {
+        "info": "cyan",
+        "warning": "yellow",
+        "error": "red",
+        "success": "green",
+        "header": "bold magenta",
+        "command": "bold blue",
+    }
+)
 
 console = Console(theme=engine_theme)
 
 
 @click.group()
 @click.version_option(version="1.0.0", prog_name="Engine CLI")
-@click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
-@click.option('--config', '-c', type=click.Path(exists=True),
-              help='Path to config file')
+@click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
+@click.option(
+    "--config", "-c", type=click.Path(exists=True), help="Path to config file"
+)
 def cli(verbose, config):
     """Engine Framework Command Line Interface
 
@@ -53,10 +56,10 @@ def interactive():
         try:
             command = console.input("[command]engine > [/command]").strip()
 
-            if command in ['exit', 'quit', 'q']:
+            if command in ["exit", "quit", "q"]:
                 console.print("[success]Goodbye! 👋[/success]")
                 break
-            elif command in ['help', 'h', '?']:
+            elif command in ["help", "h", "?"]:
                 show_help()
             elif command:
                 console.print(f"[warning]Command not implemented: {command}[/warning]")

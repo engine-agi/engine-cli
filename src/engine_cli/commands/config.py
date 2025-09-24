@@ -1,18 +1,19 @@
 """Configuration management commands."""
 
-import click
 from pathlib import Path
 
+import click
+
 from engine_cli.config import (
-    load_config,
-    save_config,
-    show_config,
+    config_manager,
     create_default_config,
     get_config_value,
+    load_config,
+    save_config,
     set_config_value,
-    config_manager,
+    show_config,
 )
-from engine_cli.formatting import success, error, info, header, key_value
+from engine_cli.formatting import error, header, info, key_value, success
 
 
 @click.group()
@@ -159,8 +160,8 @@ def edit(config_file):
             return
 
         # Open in editor
-        import subprocess
         import os
+        import subprocess
 
         editor = os.environ.get("EDITOR", "nano")
         try:

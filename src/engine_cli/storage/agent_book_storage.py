@@ -1,8 +1,9 @@
 """Agent storage using Book system for persistence."""
+
 import json
 import os
-from typing import Optional, List, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 from engine_core import BookBuilder
 
@@ -36,11 +37,11 @@ class AgentBookStorage:
                 "metadata": {
                     "created_at": agent_data.get("created_at", str(datetime.now())),
                     "version": "1.0",
-                    "type": "agent_configuration"
-                }
+                    "type": "agent_configuration",
+                },
             },
             "tags": ["agent", "configuration", agent_data.get("model", "unknown")],
-            "categories": ["agents"]
+            "categories": ["agents"],
         }
 
     def _book_data_to_agent(self, book_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -49,7 +50,9 @@ class AgentBookStorage:
             agent_data = book_data["content"]["agent_config"]
             # Ensure created_at is present
             if "created_at" not in agent_data:
-                agent_data["created_at"] = book_data.get("created_at", str(datetime.now()))
+                agent_data["created_at"] = book_data.get(
+                    "created_at", str(datetime.now())
+                )
             return agent_data
         return book_data  # Fallback for old format
 
@@ -68,24 +71,32 @@ class AgentBookStorage:
 
             # Create book using BookBuilder
             builder = BookBuilder()
-            book = (builder
-                .with_id(book_data["book_id"])
+            book = (
+                builder.with_id(book_data["book_id"])
                 .with_title(book_data["title"])
                 .with_description(book_data["description"])
                 .with_author(book_data["author"])
                 .with_project(book_data["project_id"])
                 .add_tags(book_data["tags"])
                 .add_categories(book_data["categories"])
-                .build())
+                .build()
+            )
 
             # Save book as JSON
             book_path = self._get_book_path(agent_data["id"])
-            with open(book_path, 'w', encoding='utf-8') as f:
-                json.dump({
-                    **book_data,
-                    "created_at": str(datetime.now()),
-                    "book_object": book.to_dict() if hasattr(book, 'to_dict') else str(book)
-                }, f, indent=2, ensure_ascii=False)
+            with open(book_path, "w", encoding="utf-8") as f:
+                json.dump(
+                    {
+                        **book_data,
+                        "created_at": str(datetime.now()),
+                        "book_object": (
+                            book.to_dict() if hasattr(book, "to_dict") else str(book)
+                        ),
+                    },
+                    f,
+                    indent=2,
+                    ensure_ascii=False,
+                )
 
             return True
 
@@ -107,7 +118,7 @@ class AgentBookStorage:
             if not os.path.exists(book_path):
                 return None
 
-            with open(book_path, 'r', encoding='utf-8') as f:
+            with open(book_path, "r", encoding="utf-8") as f:
                 book_data = json.load(f)
 
             return self._book_data_to_agent(book_data)
@@ -126,9 +137,9 @@ class AgentBookStorage:
         try:
             if os.path.exists(self.storage_dir):
                 for file in os.listdir(self.storage_dir):
-                    if file.endswith('.json'):
+                    if file.endswith(".json"):
                         try:
-                            agent_id = file.replace('.json', '')
+                            agent_id = file.replace(".json", "")
                             agent_data = self.get_agent(agent_id)
                             if agent_data:
                                 agents.append(agent_data)

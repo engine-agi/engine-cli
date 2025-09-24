@@ -1,25 +1,26 @@
 """CLI Performance Cache - Cache system for CLI commands and modules."""
-import json
+
 import hashlib
+import json
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 
 class CLICache:
     """Cache system for CLI performance optimization."""
 
     def __init__(self, cache_dir: Optional[str] = None):
-        self.cache_dir = Path(cache_dir) if cache_dir else Path.home() / ".engine" / "cache"
-        self.cache_dir.mkdir(parents=True, exist_ok=True)
-        self.commands_cache_file = (
-            self.cache_dir / "commands.json"
+        self.cache_dir = (
+            Path(cache_dir) if cache_dir else Path.home() / ".engine" / "cache"
         )
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
+        self.commands_cache_file = self.cache_dir / "commands.json"
         self.modules_cache_file = self.cache_dir / "modules.json"
 
     def _get_file_hash(self, file_path: str) -> str:
         """Get hash of a file for cache invalidation."""
         try:
-            with open(file_path, 'rb') as f:
+            with open(file_path, "rb") as f:
                 return hashlib.md5(f.read()).hexdigest()
         except (FileNotFoundError, OSError):
             return ""
@@ -28,7 +29,7 @@ class CLICache:
         """Load cache from file."""
         try:
             if cache_file.exists():
-                with open(cache_file, 'r') as f:
+                with open(cache_file, "r") as f:
                     return json.load(f)
         except (json.JSONDecodeError, OSError):
             pass
@@ -37,7 +38,7 @@ class CLICache:
     def _save_cache(self, cache_file: Path, data: Dict[str, Any]) -> None:
         """Save cache to file."""
         try:
-            with open(cache_file, 'w') as f:
+            with open(cache_file, "w") as f:
                 json.dump(data, f, indent=2)
         except OSError:
             pass

@@ -1,16 +1,19 @@
 """Workflow State Manager - Redis-based volatile state for workflow execution."""
+
+import asyncio
 import json
 import os
-import asyncio
-from typing import Dict, Any, Optional, List
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from dataclasses import dataclass, asdict, field
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
 import redis.asyncio as redis
 
 
 class WorkflowExecutionState(Enum):
     """Workflow execution states."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -20,6 +23,7 @@ class WorkflowExecutionState(Enum):
 
 class VertexExecutionState(Enum):
     """Vertex execution states."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -30,6 +34,7 @@ class VertexExecutionState(Enum):
 @dataclass
 class WorkflowExecutionStatus:
     """Workflow execution status data."""
+
     execution_id: str
     workflow_id: str
     workflow_name: str
@@ -47,28 +52,28 @@ class WorkflowExecutionStatus:
         """Convert to dictionary for JSON serialization."""
         data = asdict(self)
         # Convert enums to strings
-        data['state'] = self.state.value
-        for vertex_id, vertex_state in data['vertex_states'].items():
-            if 'state' in vertex_state and isinstance(vertex_state['state'], Enum):
-                vertex_state['state'] = vertex_state['state'].value
+        data["state"] = self.state.value
+        for vertex_id, vertex_state in data["vertex_states"].items():
+            if "state" in vertex_state and isinstance(vertex_state["state"], Enum):
+                vertex_state["state"] = vertex_state["state"].value
         # Convert datetime to ISO string
-        data['start_time'] = self.start_time.isoformat()
+        data["start_time"] = self.start_time.isoformat()
         if self.end_time:
-            data['end_time'] = self.end_time.isoformat()
+            data["end_time"] = self.end_time.isoformat()
         return data
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'WorkflowExecutionStatus':
+    def from_dict(cls, data: Dict[str, Any]) -> "WorkflowExecutionStatus":
         """Create from dictionary."""
         # Convert ISO strings back to datetime
-        data['start_time'] = datetime.fromisoformat(data['start_time'])
-        if data.get('end_time'):
-            data['end_time'] = datetime.fromisoformat(data['end_time'])
+        data["start_time"] = datetime.fromisoformat(data["start_time"])
+        if data.get("end_time"):
+            data["end_time"] = datetime.fromisoformat(data["end_time"])
         # Convert strings back to enums
-        data['state'] = WorkflowExecutionState(data['state'])
-        for vertex_id, vertex_state in data.get('vertex_states', {}).items():
-            if 'state' in vertex_state:
-                vertex_state['state'] = VertexExecutionState(vertex_state['state'])
+        data["state"] = WorkflowExecutionState(data["state"])
+        for vertex_id, vertex_state in data.get("vertex_states", {}).items():
+            if "state" in vertex_state:
+                vertex_state["state"] = VertexExecutionState(vertex_state["state"])
         return cls(**data)
 
 
@@ -112,7 +117,9 @@ class WorkflowStateManager:
         """Get value from memory storage."""
         return self._memory_storage.get(key)
 
-    def _memory_set(self, key: str, value: str, expire_seconds: Optional[int] = None) -> None:
+    def _memory_set(
+        self, key: str, value: str, expire_seconds: Optional[int] = None
+    ) -> None:
         """Set value in memory storage."""
         self._memory_storage[key] = value
 
@@ -127,13 +134,15 @@ class WorkflowStateManager:
 
     def _memory_lrange(self, key: str, start: int, end: int) -> List[bytes]:
         """Get range from memory list."""
-        if key not in self._memory_storage or not isinstance(self._memory_storage[key], list):
+        if key not in self._memory_storage or not isinstance(
+            self._memory_storage[key], list
+        ):
             return []
         lst = self._memory_storage[key]
         # Handle negative indices like Redis
         if end == -1:
             end = len(lst)
-        return [item.encode('utf-8') for item in lst[start:end]]
+        return [item.encode("utf-8") for item in lst[start:end]]
 
     async def _get_data(self, key: str) -> Optional[str]:
         """Get data from Redis or memory fallback."""
@@ -143,7 +152,9 @@ class WorkflowStateManager:
             return self._memory_get(key)
         return None
 
-    async def _set_data(self, key: str, value: str, expire_seconds: Optional[int] = None) -> None:
+    async def _set_data(
+        self, key: str, value: str, expire_seconds: Optional[int] = None
+    ) -> None:
         """Set data in Redis or memory fallback."""
         if self._connected and self.redis_client:
             if expire_seconds:
@@ -169,8 +180,12 @@ class WorkflowStateManager:
             return self._memory_lrange(key, start, end)
         return []
 
-    async def create_execution(self, workflow_id: str, workflow_name: str,
-                             input_data: Optional[Dict[str, Any]] = None) -> str:
+    async def create_execution(
+        self,
+        workflow_id: str,
+        workflow_name: str,
+        input_data: Optional[Dict[str, Any]] = None,
+    ) -> str:
         """Create a new workflow execution and return execution ID."""
         await self.connect()
 
@@ -182,7 +197,7 @@ class WorkflowStateManager:
             workflow_name=workflow_name,
             state=WorkflowExecutionState.PENDING,
             start_time=datetime.now(),
-            input_data=input_data or {}
+            input_data=input_data or {},
         )
 
         # Store in Redis/memory with 24 hour expiration
@@ -196,10 +211,13 @@ class WorkflowStateManager:
 
         return execution_id
 
-    async def update_execution_state(self, execution_id: str,
-                                   state: WorkflowExecutionState,
-                                   current_vertex: Optional[str] = None,
-                                   progress_percentage: Optional[float] = None) -> None:
+    async def update_execution_state(
+        self,
+        execution_id: str,
+        state: WorkflowExecutionState,
+        current_vertex: Optional[str] = None,
+        progress_percentage: Optional[float] = None,
+    ) -> None:
         """Update workflow execution state."""
         await self.connect()
 
@@ -218,15 +236,23 @@ class WorkflowStateManager:
         if progress_percentage is not None:
             status.progress_percentage = progress_percentage
 
-        if state in [WorkflowExecutionState.COMPLETED, WorkflowExecutionState.FAILED, WorkflowExecutionState.CANCELLED]:
+        if state in [
+            WorkflowExecutionState.COMPLETED,
+            WorkflowExecutionState.FAILED,
+            WorkflowExecutionState.CANCELLED,
+        ]:
             status.end_time = datetime.now()
 
         await self._set_data(key, json.dumps(status.to_dict()), 86400)
 
-    async def update_vertex_state(self, execution_id: str, vertex_id: str,
-                                state: VertexExecutionState,
-                                output_data: Optional[Dict[str, Any]] = None,
-                                error_message: Optional[str] = None) -> None:
+    async def update_vertex_state(
+        self,
+        execution_id: str,
+        vertex_id: str,
+        state: VertexExecutionState,
+        output_data: Optional[Dict[str, Any]] = None,
+        error_message: Optional[str] = None,
+    ) -> None:
         """Update vertex execution state."""
         await self.connect()
 
@@ -240,24 +266,30 @@ class WorkflowStateManager:
         status = WorkflowExecutionStatus.from_dict(data)
 
         vertex_state = {
-            'state': state,
-            'updated_at': datetime.now().isoformat(),
-            'output_data': output_data,
-            'error_message': error_message
+            "state": state,
+            "updated_at": datetime.now().isoformat(),
+            "output_data": output_data,
+            "error_message": error_message,
         }
 
         status.vertex_states[vertex_id] = vertex_state
 
         # Recalculate progress
         total_vertices = len(status.vertex_states)
-        completed_vertices = sum(1 for vs in status.vertex_states.values()
-                               if vs.get('state') == VertexExecutionState.COMPLETED.value)
-        status.progress_percentage = (completed_vertices / total_vertices * 100) if total_vertices > 0 else 0
+        completed_vertices = sum(
+            1
+            for vs in status.vertex_states.values()
+            if vs.get("state") == VertexExecutionState.COMPLETED.value
+        )
+        status.progress_percentage = (
+            (completed_vertices / total_vertices * 100) if total_vertices > 0 else 0
+        )
 
         await self._set_data(key, json.dumps(status.to_dict()), 86400)
 
-    async def set_execution_output(self, execution_id: str,
-                                 output_data: Dict[str, Any]) -> None:
+    async def set_execution_output(
+        self, execution_id: str, output_data: Dict[str, Any]
+    ) -> None:
         """Set final execution output."""
         await self.connect()
 
@@ -273,8 +305,7 @@ class WorkflowStateManager:
         status.output_data = output_data
         await self._set_data(key, json.dumps(status.to_dict()), 86400)
 
-    async def set_execution_error(self, execution_id: str,
-                                error_message: str) -> None:
+    async def set_execution_error(self, execution_id: str, error_message: str) -> None:
         """Set execution error."""
         await self.connect()
 
@@ -293,7 +324,9 @@ class WorkflowStateManager:
 
         await self._set_data(key, json.dumps(status.to_dict()), 86400)
 
-    async def get_execution_status(self, execution_id: str) -> Optional[WorkflowExecutionStatus]:
+    async def get_execution_status(
+        self, execution_id: str
+    ) -> Optional[WorkflowExecutionStatus]:
         """Get workflow execution status."""
         await self.connect()
 
@@ -306,8 +339,9 @@ class WorkflowStateManager:
         data = json.loads(data_str)
         return WorkflowExecutionStatus.from_dict(data)
 
-    async def get_workflow_executions(self, workflow_id: str,
-                                    limit: int = 10) -> List[WorkflowExecutionStatus]:
+    async def get_workflow_executions(
+        self, workflow_id: str, limit: int = 10
+    ) -> List[WorkflowExecutionStatus]:
         """Get recent executions for a workflow."""
         await self.connect()
 
@@ -316,7 +350,7 @@ class WorkflowStateManager:
 
         executions = []
         for exec_id_bytes in execution_ids:
-            exec_id = exec_id_bytes.decode('utf-8')
+            exec_id = exec_id_bytes.decode("utf-8")
             status = await self.get_execution_status(exec_id)
             if status:
                 executions.append(status)
@@ -341,7 +375,7 @@ class WorkflowStateManager:
 
         active_executions = []
         for key_bytes in keys[:50]:  # Limit to avoid performance issues
-            key = key_bytes.decode('utf-8')
+            key = key_bytes.decode("utf-8")
             data_str = await self.redis_client.get(key)  # type: ignore
             if data_str:
                 data = json.loads(data_str)

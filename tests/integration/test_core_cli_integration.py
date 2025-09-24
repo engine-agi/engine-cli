@@ -3,12 +3,13 @@ Core-CLI Integration Tests
 End-to-end tests simulating complete usage flows between CLI and Engine Core.
 """
 
-import pytest
-import tempfile
-import os
-import yaml
 import json
+import os
+import tempfile
 from pathlib import Path
+
+import pytest
+import yaml
 
 # Import core components for validation
 from engine_core.core.agents.agent_builder import AgentBuilder
@@ -38,13 +39,15 @@ class TestCoreCLIIntegration:
             # Restore original directory
             os.chdir(original_cwd)
 
-import pytest
-import tempfile
-import os
-import yaml
+
 import json
+import os
+import tempfile
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+import pytest
+import yaml
 
 # Import core components for validation
 from engine_core.core.agents.agent_builder import AgentBuilder
@@ -78,13 +81,15 @@ class TestCoreCLIIntegration:
     def test_agent_builder_to_storage_integration(self, temp_workspace):
         """Test integration between AgentBuilder and storage persistence."""
         # Create agent using core builder
-        agent = (AgentBuilder()
-                .with_id("integration-agent")
-                .with_model("claude-3.5-sonnet")
-                .with_name("Integration Test Agent")
-                .with_speciality("Integration Testing")
-                .with_stack(["python", "pytest"])
-                .build())
+        agent = (
+            AgentBuilder()
+            .with_id("integration-agent")
+            .with_model("claude-3.5-sonnet")
+            .with_name("Integration Test Agent")
+            .with_speciality("Integration Testing")
+            .with_stack(["python", "pytest"])
+            .build()
+        )
 
         assert agent is not None
 
@@ -95,19 +100,19 @@ class TestCoreCLIIntegration:
             "name": "Integration Test Agent",
             "speciality": "Integration Testing",
             "stack": ["python", "pytest"],
-            "created_at": "2025-09-23T10:00:00.000000"
+            "created_at": "2025-09-23T10:00:00.000000",
         }
 
         # Save to file (simulating CLI storage)
         agent_file = Path("agents/integration-agent.yaml")
-        with open(agent_file, 'w') as f:
+        with open(agent_file, "w") as f:
             yaml.dump(agent_data, f)
 
         # Verify file was created
         assert agent_file.exists()
 
         # Load and verify data integrity
-        with open(agent_file, 'r') as f:
+        with open(agent_file, "r") as f:
             loaded_data = yaml.safe_load(f)
 
         assert loaded_data["id"] == "integration-agent"
@@ -117,13 +122,15 @@ class TestCoreCLIIntegration:
         assert "pytest" in loaded_data["stack"]
 
         # Test that core can recreate agent from stored data
-        recreated_agent = (AgentBuilder()
-                          .with_id(loaded_data["id"])
-                          .with_model(loaded_data["model"])
-                          .with_name(loaded_data["name"])
-                          .with_speciality(loaded_data.get("speciality", ""))
-                          .with_stack(loaded_data.get("stack", []))
-                          .build())
+        recreated_agent = (
+            AgentBuilder()
+            .with_id(loaded_data["id"])
+            .with_model(loaded_data["model"])
+            .with_name(loaded_data["name"])
+            .with_speciality(loaded_data.get("speciality", ""))
+            .with_stack(loaded_data.get("stack", []))
+            .build()
+        )
 
         assert recreated_agent is not None
 
@@ -131,28 +138,34 @@ class TestCoreCLIIntegration:
     def test_team_builder_with_agents_integration(self, temp_workspace):
         """Test team builder integration with multiple agents."""
         # Create agents first
-        agent1 = (AgentBuilder()
-                 .with_id("team-agent-1")
-                 .with_model("claude-3.5-sonnet")
-                 .with_name("Team Agent 1")
-                 .build())
+        agent1 = (
+            AgentBuilder()
+            .with_id("team-agent-1")
+            .with_model("claude-3.5-sonnet")
+            .with_name("Team Agent 1")
+            .build()
+        )
 
-        agent2 = (AgentBuilder()
-                 .with_id("team-agent-2")
-                 .with_model("claude-3-haiku")
-                 .with_name("Team Agent 2")
-                 .build())
+        agent2 = (
+            AgentBuilder()
+            .with_id("team-agent-2")
+            .with_model("claude-3-haiku")
+            .with_name("Team Agent 2")
+            .build()
+        )
 
         assert agent1 is not None
         assert agent2 is not None
 
         # Create team using core builder
-        team = (TeamBuilder()
-               .with_id("integration-team")
-               .with_name("Integration Test Team")
-               .add_member("team-agent-1", TeamMemberRole.LEADER)
-               .add_member("team-agent-2", TeamMemberRole.MEMBER)
-               .build())
+        team = (
+            TeamBuilder()
+            .with_id("integration-team")
+            .with_name("Integration Test Team")
+            .add_member("team-agent-1", TeamMemberRole.LEADER)
+            .add_member("team-agent-2", TeamMemberRole.MEMBER)
+            .build()
+        )
 
         assert team is not None
 
@@ -163,23 +176,27 @@ class TestCoreCLIIntegration:
             "description": "Team for integration testing",
             "members": [
                 {"id": "team-agent-1", "role": "leader", "name": "Team Agent 1"},
-                {"id": "team-agent-2", "role": "member", "name": "Team Agent 2"}
+                {"id": "team-agent-2", "role": "member", "name": "Team Agent 2"},
             ],
-            "created_at": "2025-09-23T10:00:00.000000"
+            "created_at": "2025-09-23T10:00:00.000000",
         }
 
         # Save team data
         team_file = Path("teams/integration-team.yaml")
-        with open(team_file, 'w') as f:
+        with open(team_file, "w") as f:
             yaml.dump(team_data, f)
 
         # Save agent data
         for agent_data in [
-            {"id": "team-agent-1", "model": "claude-3.5-sonnet", "name": "Team Agent 1"},
-            {"id": "team-agent-2", "model": "claude-3-haiku", "name": "Team Agent 2"}
+            {
+                "id": "team-agent-1",
+                "model": "claude-3.5-sonnet",
+                "name": "Team Agent 1",
+            },
+            {"id": "team-agent-2", "model": "claude-3-haiku", "name": "Team Agent 2"},
         ]:
             agent_file = Path(f"agents/{agent_data['id']}.yaml")
-            with open(agent_file, 'w') as f:
+            with open(agent_file, "w") as f:
                 yaml.dump(agent_data, f)
 
         # Verify all files exist
@@ -188,7 +205,7 @@ class TestCoreCLIIntegration:
         assert Path("agents/team-agent-2.yaml").exists()
 
         # Load and verify team-agent relationship
-        with open(team_file, 'r') as f:
+        with open(team_file, "r") as f:
             loaded_team = yaml.safe_load(f)
 
         assert len(loaded_team["members"]) == 2
@@ -204,22 +221,26 @@ class TestCoreCLIIntegration:
     def test_workflow_with_agents_integration(self, temp_workspace):
         """Test workflow integration with agent execution."""
         # Create agent for workflow
-        workflow_agent = (AgentBuilder()
-                         .with_id("workflow-executor")
-                         .with_model("claude-3.5-sonnet")
-                         .with_name("Workflow Executor Agent")
-                         .build())
+        workflow_agent = (
+            AgentBuilder()
+            .with_id("workflow-executor")
+            .with_model("claude-3.5-sonnet")
+            .with_name("Workflow Executor Agent")
+            .build()
+        )
 
         assert workflow_agent is not None
 
         # Create workflow using core builder
-        workflow = (WorkflowBuilder()
-                   .with_id("integration-workflow")
-                   .with_name("Integration Test Workflow")
-                   .add_agent_vertex("analyze", workflow_agent, "Analyze requirements")
-                   .add_agent_vertex("implement", workflow_agent, "Implement solution")
-                   .add_edge("analyze", "implement")
-                   .build())
+        workflow = (
+            WorkflowBuilder()
+            .with_id("integration-workflow")
+            .with_name("Integration Test Workflow")
+            .add_agent_vertex("analyze", workflow_agent, "Analyze requirements")
+            .add_agent_vertex("implement", workflow_agent, "Implement solution")
+            .add_edge("analyze", "implement")
+            .build()
+        )
 
         assert workflow is not None
 
@@ -229,28 +250,34 @@ class TestCoreCLIIntegration:
             "name": "Integration Test Workflow",
             "description": "Workflow for integration testing",
             "vertices": [
-                {"id": "analyze", "agent_id": "workflow-executor", "task": "Analyze requirements"},
-                {"id": "implement", "agent_id": "workflow-executor", "task": "Implement solution"}
+                {
+                    "id": "analyze",
+                    "agent_id": "workflow-executor",
+                    "task": "Analyze requirements",
+                },
+                {
+                    "id": "implement",
+                    "agent_id": "workflow-executor",
+                    "task": "Implement solution",
+                },
             ],
-            "edges": [
-                {"from": "analyze", "to": "implement"}
-            ],
-            "created_at": "2025-09-23T10:00:00.000000"
+            "edges": [{"from": "analyze", "to": "implement"}],
+            "created_at": "2025-09-23T10:00:00.000000",
         }
 
         # Save workflow data
         workflow_file = Path("workflows/integration-workflow.yaml")
-        with open(workflow_file, 'w') as f:
+        with open(workflow_file, "w") as f:
             yaml.dump(workflow_data, f)
 
         # Save agent data
         agent_data = {
             "id": "workflow-executor",
             "model": "claude-3.5-sonnet",
-            "name": "Workflow Executor Agent"
+            "name": "Workflow Executor Agent",
         }
         agent_file = Path("agents/workflow-executor.yaml")
-        with open(agent_file, 'w') as f:
+        with open(agent_file, "w") as f:
             yaml.dump(agent_data, f)
 
         # Verify files exist
@@ -258,7 +285,7 @@ class TestCoreCLIIntegration:
         assert agent_file.exists()
 
         # Load and verify workflow structure
-        with open(workflow_file, 'r') as f:
+        with open(workflow_file, "r") as f:
             loaded_workflow = yaml.safe_load(f)
 
         assert len(loaded_workflow["vertices"]) == 2
@@ -279,42 +306,52 @@ class TestCoreCLIIntegration:
         # Phase 1: Project Setup - Create all components
 
         # Create agents
-        senior_dev = (AgentBuilder()
-                     .with_id("senior-dev")
-                     .with_model("claude-3.5-sonnet")
-                     .with_name("Senior Developer")
-                     .with_speciality("Full-Stack Development")
-                     .with_stack(["python", "react", "postgresql"])
-                     .build())
+        senior_dev = (
+            AgentBuilder()
+            .with_id("senior-dev")
+            .with_model("claude-3.5-sonnet")
+            .with_name("Senior Developer")
+            .with_speciality("Full-Stack Development")
+            .with_stack(["python", "react", "postgresql"])
+            .build()
+        )
 
-        qa_engineer = (AgentBuilder()
-                      .with_id("qa-engineer")
-                      .with_model("claude-3-haiku")
-                      .with_name("QA Engineer")
-                      .with_speciality("Quality Assurance")
-                      .with_stack(["selenium", "pytest"])
-                      .build())
+        qa_engineer = (
+            AgentBuilder()
+            .with_id("qa-engineer")
+            .with_model("claude-3-haiku")
+            .with_name("QA Engineer")
+            .with_speciality("Quality Assurance")
+            .with_stack(["selenium", "pytest"])
+            .build()
+        )
 
         # Create team
-        dev_team = (TeamBuilder()
-                   .with_id("dev-team")
-                   .with_name("Development Team")
-                   .add_member("senior-dev", TeamMemberRole.LEADER)
-                   .add_member("qa-engineer", TeamMemberRole.MEMBER)
-                   .build())
+        dev_team = (
+            TeamBuilder()
+            .with_id("dev-team")
+            .with_name("Development Team")
+            .add_member("senior-dev", TeamMemberRole.LEADER)
+            .add_member("qa-engineer", TeamMemberRole.MEMBER)
+            .build()
+        )
 
         # Create workflow
-        dev_workflow = (WorkflowBuilder()
-                       .with_id("dev-workflow")
-                       .with_name("Development Workflow")
-                       .add_agent_vertex("analysis", senior_dev, "Analyze requirements and design solution")
-                       .add_agent_vertex("implementation", senior_dev, "Implement the solution")
-                       .add_agent_vertex("testing", qa_engineer, "Test the implementation")
-                       .add_agent_vertex("review", senior_dev, "Review and approve changes")
-                       .add_edge("analysis", "implementation")
-                       .add_edge("implementation", "testing")
-                       .add_edge("testing", "review")
-                       .build())
+        dev_workflow = (
+            WorkflowBuilder()
+            .with_id("dev-workflow")
+            .with_name("Development Workflow")
+            .add_agent_vertex(
+                "analysis", senior_dev, "Analyze requirements and design solution"
+            )
+            .add_agent_vertex("implementation", senior_dev, "Implement the solution")
+            .add_agent_vertex("testing", qa_engineer, "Test the implementation")
+            .add_agent_vertex("review", senior_dev, "Review and approve changes")
+            .add_edge("analysis", "implementation")
+            .add_edge("implementation", "testing")
+            .add_edge("testing", "review")
+            .build()
+        )
 
         # Verify all core objects created successfully
         assert senior_dev is not None
@@ -331,20 +368,20 @@ class TestCoreCLIIntegration:
                 "model": "claude-3.5-sonnet",
                 "name": "Senior Developer",
                 "speciality": "Full-Stack Development",
-                "stack": ["python", "react", "postgresql"]
+                "stack": ["python", "react", "postgresql"],
             },
             {
                 "id": "qa-engineer",
                 "model": "claude-3-haiku",
                 "name": "QA Engineer",
                 "speciality": "Quality Assurance",
-                "stack": ["selenium", "pytest"]
-            }
+                "stack": ["selenium", "pytest"],
+            },
         ]
 
         for agent_data in agents_data:
             agent_file = Path(f"agents/{agent_data['id']}.yaml")
-            with open(agent_file, 'w') as f:
+            with open(agent_file, "w") as f:
                 yaml.dump(agent_data, f)
 
         # Save team
@@ -353,11 +390,11 @@ class TestCoreCLIIntegration:
             "name": "Development Team",
             "members": [
                 {"id": "senior-dev", "role": "leader", "name": "Senior Developer"},
-                {"id": "qa-engineer", "role": "member", "name": "QA Engineer"}
-            ]
+                {"id": "qa-engineer", "role": "member", "name": "QA Engineer"},
+            ],
         }
         team_file = Path("teams/dev-team.yaml")
-        with open(team_file, 'w') as f:
+        with open(team_file, "w") as f:
             yaml.dump(team_data, f)
 
         # Save workflow
@@ -365,19 +402,35 @@ class TestCoreCLIIntegration:
             "id": "dev-workflow",
             "name": "Development Workflow",
             "vertices": [
-                {"id": "analysis", "agent_id": "senior-dev", "task": "Analyze requirements and design solution"},
-                {"id": "implementation", "agent_id": "senior-dev", "task": "Implement the solution"},
-                {"id": "testing", "agent_id": "qa-engineer", "task": "Test the implementation"},
-                {"id": "review", "agent_id": "senior-dev", "task": "Review and approve changes"}
+                {
+                    "id": "analysis",
+                    "agent_id": "senior-dev",
+                    "task": "Analyze requirements and design solution",
+                },
+                {
+                    "id": "implementation",
+                    "agent_id": "senior-dev",
+                    "task": "Implement the solution",
+                },
+                {
+                    "id": "testing",
+                    "agent_id": "qa-engineer",
+                    "task": "Test the implementation",
+                },
+                {
+                    "id": "review",
+                    "agent_id": "senior-dev",
+                    "task": "Review and approve changes",
+                },
             ],
             "edges": [
                 {"from": "analysis", "to": "implementation"},
                 {"from": "implementation", "to": "testing"},
-                {"from": "testing", "to": "review"}
-            ]
+                {"from": "testing", "to": "review"},
+            ],
         }
         workflow_file = Path("workflows/dev-workflow.yaml")
-        with open(workflow_file, 'w') as f:
+        with open(workflow_file, "w") as f:
             yaml.dump(workflow_data, f)
 
         # Phase 3: Verification - Load and validate all data
@@ -389,19 +442,19 @@ class TestCoreCLIIntegration:
         assert Path("workflows/dev-workflow.yaml").exists()
 
         # Load and validate agents
-        with open("agents/senior-dev.yaml", 'r') as f:
+        with open("agents/senior-dev.yaml", "r") as f:
             senior_data = yaml.safe_load(f)
         assert senior_data["speciality"] == "Full-Stack Development"
         assert "python" in senior_data["stack"]
 
         # Load and validate team
-        with open("teams/dev-team.yaml", 'r') as f:
+        with open("teams/dev-team.yaml", "r") as f:
             team_loaded = yaml.safe_load(f)
         assert len(team_loaded["members"]) == 2
         assert any(m["role"] == "leader" for m in team_loaded["members"])
 
         # Load and validate workflow
-        with open("workflows/dev-workflow.yaml", 'r') as f:
+        with open("workflows/dev-workflow.yaml", "r") as f:
             workflow_loaded = yaml.safe_load(f)
         assert len(workflow_loaded["vertices"]) == 4
         assert len(workflow_loaded["edges"]) == 3
@@ -416,7 +469,9 @@ class TestCoreCLIIntegration:
         # Phase 4: Cross-reference validation
         # Ensure all agent references in team and workflow are valid
         team_agent_ids = [m["id"] for m in team_loaded["members"]]
-        workflow_agent_ids = list(set(v["agent_id"] for v in workflow_loaded["vertices"]))
+        workflow_agent_ids = list(
+            set(v["agent_id"] for v in workflow_loaded["vertices"])
+        )
 
         # All agents referenced in team should exist
         for agent_id in team_agent_ids:
@@ -436,16 +491,16 @@ class TestCoreCLIIntegration:
             "name": "Consistency Test Agent",
             "speciality": "Data Consistency Testing",
             "stack": ["python", "testing"],
-            "metadata": {"version": "1.0", "created_by": "test"}
+            "metadata": {"version": "1.0", "created_by": "test"},
         }
 
         # Save as YAML
         yaml_file = Path("agents/consistency-agent.yaml")
-        with open(yaml_file, 'w') as f:
+        with open(yaml_file, "w") as f:
             yaml.dump(original_data, f)
 
         # Load YAML and convert to JSON
-        with open(yaml_file, 'r') as f:
+        with open(yaml_file, "r") as f:
             yaml_data = yaml.safe_load(f)
 
         json_str = json.dumps(yaml_data, indent=2, sort_keys=True)
@@ -465,13 +520,15 @@ class TestCoreCLIIntegration:
         assert json_data["metadata"]["version"] == "1.0"
 
         # Test that core builder can handle the converted data
-        core_agent = (AgentBuilder()
-                     .with_id(json_data["id"])
-                     .with_model(json_data["model"])
-                     .with_name(json_data["name"])
-                     .with_speciality(json_data.get("speciality", ""))
-                     .with_stack(json_data.get("stack", []))
-                     .build())
+        core_agent = (
+            AgentBuilder()
+            .with_id(json_data["id"])
+            .with_model(json_data["model"])
+            .with_name(json_data["name"])
+            .with_speciality(json_data.get("speciality", ""))
+            .with_stack(json_data.get("stack", []))
+            .build()
+        )
 
         assert core_agent is not None
 
@@ -486,13 +543,13 @@ class TestCoreCLIIntegration:
                 "model": "claude-3.5-sonnet" if i % 2 == 0 else "claude-3-haiku",
                 "name": f"Bulk Agent {i}",
                 "speciality": f"Speciality {i}",
-                "stack": ["python", f"skill-{i}"]
+                "stack": ["python", f"skill-{i}"],
             }
             agents_data.append(agent_data)
 
             # Save each agent
             agent_file = Path(f"agents/bulk-agent-{i}.yaml")
-            with open(agent_file, 'w') as f:
+            with open(agent_file, "w") as f:
                 yaml.dump(agent_data, f)
 
         # Create team with all agents
@@ -502,9 +559,7 @@ class TestCoreCLIIntegration:
             team_members.append((agent_data["id"], role))
 
         # Build team using core
-        bulk_team = (TeamBuilder()
-                    .with_id("bulk-team")
-                    .with_name("Bulk Operations Team"))
+        bulk_team = TeamBuilder().with_id("bulk-team").with_name("Bulk Operations Team")
 
         for agent_id, role in team_members:
             bulk_team = bulk_team.add_member(agent_id, role)
@@ -519,11 +574,11 @@ class TestCoreCLIIntegration:
             "members": [
                 {"id": agent_id, "role": role.value, "name": f"Bulk Agent {i}"}
                 for i, (agent_id, role) in enumerate(team_members)
-            ]
+            ],
         }
 
         team_file = Path("teams/bulk-team.yaml")
-        with open(team_file, 'w') as f:
+        with open(team_file, "w") as f:
             yaml.dump(team_data, f)
 
         # Verify bulk integrity
@@ -535,7 +590,7 @@ class TestCoreCLIIntegration:
         assert team_file.exists()
 
         # Load team and verify all members
-        with open(team_file, 'r') as f:
+        with open(team_file, "r") as f:
             loaded_team = yaml.safe_load(f)
 
         assert len(loaded_team["members"]) == 5
@@ -545,7 +600,7 @@ class TestCoreCLIIntegration:
             agent_file = Path(f"agents/{member['id']}.yaml")
             assert agent_file.exists()
 
-            with open(agent_file, 'r') as f:
+            with open(agent_file, "r") as f:
                 agent_data = yaml.safe_load(f)
 
             assert agent_data["name"] == member["name"]
@@ -557,29 +612,29 @@ class TestCoreCLIIntegration:
         valid_agent_data = {
             "id": "valid-agent",
             "model": "claude-3.5-sonnet",
-            "name": "Valid Agent"
+            "name": "Valid Agent",
         }
 
         # Save valid agent
         valid_file = Path("agents/valid-agent.yaml")
-        with open(valid_file, 'w') as f:
+        with open(valid_file, "w") as f:
             yaml.dump(valid_agent_data, f)
 
         # Attempt to create invalid agent data (simulate error)
         invalid_agent_data = {
             "id": "",  # Invalid: empty ID
             "model": "invalid-model",
-            "name": "Invalid Agent"
+            "name": "Invalid Agent",
         }
 
         # This would normally fail, but we'll save it to test recovery
         invalid_file = Path("agents/invalid-agent.yaml")
-        with open(invalid_file, 'w') as f:
+        with open(invalid_file, "w") as f:
             yaml.dump(invalid_agent_data, f)
 
         # Verify valid agent still exists and is intact
         assert valid_file.exists()
-        with open(valid_file, 'r') as f:
+        with open(valid_file, "r") as f:
             loaded_valid = yaml.safe_load(f)
         assert loaded_valid["id"] == "valid-agent"
         assert loaded_valid["model"] == "claude-3.5-sonnet"
@@ -590,17 +645,21 @@ class TestCoreCLIIntegration:
         # Test that core validation catches the invalid data
         with pytest.raises(ValueError):
             # This should fail due to empty ID
-            (AgentBuilder()
-             .with_id(invalid_agent_data["id"])
-             .with_model(invalid_agent_data["model"])
-             .with_name(invalid_agent_data["name"])
-             .build())
+            (
+                AgentBuilder()
+                .with_id(invalid_agent_data["id"])
+                .with_model(invalid_agent_data["model"])
+                .with_name(invalid_agent_data["name"])
+                .build()
+            )
 
         # Verify valid agent can still be recreated
-        valid_core_agent = (AgentBuilder()
-                           .with_id(valid_agent_data["id"])
-                           .with_model(valid_agent_data["model"])
-                           .with_name(valid_agent_data["name"])
-                           .build())
+        valid_core_agent = (
+            AgentBuilder()
+            .with_id(valid_agent_data["id"])
+            .with_model(valid_agent_data["model"])
+            .with_name(valid_agent_data["name"])
+            .build()
+        )
 
         assert valid_core_agent is not None

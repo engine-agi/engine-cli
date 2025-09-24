@@ -1,9 +1,11 @@
 """Tests for AgentBookStorage integration with Book system."""
-import pytest
-import tempfile
-import os
+
 import json
+import os
+import tempfile
 from unittest.mock import patch
+
+import pytest
 
 from engine_cli.storage.agent_book_storage import AgentBookStorage
 
@@ -19,6 +21,7 @@ class TestAgentBookStorage:
     def teardown_method(self):
         """Clean up test environment."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_save_and_get_agent(self):
@@ -34,7 +37,7 @@ class TestAgentBookStorage:
             "protocol": "test_protocol",
             "workflow": "test_workflow",
             "book": "test_book",
-            "created_at": "2025-01-01T00:00:00"
+            "created_at": "2025-01-01T00:00:00",
         }
 
         # Save agent
@@ -66,13 +69,13 @@ class TestAgentBookStorage:
             "id": "agent1",
             "name": "Agent One",
             "model": "claude-3.5-sonnet",
-            "created_at": "2025-01-01T00:00:00"
+            "created_at": "2025-01-01T00:00:00",
         }
         agent2 = {
             "id": "agent2",
             "name": "Agent Two",
             "model": "gpt-4",
-            "created_at": "2025-01-01T00:00:00"
+            "created_at": "2025-01-01T00:00:00",
         }
 
         self.storage.save_agent(agent1)
@@ -92,7 +95,7 @@ class TestAgentBookStorage:
             "id": "test_agent",
             "name": "Test Agent",
             "model": "claude-3.5-sonnet",
-            "created_at": "2025-01-01T00:00:00"
+            "created_at": "2025-01-01T00:00:00",
         }
 
         # Save agent
@@ -119,7 +122,7 @@ class TestAgentBookStorage:
             "id": "test_agent",
             "name": "Test Agent",
             "model": "claude-3.5-sonnet",
-            "created_at": "2025-01-01T00:00:00"
+            "created_at": "2025-01-01T00:00:00",
         }
 
         # Agent doesn't exist initially
@@ -131,7 +134,7 @@ class TestAgentBookStorage:
         # Now it exists
         assert self.storage.agent_exists("test_agent") is True
 
-    @patch('engine_cli.storage.agent_book_storage.BookBuilder')
+    @patch("engine_cli.storage.agent_book_storage.BookBuilder")
     def test_book_builder_integration(self, mock_builder):
         """Test that BookBuilder is properly used."""
         # Mock the BookBuilder
@@ -149,7 +152,7 @@ class TestAgentBookStorage:
             "id": "test_agent",
             "name": "Test Agent",
             "model": "claude-3.5-sonnet",
-            "created_at": "2025-01-01T00:00:00"
+            "created_at": "2025-01-01T00:00:00",
         }
 
         # Save agent
@@ -169,11 +172,11 @@ class TestAgentBookStorage:
             "id": "old_agent",
             "name": "Old Agent",
             "model": "claude-3.5-sonnet",
-            "created_at": "2025-01-01T00:00:00"
+            "created_at": "2025-01-01T00:00:00",
         }
 
         old_file_path = os.path.join(self.temp_dir, "old_agent.json")
-        with open(old_file_path, 'w') as f:
+        with open(old_file_path, "w") as f:
             json.dump(old_agent_data, f)
 
         # Should be able to load it

@@ -1,15 +1,17 @@
 """Tests for WorkflowStateManager - Redis-based volatile state management."""
-import pytest
+
 import asyncio
 import json
-from unittest.mock import AsyncMock, MagicMock, patch
 from datetime import datetime
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 from engine_cli.storage.workflow_state_manager import (
-    WorkflowStateManager,
-    WorkflowExecutionStatus,
+    VertexExecutionState,
     WorkflowExecutionState,
-    VertexExecutionState
+    WorkflowExecutionStatus,
+    WorkflowStateManager,
 )
 
 
@@ -26,13 +28,13 @@ class TestWorkflowStateManager:
         mock_client.lpush = AsyncMock(return_value=1)
         mock_client.expire = AsyncMock(return_value=True)
         mock_client.lrange = AsyncMock(return_value=[])
-        
+
         # Mock scan_iter to return an async iterable
         async def mock_scan_iter(pattern):
             # Return some mock keys
             yield b"workflow:execution:exec_1"
             yield b"workflow:execution:exec_2"
-        
+
         mock_client.scan_iter = mock_scan_iter
         return mock_client
 
@@ -50,7 +52,7 @@ class TestWorkflowStateManager:
         manager = WorkflowStateManager()
         manager.redis_client = None
 
-        with patch('redis.asyncio.from_url', return_value=mock_redis):
+        with patch("redis.asyncio.from_url", return_value=mock_redis):
             await manager.connect()
             assert manager.is_connected()
             mock_redis.ping.assert_called_once()
@@ -59,10 +61,12 @@ class TestWorkflowStateManager:
     async def test_connect_failure(self, mock_redis):
         """Test Redis connection failure."""
         mock_redis.ping.side_effect = Exception("Connection failed")
-        manager = WorkflowStateManager(enable_fallback=False)  # Disable fallback for this test
+        manager = WorkflowStateManager(
+            enable_fallback=False
+        )  # Disable fallback for this test
         manager.redis_client = None
 
-        with patch('redis.asyncio.from_url', return_value=mock_redis):
+        with patch("redis.asyncio.from_url", return_value=mock_redis):
             with pytest.raises(Exception, match="Connection failed"):
                 await manager.connect()
 
@@ -72,7 +76,7 @@ class TestWorkflowStateManager:
         execution_id = await state_manager.create_execution(
             workflow_id="test_workflow",
             workflow_name="Test Workflow",
-            input_data={"param": "value"}
+            input_data={"param": "value"},
         )
 
         assert execution_id.startswith("wf_exec_test_workflow_")
@@ -98,7 +102,7 @@ class TestWorkflowStateManager:
             "state": "pending",
             "start_time": datetime.now().isoformat(),
             "input_data": {},
-            "vertex_states": {}
+            "vertex_states": {},
         }
         mock_redis.get.return_value = json.dumps(existing_data)
 
@@ -106,7 +110,7 @@ class TestWorkflowStateManager:
             execution_id="test_exec_123",
             state=WorkflowExecutionState.RUNNING,
             current_vertex="vertex1",
-            progress_percentage=25.0
+            progress_percentage=25.0,
         )
 
         # Verify update was called
@@ -128,7 +132,7 @@ class TestWorkflowStateManager:
             "state": "running",
             "start_time": datetime.now().isoformat(),
             "input_data": {},
-            "vertex_states": {}
+            "vertex_states": {},
         }
         mock_redis.get.return_value = json.dumps(existing_data)
 
@@ -136,7 +140,7 @@ class TestWorkflowStateManager:
             execution_id="test_exec_123",
             vertex_id="vertex1",
             state=VertexExecutionState.COMPLETED,
-            output_data={"result": "success"}
+            output_data={"result": "success"},
         )
 
         # Verify update was called
@@ -158,7 +162,7 @@ class TestWorkflowStateManager:
             "state": "running",
             "start_time": datetime.now().isoformat(),
             "input_data": {},
-            "vertex_states": {}
+            "vertex_states": {},
         }
         mock_redis.get.return_value = json.dumps(existing_data)
 
@@ -180,7 +184,7 @@ class TestWorkflowStateManager:
             "state": "running",
             "start_time": datetime.now().isoformat(),
             "input_data": {},
-            "vertex_states": {}
+            "vertex_states": {},
         }
         mock_redis.get.return_value = json.dumps(existing_data)
 
@@ -205,7 +209,7 @@ class TestWorkflowStateManager:
             "start_time": datetime.now().isoformat(),
             "input_data": {"param": "value"},
             "vertex_states": {},
-            "progress_percentage": 50.0
+            "progress_percentage": 50.0,
         }
         mock_redis.get.return_value = json.dumps(execution_data)
 
@@ -230,10 +234,7 @@ class TestWorkflowStateManager:
     async def test_get_workflow_executions(self, state_manager, mock_redis):
         """Test getting executions for a workflow."""
         # Mock execution IDs from Redis list
-        mock_redis.lrange.return_value = [
-            b"exec_1",
-            b"exec_2"
-        ]
+        mock_redis.lrange.return_value = [b"exec_1", b"exec_2"]
 
         # Mock execution data
         exec_data_1 = {
@@ -243,7 +244,7 @@ class TestWorkflowStateManager:
             "state": "completed",
             "start_time": datetime.now().isoformat(),
             "input_data": {},
-            "vertex_states": {}
+            "vertex_states": {},
         }
         exec_data_2 = {
             "execution_id": "exec_2",
@@ -252,15 +253,14 @@ class TestWorkflowStateManager:
             "state": "failed",
             "start_time": datetime.now().isoformat(),
             "input_data": {},
-            "vertex_states": {}
+            "vertex_states": {},
         }
 
-        mock_redis.get.side_effect = [
-            json.dumps(exec_data_1),
-            json.dumps(exec_data_2)
-        ]
+        mock_redis.get.side_effect = [json.dumps(exec_data_1), json.dumps(exec_data_2)]
 
-        executions = await state_manager.get_workflow_executions("test_workflow", limit=5)
+        executions = await state_manager.get_workflow_executions(
+            "test_workflow", limit=5
+        )
 
         assert len(executions) == 2
         assert executions[0].execution_id == "exec_1"
@@ -272,7 +272,7 @@ class TestWorkflowStateManager:
         # Mock scan results
         mock_redis.scan_iter.return_value = [
             b"workflow:execution:exec_1",
-            b"workflow:execution:exec_2"
+            b"workflow:execution:exec_2",
         ]
 
         # Mock execution data - one running, one completed
@@ -283,7 +283,7 @@ class TestWorkflowStateManager:
             "state": "running",
             "start_time": datetime.now().isoformat(),
             "input_data": {},
-            "vertex_states": {}
+            "vertex_states": {},
         }
         completed_exec = {
             "execution_id": "exec_2",
@@ -292,12 +292,12 @@ class TestWorkflowStateManager:
             "state": "completed",
             "start_time": datetime.now().isoformat(),
             "input_data": {},
-            "vertex_states": {}
+            "vertex_states": {},
         }
 
         mock_redis.get.side_effect = [
             json.dumps(running_exec),
-            json.dumps(completed_exec)
+            json.dumps(completed_exec),
         ]
 
         active_executions = await state_manager.get_active_executions()
@@ -316,7 +316,7 @@ class TestWorkflowStateManager:
             "state": "running",
             "start_time": datetime.now().isoformat(),
             "input_data": {},
-            "vertex_states": {}
+            "vertex_states": {},
         }
         mock_redis.get.return_value = json.dumps(existing_data)
 
@@ -340,7 +340,7 @@ class TestWorkflowStateManager:
             "state": "completed",
             "start_time": datetime.now().isoformat(),
             "input_data": {},
-            "vertex_states": {}
+            "vertex_states": {},
         }
         mock_redis.get.return_value = json.dumps(existing_data)
 
@@ -373,7 +373,7 @@ class TestWorkflowExecutionStatus:
             state=WorkflowExecutionState.RUNNING,
             start_time=start_time,
             input_data={"param": "value"},
-            progress_percentage=75.5
+            progress_percentage=75.5,
         )
 
         data = status.to_dict()
@@ -396,7 +396,7 @@ class TestWorkflowExecutionStatus:
             "start_time": start_time_str,
             "input_data": {"param": "value"},
             "vertex_states": {},
-            "progress_percentage": 75.5
+            "progress_percentage": 75.5,
         }
 
         status = WorkflowExecutionStatus.from_dict(data)
@@ -421,10 +421,10 @@ class TestWorkflowExecutionStatus:
                 "vertex1": {
                     "state": "completed",
                     "updated_at": datetime.now().isoformat(),
-                    "output_data": {"result": "success"}
+                    "output_data": {"result": "success"},
                 }
             },
-            "progress_percentage": 50.0
+            "progress_percentage": 50.0,
         }
 
         status = WorkflowExecutionStatus.from_dict(data)

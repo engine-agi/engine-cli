@@ -1,12 +1,15 @@
 """Usability tests for CLI user experience."""
-import pytest
-from click.testing import CliRunner
+
+import os
 import re
 
 # Import the actual CLI
 import sys
-import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+
+import pytest
+from click.testing import CliRunner
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 from engine_cli.main import cli
 
 
@@ -20,7 +23,7 @@ class TestCLIUsability:
 
     def test_help_completeness(self, runner):
         """Test that help messages are comprehensive and user-friendly."""
-        result = runner.invoke(cli, ['--help'])
+        result = runner.invoke(cli, ["--help"])
         assert result.exit_code == 0
 
         # Check for essential elements in help
@@ -35,13 +38,13 @@ class TestCLIUsability:
     def test_command_help_quality(self, runner):
         """Test quality of individual command help messages."""
         commands_to_test = [
-            ['config', '--help'],
-            ['config', 'show', '--help'],
-            ['config', 'get', '--help'],
-            ['config', 'set', '--help'],
-            ['advanced', '--help'],
-            ['advanced', 'monitor', '--help'],
-            ['advanced', 'health', '--help'],
+            ["config", "--help"],
+            ["config", "show", "--help"],
+            ["config", "get", "--help"],
+            ["config", "set", "--help"],
+            ["advanced", "--help"],
+            ["advanced", "monitor", "--help"],
+            ["advanced", "health", "--help"],
         ]
 
         for cmd in commands_to_test:
@@ -55,7 +58,7 @@ class TestCLIUsability:
     def test_error_messages_user_friendly(self, runner):
         """Test that error messages are user-friendly."""
         # Test invalid command
-        result = runner.invoke(cli, ['nonexistent-command'])
+        result = runner.invoke(cli, ["nonexistent-command"])
         assert result.exit_code != 0
 
         # Error should be clear and actionable
@@ -64,22 +67,22 @@ class TestCLIUsability:
     def test_config_error_handling(self, runner):
         """Test user-friendly error handling in config commands."""
         # Test getting non-existent config key
-        result = runner.invoke(cli, ['config', 'get', 'nonexistent.key'])
+        result = runner.invoke(cli, ["config", "get", "nonexistent.key"])
         assert result.exit_code == 0  # Should not crash
         assert "not found" in result.output.lower()
 
         # Test setting invalid config
-        result = runner.invoke(cli, ['config', 'set', 'invalid.key', 'value'])
+        result = runner.invoke(cli, ["config", "set", "invalid.key", "value"])
         # Should either succeed or give clear error
         assert result.exit_code in [0, 1]
 
     def test_output_formatting_consistency(self, runner):
         """Test that output formatting is consistent across commands."""
         commands = [
-            ['config', 'show'],
-            ['config', 'paths'],
-            ['advanced', 'monitor'],
-            ['advanced', 'health'],
+            ["config", "show"],
+            ["config", "paths"],
+            ["advanced", "monitor"],
+            ["advanced", "health"],
         ]
 
         outputs = []
@@ -91,19 +94,19 @@ class TestCLIUsability:
         # Check for consistent patterns (this is subjective but helps catch major issues)
         for output in outputs:
             # Should not have obvious formatting errors
-            assert not output.startswith('\n\n')  # No double newlines at start
-            assert not re.search(r'\n\s*\n\s*\n', output)  # No excessive blank lines
+            assert not output.startswith("\n\n")  # No double newlines at start
+            assert not re.search(r"\n\s*\n\s*\n", output)  # No excessive blank lines
 
     def test_progress_feedback(self, runner):
         """Test that commands provide appropriate progress feedback."""
         with runner.isolated_filesystem():
             # Test commands that should show progress
-            result = runner.invoke(cli, ['config', 'init', '--force'])
+            result = runner.invoke(cli, ["config", "init", "--force"])
             assert result.exit_code == 0
             # Should indicate success
             assert "✓" in result.output or "created" in result.output.lower()
 
-            result = runner.invoke(cli, ['advanced', 'monitor'])
+            result = runner.invoke(cli, ["advanced", "monitor"])
             assert result.exit_code == 0
             # Should show some status information
             assert len(result.output.strip()) > 10  # Not empty
@@ -111,16 +114,27 @@ class TestCLIUsability:
     def test_command_discovery(self, runner):
         """Test that users can discover commands easily."""
         # Main help should show all major command groups
-        result = runner.invoke(cli, ['--help'])
-        main_commands = ['agent', 'team', 'workflow', 'tool', 'protocol', 'book',
-                        'project', 'examples', 'status', 'config', 'advanced']
+        result = runner.invoke(cli, ["--help"])
+        main_commands = [
+            "agent",
+            "team",
+            "workflow",
+            "tool",
+            "protocol",
+            "book",
+            "project",
+            "examples",
+            "status",
+            "config",
+            "advanced",
+        ]
 
         for cmd in main_commands:
             assert cmd in result.output, f"Command '{cmd}' not listed in main help"
 
     def test_option_clarity(self, runner):
         """Test that command options are clearly named and described."""
-        result = runner.invoke(cli, ['advanced', 'monitor', '--help'])
+        result = runner.invoke(cli, ["advanced", "monitor", "--help"])
         assert result.exit_code == 0
 
         # Should clearly describe options
@@ -140,22 +154,22 @@ class TestWorkflowUsability:
         """Test workflow for new users getting started."""
         with runner.isolated_filesystem():
             # Step 1: User runs main command
-            result = runner.invoke(cli, ['--help'])
+            result = runner.invoke(cli, ["--help"])
             assert result.exit_code == 0
             assert "config" in result.output
 
             # Step 2: Initialize config
-            result = runner.invoke(cli, ['config', 'init', '--force'])
+            result = runner.invoke(cli, ["config", "init", "--force"])
             assert result.exit_code == 0
             assert "created" in result.output.lower()
 
             # Step 3: Check current config
-            result = runner.invoke(cli, ['config', 'show'])
+            result = runner.invoke(cli, ["config", "show"])
             assert result.exit_code == 0
             assert "Configuration" in result.output
 
             # Step 4: Get help on advanced features
-            result = runner.invoke(cli, ['advanced', '--help'])
+            result = runner.invoke(cli, ["advanced", "--help"])
             assert result.exit_code == 0
             assert "monitor" in result.output
 
@@ -163,40 +177,44 @@ class TestWorkflowUsability:
         """Test typical configuration management workflow."""
         with runner.isolated_filesystem():
             # Initialize config
-            result = runner.invoke(cli, ['config', 'init', '--force'])
+            result = runner.invoke(cli, ["config", "init", "--force"])
             assert result.exit_code == 0
 
             # Set some configuration
-            result = runner.invoke(cli, ['config', 'set', 'database.url', 'postgresql://localhost:5432/engine'])
+            result = runner.invoke(
+                cli,
+                ["config", "set", "database.url", "postgresql://localhost:5432/engine"],
+            )
             assert result.exit_code == 0
 
             # Get the configuration back
-            result = runner.invoke(cli, ['config', 'get', 'database.url'])
+            result = runner.invoke(cli, ["config", "get", "database.url"])
             assert result.exit_code == 0
             assert "postgresql://localhost:5432/engine" in result.output
 
             # Show all config - should contain our custom setting
-            result = runner.invoke(cli, ['config', 'show'])
+            result = runner.invoke(cli, ["config", "show"])
             assert result.exit_code == 0
             # The config show might not show custom keys directly, so just check it runs
 
     def test_monitoring_workflow(self, runner):
         """Test monitoring and health check workflow."""
         # Test health check
-        result = runner.invoke(cli, ['advanced', 'health'])
+        result = runner.invoke(cli, ["advanced", "health"])
         assert result.exit_code == 0
         assert "status" in result.output.lower()
 
         # Test monitoring
-        result = runner.invoke(cli, ['advanced', 'monitor'])
+        result = runner.invoke(cli, ["advanced", "monitor"])
         assert result.exit_code == 0
         assert len(result.output.strip()) > 0
 
         # Test JSON output
-        result = runner.invoke(cli, ['advanced', 'monitor', '--json'])
+        result = runner.invoke(cli, ["advanced", "monitor", "--json"])
         assert result.exit_code == 0
         # Should be valid JSON
         import json
+
         try:
             json.loads(result.output)
         except json.JSONDecodeError:

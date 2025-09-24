@@ -3,14 +3,15 @@ Performance Tests for Engine CLI
 Benchmarks with 100+ agents and <100ms response times.
 """
 
-import time
-import pytest
-import tempfile
-import os
-from pathlib import Path
-from typing import List, Dict, Any
 import json
-from dataclasses import dataclass, asdict
+import os
+import tempfile
+import time
+from dataclasses import asdict, dataclass
+from pathlib import Path
+from typing import Any, Dict, List
+
+import pytest
 
 # Import core components for performance testing
 from engine_core.core.agents.agent_builder import AgentBuilder
@@ -21,6 +22,7 @@ from engine_core.core.workflows.workflow_builder import WorkflowBuilder
 @dataclass
 class PerformanceMetrics:
     """Performance metrics data structure."""
+
     operation: str
     count: int
     total_time: float
@@ -62,7 +64,9 @@ class PerformanceReporter:
 
         for metric in self.metrics:
             status = "✅ <100ms" if metric.p95_time < 0.1 else "❌ >100ms"
-            report.append(f"| {metric.operation} | {metric.count} | {metric.avg_time:.4f}s | {metric.p95_time:.4f}s | {status} |")
+            report.append(
+                f"| {metric.operation} | {metric.count} | {metric.avg_time:.4f}s | {metric.p95_time:.4f}s | {status} |"
+            )
 
         report.append("")
 
@@ -82,9 +86,13 @@ class PerformanceReporter:
         all_under_100ms = all(m.p95_time < 0.1 for m in self.metrics)
         report.append("## 🎯 Compliance Check")
         if all_under_100ms:
-            report.append("✅ **ALL OPERATIONS UNDER 100ms** - Performance requirements met!")
+            report.append(
+                "✅ **ALL OPERATIONS UNDER 100ms** - Performance requirements met!"
+            )
         else:
-            report.append("❌ **PERFORMANCE ISSUES DETECTED** - Some operations exceed 100ms")
+            report.append(
+                "❌ **PERFORMANCE ISSUES DETECTED** - Some operations exceed 100ms"
+            )
             slow_ops = [m for m in self.metrics if m.p95_time >= 0.1]
             for op in slow_ops:
                 report.append(f"   - {op.operation}: {op.p95_time:.4f}s")
@@ -94,7 +102,7 @@ class PerformanceReporter:
     def save_report(self, filepath: str):
         """Save report to file."""
         report = self.generate_report()
-        with open(filepath, 'w', encoding='utf-8') as f:
+        with open(filepath, "w", encoding="utf-8") as f:
             f.write(report)
 
 
@@ -125,7 +133,9 @@ def temp_workspace():
 class TestPerformanceBenchmarks:
     """Performance benchmarks for Engine CLI operations."""
 
-    def _measure_operation(self, operation_name: str, count: int, operation_func) -> PerformanceMetrics:
+    def _measure_operation(
+        self, operation_name: str, count: int, operation_func
+    ) -> PerformanceMetrics:
         """Measure performance of an operation."""
         times = []
 
@@ -153,20 +163,23 @@ class TestPerformanceBenchmarks:
             min_time=min_time,
             max_time=max_time,
             p95_time=p95_time,
-            timestamp=time.strftime('%Y-%m-%d %H:%M:%S')
+            timestamp=time.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
     @pytest.mark.performance
     def test_agent_creation_100_agents(self, temp_workspace, performance_reporter):
         """Benchmark creating 100 agents."""
+
         def create_agent(i):
-            agent = (AgentBuilder()
-                    .with_id(f"perf-agent-{i:03d}")
-                    .with_model("claude-3.5-sonnet")
-                    .with_name(f"Performance Agent {i}")
-                    .with_speciality("Performance Testing")
-                    .with_stack(["python", "benchmarking"])
-                    .build())
+            agent = (
+                AgentBuilder()
+                .with_id(f"perf-agent-{i:03d}")
+                .with_model("claude-3.5-sonnet")
+                .with_name(f"Performance Agent {i}")
+                .with_speciality("Performance Testing")
+                .with_stack(["python", "benchmarking"])
+                .build()
+            )
 
             # Simulate CLI storage
             agent_data = {
@@ -175,23 +188,27 @@ class TestPerformanceBenchmarks:
                 "name": f"Performance Agent {i}",
                 "speciality": "Performance Testing",
                 "stack": ["python", "benchmarking"],
-                "created_at": "2025-09-23T10:00:00.000000"
+                "created_at": "2025-09-23T10:00:00.000000",
             }
 
             agent_file = Path(f"agents/perf-agent-{i:03d}.yaml")
-            with open(agent_file, 'w') as f:
+            with open(agent_file, "w") as f:
                 json.dump(agent_data, f)
 
             return agent
 
-        metric = self._measure_operation("Agent Creation (100 agents)", 100, create_agent)
+        metric = self._measure_operation(
+            "Agent Creation (100 agents)", 100, create_agent
+        )
         performance_reporter.add_metric(metric)
 
         # Verify all agents were created
         assert len(list(Path("agents").glob("*.yaml"))) == 100
 
         # Assert performance requirement: P95 < 100ms
-        assert metric.p95_time < 0.1, f"Agent creation P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
+        assert (
+            metric.p95_time < 0.1
+        ), f"Agent creation P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
 
     @pytest.mark.performance
     def test_agent_loading_100_agents(self, temp_workspace, performance_reporter):
@@ -204,33 +221,37 @@ class TestPerformanceBenchmarks:
                 "name": f"Performance Agent {i}",
                 "speciality": "Performance Testing",
                 "stack": ["python", "benchmarking"],
-                "created_at": "2025-09-23T10:00:00.000000"
+                "created_at": "2025-09-23T10:00:00.000000",
             }
 
             agent_file = Path(f"agents/perf-agent-{i:03d}.yaml")
-            with open(agent_file, 'w') as f:
+            with open(agent_file, "w") as f:
                 json.dump(agent_data, f)
 
         def load_agent(i):
             agent_file = Path(f"agents/perf-agent-{i:03d}.yaml")
-            with open(agent_file, 'r') as f:
+            with open(agent_file, "r") as f:
                 data = json.load(f)
 
             # Recreate agent from data
-            agent = (AgentBuilder()
-                    .with_id(data["id"])
-                    .with_model(data["model"])
-                    .with_name(data["name"])
-                    .with_speciality(data.get("speciality", ""))
-                    .with_stack(data.get("stack", []))
-                    .build())
+            agent = (
+                AgentBuilder()
+                .with_id(data["id"])
+                .with_model(data["model"])
+                .with_name(data["name"])
+                .with_speciality(data.get("speciality", ""))
+                .with_stack(data.get("stack", []))
+                .build()
+            )
             return agent
 
         metric = self._measure_operation("Agent Loading (100 agents)", 100, load_agent)
         performance_reporter.add_metric(metric)
 
         # Assert performance requirement: P95 < 100ms
-        assert metric.p95_time < 0.1, f"Agent loading P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
+        assert (
+            metric.p95_time < 0.1
+        ), f"Agent loading P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
 
     @pytest.mark.performance
     def test_team_creation_with_50_members(self, temp_workspace, performance_reporter):
@@ -238,11 +259,13 @@ class TestPerformanceBenchmarks:
         # Create 100 agents first
         agents = []
         for i in range(100):
-            agent = (AgentBuilder()
-                    .with_id(f"team-agent-{i:03d}")
-                    .with_model("claude-3.5-sonnet")
-                    .with_name(f"Team Agent {i}")
-                    .build())
+            agent = (
+                AgentBuilder()
+                .with_id(f"team-agent-{i:03d}")
+                .with_model("claude-3.5-sonnet")
+                .with_name(f"Team Agent {i}")
+                .build()
+            )
             agents.append(agent)
 
         def create_team_with_members(i):
@@ -253,9 +276,11 @@ class TestPerformanceBenchmarks:
 
             team_agents = agents[start_idx:end_idx]
 
-            team_builder = (TeamBuilder()
-                           .with_id(f"perf-team-{i}")
-                           .with_name(f"Performance Team {i}"))
+            team_builder = (
+                TeamBuilder()
+                .with_id(f"perf-team-{i}")
+                .with_name(f"Performance Team {i}")
+            )
 
             # Add members with alternating roles
             for j, agent in enumerate(team_agents):
@@ -269,26 +294,34 @@ class TestPerformanceBenchmarks:
                 "id": f"perf-team-{i}",
                 "name": f"Performance Team {i}",
                 "members": [
-                    {"id": agent.id, "role": ("leader" if j == 0 else "member"), "name": agent.name}
+                    {
+                        "id": agent.id,
+                        "role": ("leader" if j == 0 else "member"),
+                        "name": agent.name,
+                    }
                     for j, agent in enumerate(team_agents)
                 ],
-                "created_at": "2025-09-23T10:00:00.000000"
+                "created_at": "2025-09-23T10:00:00.000000",
             }
 
             team_file = Path(f"teams/perf-team-{i}.yaml")
-            with open(team_file, 'w') as f:
+            with open(team_file, "w") as f:
                 json.dump(team_data, f)
 
             return team
 
-        metric = self._measure_operation("Team Creation (50 members each)", 2, create_team_with_members)
+        metric = self._measure_operation(
+            "Team Creation (50 members each)", 2, create_team_with_members
+        )
         performance_reporter.add_metric(metric)
 
         # Verify teams were created
         assert len(list(Path("teams").glob("*.yaml"))) == 2
 
         # Assert performance requirement: P95 < 100ms
-        assert metric.p95_time < 0.1, f"Team creation P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
+        assert (
+            metric.p95_time < 0.1
+        ), f"Team creation P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
 
     @pytest.mark.performance
     def test_workflow_creation_complex(self, temp_workspace, performance_reporter):
@@ -296,24 +329,26 @@ class TestPerformanceBenchmarks:
         # Create 10 agents for workflow vertices
         agents = []
         for i in range(10):
-            agent = (AgentBuilder()
-                    .with_id(f"workflow-agent-{i}")
-                    .with_model("claude-3.5-sonnet")
-                    .with_name(f"Workflow Agent {i}")
-                    .build())
+            agent = (
+                AgentBuilder()
+                .with_id(f"workflow-agent-{i}")
+                .with_model("claude-3.5-sonnet")
+                .with_name(f"Workflow Agent {i}")
+                .build()
+            )
             agents.append(agent)
 
         def create_complex_workflow(i):
-            workflow = (WorkflowBuilder()
-                       .with_id(f"perf-workflow-{i}")
-                       .with_name(f"Performance Workflow {i}"))
+            workflow = (
+                WorkflowBuilder()
+                .with_id(f"perf-workflow-{i}")
+                .with_name(f"Performance Workflow {i}")
+            )
 
             # Add 10 vertices with different agents
             for j in range(10):
                 workflow = workflow.add_agent_vertex(
-                    f"task-{j}",
-                    agents[j],
-                    f"Execute task {j} in workflow {i}"
+                    f"task-{j}", agents[j], f"Execute task {j} in workflow {i}"
                 )
 
             # Add edges to create a complex graph
@@ -331,36 +366,44 @@ class TestPerformanceBenchmarks:
                 "id": f"perf-workflow-{i}",
                 "name": f"Performance Workflow {i}",
                 "vertices": [
-                    {"id": f"task-{j}", "agent_id": agents[j].id, "task": f"Execute task {j} in workflow {i}"}
+                    {
+                        "id": f"task-{j}",
+                        "agent_id": agents[j].id,
+                        "task": f"Execute task {j} in workflow {i}",
+                    }
                     for j in range(10)
                 ],
-                "edges": [
-                    {"from": f"task-{j}", "to": f"task-{j+1}"} for j in range(9)
-                ] + [
+                "edges": [{"from": f"task-{j}", "to": f"task-{j+1}"} for j in range(9)]
+                + [
                     {"from": "task-0", "to": "task-5"},
-                    {"from": "task-2", "to": "task-7"}
+                    {"from": "task-2", "to": "task-7"},
                 ],
-                "created_at": "2025-09-23T10:00:00.000000"
+                "created_at": "2025-09-23T10:00:00.000000",
             }
 
             workflow_file = Path(f"workflows/perf-workflow-{i}.yaml")
-            with open(workflow_file, 'w') as f:
+            with open(workflow_file, "w") as f:
                 json.dump(workflow_data, f)
 
             return workflow
 
-        metric = self._measure_operation("Complex Workflow Creation (10 vertices)", 5, create_complex_workflow)
+        metric = self._measure_operation(
+            "Complex Workflow Creation (10 vertices)", 5, create_complex_workflow
+        )
         performance_reporter.add_metric(metric)
 
         # Verify workflows were created
         assert len(list(Path("workflows").glob("*.yaml"))) == 5
 
         # Assert performance requirement: P95 < 100ms
-        assert metric.p95_time < 0.1, f"Workflow creation P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
+        assert (
+            metric.p95_time < 0.1
+        ), f"Workflow creation P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
 
     @pytest.mark.performance
     def test_bulk_operations_1000_items(self, temp_workspace, performance_reporter):
         """Benchmark bulk operations with 1000 items."""
+
         def bulk_agent_creation(i):
             # Create 100 agents in each bulk operation (10 operations = 1000 total)
             agents_data = []
@@ -371,19 +414,21 @@ class TestPerformanceBenchmarks:
                     "name": f"Bulk Agent {i*100 + j}",
                     "speciality": "Bulk Operations",
                     "stack": ["python", "bulk"],
-                    "created_at": "2025-09-23T10:00:00.000000"
+                    "created_at": "2025-09-23T10:00:00.000000",
                 }
                 agents_data.append(agent_data)
 
             # Write all agents in bulk
             for agent_data in agents_data:
                 agent_file = Path(f"agents/{agent_data['id']}.yaml")
-                with open(agent_file, 'w') as f:
+                with open(agent_file, "w") as f:
                     json.dump(agent_data, f)
 
             return len(agents_data)
 
-        metric = self._measure_operation("Bulk Agent Creation (100 agents/batch)", 10, bulk_agent_creation)
+        metric = self._measure_operation(
+            "Bulk Agent Creation (100 agents/batch)", 10, bulk_agent_creation
+        )
         performance_reporter.add_metric(metric)
 
         # Verify all agents were created
@@ -391,28 +436,37 @@ class TestPerformanceBenchmarks:
         assert len(agent_files) == 1000
 
         # Assert performance requirement: P95 < 100ms
-        assert metric.p95_time < 0.1, f"Bulk operations P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
+        assert (
+            metric.p95_time < 0.1
+        ), f"Bulk operations P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
 
     @pytest.mark.performance
-    def test_end_to_end_project_simulation_100_scale(self, temp_workspace, performance_reporter):
+    def test_end_to_end_project_simulation_100_scale(
+        self, temp_workspace, performance_reporter
+    ):
         """Benchmark end-to-end project simulation at 100x scale."""
+
         def create_full_project(i):
             # Create 10 agents per project (100 agents total across 10 projects)
             project_agents = []
             for j in range(10):
-                agent = (AgentBuilder()
-                        .with_id(f"project-{i}-agent-{j}")
-                        .with_model("claude-3.5-sonnet" if j % 2 == 0 else "claude-3-haiku")
-                        .with_name(f"Project {i} Agent {j}")
-                        .with_speciality(f"Role {j}")
-                        .with_stack(["python", f"skill-{j}"])
-                        .build())
+                agent = (
+                    AgentBuilder()
+                    .with_id(f"project-{i}-agent-{j}")
+                    .with_model("claude-3.5-sonnet" if j % 2 == 0 else "claude-3-haiku")
+                    .with_name(f"Project {i} Agent {j}")
+                    .with_speciality(f"Role {j}")
+                    .with_stack(["python", f"skill-{j}"])
+                    .build()
+                )
                 project_agents.append(agent)
 
             # Create team with all agents
-            team_builder = (TeamBuilder()
-                           .with_id(f"project-{i}-team")
-                           .with_name(f"Project {i} Team"))
+            team_builder = (
+                TeamBuilder()
+                .with_id(f"project-{i}-team")
+                .with_name(f"Project {i} Team")
+            )
 
             for j, agent in enumerate(project_agents):
                 role = TeamMemberRole.LEADER if j == 0 else TeamMemberRole.MEMBER
@@ -421,16 +475,16 @@ class TestPerformanceBenchmarks:
             team = team_builder.build()
 
             # Create workflow
-            workflow = (WorkflowBuilder()
-                       .with_id(f"project-{i}-workflow")
-                       .with_name(f"Project {i} Workflow"))
+            workflow = (
+                WorkflowBuilder()
+                .with_id(f"project-{i}-workflow")
+                .with_name(f"Project {i} Workflow")
+            )
 
             # Add vertices for each agent
             for j, agent in enumerate(project_agents):
                 workflow = workflow.add_agent_vertex(
-                    f"step-{j}",
-                    agent,
-                    f"Execute step {j} for project {i}"
+                    f"step-{j}", agent, f"Execute step {j} for project {i}"
                 )
 
             # Add sequential edges
@@ -444,14 +498,18 @@ class TestPerformanceBenchmarks:
             for agent in project_agents:
                 agent_data = {
                     "id": agent.id,
-                    "model": "claude-3.5-sonnet" if "claude-3.5-sonnet" in str(agent) else "claude-3-haiku",
+                    "model": (
+                        "claude-3.5-sonnet"
+                        if "claude-3.5-sonnet" in str(agent)
+                        else "claude-3-haiku"
+                    ),
                     "name": agent.name,
                     "speciality": f"Role {project_agents.index(agent)}",
                     "stack": ["python", f"skill-{project_agents.index(agent)}"],
-                    "created_at": "2025-09-23T10:00:00.000000"
+                    "created_at": "2025-09-23T10:00:00.000000",
                 }
                 agent_file = Path(f"agents/{agent.id}.yaml")
-                with open(agent_file, 'w') as f:
+                with open(agent_file, "w") as f:
                     json.dump(agent_data, f)
 
             # Save team
@@ -459,13 +517,17 @@ class TestPerformanceBenchmarks:
                 "id": team.id,
                 "name": team.name,
                 "members": [
-                    {"id": agent.id, "role": ("leader" if j == 0 else "member"), "name": agent.name}
+                    {
+                        "id": agent.id,
+                        "role": ("leader" if j == 0 else "member"),
+                        "name": agent.name,
+                    }
                     for j, agent in enumerate(project_agents)
                 ],
-                "created_at": "2025-09-23T10:00:00.000000"
+                "created_at": "2025-09-23T10:00:00.000000",
             }
             team_file = Path(f"teams/{team.id}.yaml")
-            with open(team_file, 'w') as f:
+            with open(team_file, "w") as f:
                 json.dump(team_data, f)
 
             # Save workflow
@@ -473,45 +535,60 @@ class TestPerformanceBenchmarks:
                 "id": workflow.id,
                 "name": workflow.name,
                 "vertices": [
-                    {"id": f"step-{j}", "agent_id": agent.id, "task": f"Execute step {j} for project {i}"}
+                    {
+                        "id": f"step-{j}",
+                        "agent_id": agent.id,
+                        "task": f"Execute step {j} for project {i}",
+                    }
                     for j, agent in enumerate(project_agents)
                 ],
                 "edges": [
                     {"from": f"step-{j}", "to": f"step-{j+1}"}
                     for j in range(len(project_agents) - 1)
                 ],
-                "created_at": "2025-09-23T10:00:00.000000"
+                "created_at": "2025-09-23T10:00:00.000000",
             }
             workflow_file = Path(f"workflows/{workflow.id}.yaml")
-            with open(workflow_file, 'w') as f:
+            with open(workflow_file, "w") as f:
                 json.dump(workflow_data, f)
 
             return {"agents": project_agents, "team": team, "workflow": workflow}
 
-        metric = self._measure_operation("End-to-End Project Creation (10 agents/project)", 10, create_full_project)
+        metric = self._measure_operation(
+            "End-to-End Project Creation (10 agents/project)", 10, create_full_project
+        )
         performance_reporter.add_metric(metric)
 
         # Verify all components were created
-        assert len(list(Path("agents").glob("*.yaml"))) == 100  # 10 projects * 10 agents
-        assert len(list(Path("teams").glob("*.yaml"))) == 10    # 10 teams
-        assert len(list(Path("workflows").glob("*.yaml"))) == 10 # 10 workflows
+        assert (
+            len(list(Path("agents").glob("*.yaml"))) == 100
+        )  # 10 projects * 10 agents
+        assert len(list(Path("teams").glob("*.yaml"))) == 10  # 10 teams
+        assert len(list(Path("workflows").glob("*.yaml"))) == 10  # 10 workflows
 
         # Assert performance requirement: P95 < 100ms
-        assert metric.p95_time < 0.1, f"End-to-end project creation P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
+        assert (
+            metric.p95_time < 0.1
+        ), f"End-to-end project creation P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
 
     @pytest.mark.performance
     def test_generate_performance_report(self, temp_workspace, performance_reporter):
         """Generate and save performance report."""
+
         # Run a quick benchmark to have data for the report
         def quick_agent_creation(i):
-            agent = (AgentBuilder()
-                    .with_id(f"report-agent-{i}")
-                    .with_model("claude-3.5-sonnet")
-                    .with_name(f"Report Agent {i}")
-                    .build())
+            agent = (
+                AgentBuilder()
+                .with_id(f"report-agent-{i}")
+                .with_model("claude-3.5-sonnet")
+                .with_name(f"Report Agent {i}")
+                .build()
+            )
             return agent
 
-        metric = self._measure_operation("Quick Agent Creation Sample", 10, quick_agent_creation)
+        metric = self._measure_operation(
+            "Quick Agent Creation Sample", 10, quick_agent_creation
+        )
         performance_reporter.add_metric(metric)
 
         # Generate report
@@ -522,7 +599,7 @@ class TestPerformanceBenchmarks:
         assert report_path.exists()
 
         # Read and verify report content
-        with open(report_path, 'r', encoding='utf-8') as f:
+        with open(report_path, "r", encoding="utf-8") as f:
             report_content = f.read()
 
         assert "# 🚀 Engine CLI Performance Report" in report_content
@@ -533,5 +610,9 @@ class TestPerformanceBenchmarks:
         print(f"\n📊 Performance Report Generated: {report_path}")
         print("Sample Report Content:")
         print("=" * 50)
-        print(report_content[:500] + "..." if len(report_content) > 500 else report_content)
+        print(
+            report_content[:500] + "..."
+            if len(report_content) > 500
+            else report_content
+        )
         print("=" * 50)

@@ -1,16 +1,17 @@
 """Interactive CLI mode with REPL, auto-complete, and command history."""
-import sys
+
 import os
-from typing import List, Optional, Dict, Any
+import sys
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import Completer, Completion
+from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.styles import Style
-from prompt_toolkit.formatted_text import HTML
 
-from engine_cli.formatting import header, success, error, info, separator
+from engine_cli.formatting import error, header, info, separator, success
 
 
 class EngineCLICompleter(Completer):
@@ -18,29 +19,29 @@ class EngineCLICompleter(Completer):
 
     def __init__(self):
         self.commands = {
-            'version': [],
-            'status': [],
-            'agent': ['create', 'delete', 'list', 'show'],
-            'team': ['create', 'delete', 'list', 'show', 'add-agent', 'remove-agent'],
-            'workflow': ['create', 'delete', 'list', 'show', 'run', 'status'],
-            'tool': ['create', 'delete', 'list', 'show', 'execute'],
-            'protocol': ['create', 'delete', 'list', 'show'],
-            'book': ['create', 'delete', 'list', 'show', 'search', 'add-page'],
-            'project': ['create', 'delete', 'list', 'show', 'init'],
-            'examples': ['list', 'run', 'create'],
-            'monitoring': ['status', 'logs', 'metrics'],
-            'help': [],
-            'exit': [],
-            'quit': [],
-            'clear': []
+            "version": [],
+            "status": [],
+            "agent": ["create", "delete", "list", "show"],
+            "team": ["create", "delete", "list", "show", "add-agent", "remove-agent"],
+            "workflow": ["create", "delete", "list", "show", "run", "status"],
+            "tool": ["create", "delete", "list", "show", "execute"],
+            "protocol": ["create", "delete", "list", "show"],
+            "book": ["create", "delete", "list", "show", "search", "add-page"],
+            "project": ["create", "delete", "list", "show", "init"],
+            "examples": ["list", "run", "create"],
+            "monitoring": ["status", "logs", "metrics"],
+            "help": [],
+            "exit": [],
+            "quit": [],
+            "clear": [],
         }
 
-        self.agent_options = ['--model', '--speciality', '--stack']
-        self.team_options = ['--name', '--description', '--agents']
-        self.workflow_options = ['--name', '--description', '--vertices', '--edges']
-        self.tool_options = ['--name', '--type', '--config']
-        self.protocol_options = ['--name', '--commands']
-        self.book_options = ['--name', '--description', '--chapters']
+        self.agent_options = ["--model", "--speciality", "--stack"]
+        self.team_options = ["--name", "--description", "--agents"]
+        self.workflow_options = ["--name", "--description", "--vertices", "--edges"]
+        self.tool_options = ["--name", "--type", "--config"]
+        self.protocol_options = ["--name", "--commands"]
+        self.book_options = ["--name", "--description", "--chapters"]
 
     def get_completions(self, document, complete_event):
         """Get completions for the current input."""
@@ -69,27 +70,27 @@ class EngineCLICompleter(Completer):
             subcmd = words[1]
 
             # Complete options based on command
-            if cmd == 'agent' and subcmd == 'create':
+            if cmd == "agent" and subcmd == "create":
                 for option in self.agent_options:
                     if not any(option in word for word in words):
                         yield Completion(option, start_position=0)
-            elif cmd == 'team' and subcmd == 'create':
+            elif cmd == "team" and subcmd == "create":
                 for option in self.team_options:
                     if not any(option in word for word in words):
                         yield Completion(option, start_position=0)
-            elif cmd == 'workflow' and subcmd == 'create':
+            elif cmd == "workflow" and subcmd == "create":
                 for option in self.workflow_options:
                     if not any(option in word for word in words):
                         yield Completion(option, start_position=0)
-            elif cmd == 'tool' and subcmd == 'create':
+            elif cmd == "tool" and subcmd == "create":
                 for option in self.tool_options:
                     if not any(option in word for word in words):
                         yield Completion(option, start_position=0)
-            elif cmd == 'protocol' and subcmd == 'create':
+            elif cmd == "protocol" and subcmd == "create":
                 for option in self.protocol_options:
                     if not any(option in word for word in words):
                         yield Completion(option, start_position=0)
-            elif cmd == 'book' and subcmd == 'create':
+            elif cmd == "book" and subcmd == "create":
                 for option in self.book_options:
                     if not any(option in word for word in words):
                         yield Completion(option, start_position=0)
@@ -99,19 +100,21 @@ class InteractiveCLI:
     """Interactive CLI REPL mode."""
 
     def __init__(self):
-        self.history_file = Path.home() / '.engine_cli_history'
+        self.history_file = Path.home() / ".engine_cli_history"
         self.session = PromptSession(
             history=FileHistory(str(self.history_file)),
             completer=EngineCLICompleter(),
-            style=Style.from_dict({
-                'prompt': 'ansicyan bold',
-                '': 'ansiwhite',
-            })
+            style=Style.from_dict(
+                {
+                    "prompt": "ansicyan bold",
+                    "": "ansiwhite",
+                }
+            ),
         )
 
     def get_prompt(self) -> HTML:
         """Get the interactive prompt."""
-        return HTML('<prompt>engine</prompt> <white>❯ </white>')
+        return HTML("<prompt>engine</prompt> <white>❯ </white>")
 
     def execute_command(self, command_line: str) -> bool:
         """Execute a command line. Returns False if should exit."""
@@ -121,15 +124,15 @@ class InteractiveCLI:
             return True
 
         # Handle special commands
-        if command_line.lower() in ['exit', 'quit', 'q']:
+        if command_line.lower() in ["exit", "quit", "q"]:
             success("Goodbye! 👋")
             return False
 
-        if command_line.lower() == 'clear':
-            os.system('clear' if os.name == 'posix' else 'cls')
+        if command_line.lower() == "clear":
+            os.system("clear" if os.name == "posix" else "cls")
             return True
 
-        if command_line.lower() in ['help', 'h', '?']:
+        if command_line.lower() in ["help", "h", "?"]:
             self.show_help()
             return True
 
@@ -137,10 +140,12 @@ class InteractiveCLI:
         try:
             # Split command line into arguments
             import shlex
+
             args = shlex.split(command_line)
 
             # Execute using Click CLI
             from engine_cli.main import cli
+
             cli(args=args, standalone_mode=False)
 
         except SystemExit as e:
@@ -153,7 +158,9 @@ class InteractiveCLI:
 
     def show_help(self):
         """Show interactive help."""
-        header("Engine CLI Interactive Mode", "Type commands or use Tab for auto-complete")
+        header(
+            "Engine CLI Interactive Mode", "Type commands or use Tab for auto-complete"
+        )
 
         info("Available commands:")
         commands = [
@@ -170,10 +177,11 @@ class InteractiveCLI:
             ("monitoring", "System monitoring"),
             ("help/h/?", "Show this help"),
             ("clear", "Clear screen"),
-            ("exit/quit/q", "Exit interactive mode")
+            ("exit/quit/q", "Exit interactive mode"),
         ]
 
-        from engine_cli.formatting import table, print_table
+        from engine_cli.formatting import print_table, table
+
         help_table = table("Commands", ["Command", "Description"])
         for cmd, desc in commands:
             help_table.add_row(cmd, desc)

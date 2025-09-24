@@ -3,11 +3,12 @@ Data Contract Validation Tests
 Tests for validating JSON/YAML schemas and data contracts between CLI and core components.
 """
 
-import pytest
-import yaml
 import json
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Any, Dict, List
+
+import pytest
+import yaml
 from pydantic import BaseModel, ValidationError
 
 
@@ -26,7 +27,13 @@ class CLISchemaValidator:
 
         # Validate CLI section
         cli_section = data.get("cli", {})
-        cli_required = ["colors", "interactive", "history_size", "table_style", "progress_bar"]
+        cli_required = [
+            "colors",
+            "interactive",
+            "history_size",
+            "table_style",
+            "progress_bar",
+        ]
         for key in cli_required:
             if key not in cli_section:
                 raise ValueError(f"Missing CLI config key: {key}")
@@ -151,7 +158,9 @@ class CLISchemaValidator:
         valid_types = ["api", "cli", "mcp", "database", "filesystem", "custom"]
         tool_type = data.get("type", "")
         if tool_type not in valid_types:
-            raise ValueError(f"Invalid tool type: {tool_type}. Must be one of {valid_types}")
+            raise ValueError(
+                f"Invalid tool type: {tool_type}. Must be one of {valid_types}"
+            )
 
         return True
 
@@ -164,7 +173,7 @@ class TestDataContractValidation:
         """Test CLI configuration schema validation."""
         # Load actual CLI config
         config_path = Path(__file__).parent.parent.parent / "config" / "cli-config.yaml"
-        with open(config_path, 'r') as f:
+        with open(config_path, "r") as f:
             config_data = yaml.safe_load(f)
 
         # Validate schema
@@ -187,7 +196,7 @@ class TestDataContractValidation:
             "stack": ["python", "javascript"],
             "tools": ["github", "vscode"],
             "speciality": "Development",
-            "persona": "Experienced developer"
+            "persona": "Experienced developer",
         }
 
         assert CLISchemaValidator.validate_agent_schema(valid_agent)
@@ -212,10 +221,8 @@ class TestDataContractValidation:
             "id": "test-workflow",
             "name": "Test Workflow",
             "description": "A test workflow",
-            "vertices": [
-                {"id": "task1", "agent": "agent1", "task": "Test task"}
-            ],
-            "edges": []
+            "vertices": [{"id": "task1", "agent": "agent1", "task": "Test task"}],
+            "edges": [],
         }
 
         assert CLISchemaValidator.validate_workflow_schema(valid_workflow)
@@ -245,15 +252,15 @@ class TestDataContractValidation:
                     "id": "member1",
                     "role": "member",
                     "name": "Team Member 1",
-                    "speciality": "Development"
+                    "speciality": "Development",
                 },
                 {
                     "id": "member2",
                     "role": "leader",
                     "name": "Team Leader",
-                    "speciality": "Management"
-                }
-            ]
+                    "speciality": "Management",
+                },
+            ],
         }
 
         assert CLISchemaValidator.validate_team_schema(valid_team)
@@ -285,9 +292,7 @@ class TestDataContractValidation:
             "title": "Test Book",
             "author": "Test Author",
             "description": "A test book",
-            "chapters": [
-                {"id": "chap1", "title": "Chapter 1", "content": "Content"}
-            ]
+            "chapters": [{"id": "chap1", "title": "Chapter 1", "content": "Content"}],
         }
 
         assert CLISchemaValidator.validate_book_schema(valid_book)
@@ -314,8 +319,8 @@ class TestDataContractValidation:
             "description": "A test protocol",
             "commands": [
                 {"name": "analyze", "description": "Analyze task"},
-                {"name": "implement", "description": "Implement solution"}
-            ]
+                {"name": "implement", "description": "Implement solution"},
+            ],
         }
 
         assert CLISchemaValidator.validate_protocol_schema(valid_protocol)
@@ -341,7 +346,7 @@ class TestDataContractValidation:
             "name": "Test Tool",
             "description": "A test tool",
             "type": "cli",
-            "config": {"command": "echo hello"}
+            "config": {"command": "echo hello"},
         }
 
         assert CLISchemaValidator.validate_tool_schema(valid_tool)
@@ -363,15 +368,17 @@ class TestDataContractValidation:
         """Test that YAML files can be parsed correctly."""
         # Test parsing CLI config
         config_path = Path(__file__).parent.parent.parent / "config" / "cli-config.yaml"
-        with open(config_path, 'r') as f:
+        with open(config_path, "r") as f:
             data = yaml.safe_load(f)
 
         assert isinstance(data, dict)
         assert "cli" in data
 
         # Test parsing workflow file
-        workflow_path = Path(__file__).parent.parent.parent / "workflows" / "test-workflow-e2e.yaml"
-        with open(workflow_path, 'r') as f:
+        workflow_path = (
+            Path(__file__).parent.parent.parent / "workflows" / "test-workflow-e2e.yaml"
+        )
+        with open(workflow_path, "r") as f:
             workflow_data = yaml.safe_load(f)
 
         assert isinstance(workflow_data, dict)
@@ -382,7 +389,7 @@ class TestDataContractValidation:
         """Test that YAML data can be converted to JSON."""
         # Test CLI config JSON conversion
         config_path = Path(__file__).parent.parent.parent / "config" / "cli-config.yaml"
-        with open(config_path, 'r') as f:
+        with open(config_path, "r") as f:
             yaml_data = yaml.safe_load(f)
 
         # Convert to JSON string and back
@@ -400,7 +407,7 @@ class TestDataContractValidation:
         minimal_agent = {
             "id": "minimal-agent",
             "model": "gpt-4",
-            "name": "Minimal Agent"
+            "name": "Minimal Agent",
         }
 
         assert CLISchemaValidator.validate_agent_schema(minimal_agent)
@@ -409,7 +416,7 @@ class TestDataContractValidation:
         workflow_no_edges = {
             "id": "workflow-no-edges",
             "name": "Workflow Without Edges",
-            "vertices": []
+            "vertices": [],
         }
 
         assert CLISchemaValidator.validate_workflow_schema(workflow_no_edges)
@@ -423,7 +430,7 @@ class TestDataContractValidation:
             "model": "claude-3-haiku",
             "name": "Agent with Empty Lists",
             "stack": [],
-            "tools": []
+            "tools": [],
         }
 
         assert CLISchemaValidator.validate_agent_schema(agent_empty_lists)
@@ -432,22 +439,12 @@ class TestDataContractValidation:
         team_single_member = {
             "id": "single-member-team",
             "name": "Single Member Team",
-            "members": [
-                {
-                    "id": "only-member",
-                    "role": "leader",
-                    "name": "Only Member"
-                }
-            ]
+            "members": [{"id": "only-member", "role": "leader", "name": "Only Member"}],
         }
 
         assert CLISchemaValidator.validate_team_schema(team_single_member)
 
         # Test tool with minimal config
-        minimal_tool = {
-            "id": "minimal-tool",
-            "name": "Minimal Tool",
-            "type": "api"
-        }
+        minimal_tool = {"id": "minimal-tool", "name": "Minimal Tool", "type": "api"}
 
         assert CLISchemaValidator.validate_tool_schema(minimal_tool)

@@ -1,9 +1,11 @@
 import pytest
 from click.testing import CliRunner
 
+
 @pytest.fixture
 def cli_runner():
     return CliRunner()
+
 
 class TestMonitoringCLICommands:
     """Test CLI commands for system monitoring"""
@@ -53,7 +55,7 @@ class TestMonitoringCLICommands:
         """Test health command with specific component"""
         from engine_cli.commands.monitoring import health
 
-        result = cli_runner.invoke(health, ['--component', 'database'])
+        result = cli_runner.invoke(health, ["--component", "database"])
 
         assert result.exit_code == 0
         assert "Health check for 'database' not yet implemented" in result.output
@@ -111,7 +113,7 @@ class TestMonitoringCLICommands:
         """Test that the CLI group exists and can be invoked"""
         from engine_cli.commands.monitoring import cli
 
-        result = cli_runner.invoke(cli, ['--help'])
+        result = cli_runner.invoke(cli, ["--help"])
 
         assert result.exit_code == 0
         assert "System monitoring" in result.output
@@ -125,7 +127,7 @@ class TestMonitoringCLICommands:
         """Test status command help"""
         from engine_cli.commands.monitoring import status
 
-        result = cli_runner.invoke(status, ['--help'])
+        result = cli_runner.invoke(status, ["--help"])
 
         assert result.exit_code == 0
         assert "Show system status" in result.output
@@ -134,7 +136,7 @@ class TestMonitoringCLICommands:
         """Test logs command help"""
         from engine_cli.commands.monitoring import logs
 
-        result = cli_runner.invoke(logs, ['--help'])
+        result = cli_runner.invoke(logs, ["--help"])
 
         assert result.exit_code == 0
         assert "Show system logs" in result.output
@@ -143,7 +145,7 @@ class TestMonitoringCLICommands:
         """Test metrics command help"""
         from engine_cli.commands.monitoring import metrics
 
-        result = cli_runner.invoke(metrics, ['--help'])
+        result = cli_runner.invoke(metrics, ["--help"])
 
         assert result.exit_code == 0
         assert "Show system metrics" in result.output
@@ -152,7 +154,7 @@ class TestMonitoringCLICommands:
         """Test health command help"""
         from engine_cli.commands.monitoring import health
 
-        result = cli_runner.invoke(health, ['--help'])
+        result = cli_runner.invoke(health, ["--help"])
 
         assert result.exit_code == 0
         assert "Check system health" in result.output
@@ -162,10 +164,11 @@ class TestMonitoringCLICommands:
         """Test alerts command help"""
         from engine_cli.commands.monitoring import alerts
 
-        result = cli_runner.invoke(alerts, ['--help'])
+        result = cli_runner.invoke(alerts, ["--help"])
 
         assert result.exit_code == 0
         assert "Show active alerts" in result.output
+
 
 if __name__ == "__main__":
     pytest.main([__file__])

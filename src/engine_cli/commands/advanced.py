@@ -1,13 +1,14 @@
 """Advanced CLI commands for bulk operations and utilities."""
 
-import click
 import json
-import yaml
 from pathlib import Path
 from typing import List, Optional
 
+import click
+import yaml
+
 from engine_cli.config import load_config, save_config
-from engine_cli.formatting import success, error, info, warning, header, key_value
+from engine_cli.formatting import error, header, info, key_value, success, warning
 
 
 @click.group()
@@ -140,8 +141,8 @@ def export(output_file: str, format: str, sections: List[str]):
 
         success(f"Configuration exported to {output_path}")
         info(
-            "Exported sections: " +
-            (', '.join(config_dict.keys()) if config_dict else 'none')
+            "Exported sections: "
+            + (", ".join(config_dict.keys()) if config_dict else "none")
         )
 
     except Exception as e:
@@ -338,16 +339,14 @@ def logs(lines: int, level: Optional[str], component: Optional[str]):
 
         # Mock log entries
         mock_logs = [
-            "[2025-09-22 10:30:15] INFO  core.agent - "
-            "Agent 'dev_assistant' started",
+            "[2025-09-22 10:30:15] INFO  core.agent - " "Agent 'dev_assistant' started",
             "[2025-09-22 10:30:20] INFO  api.server - "
             "API server listening on port 8000",
             "[2025-09-22 10:31:05] WARNING database - "
             "High connection count detected",
             "[2025-09-22 10:31:10] INFO  workflow.engine - "
             "Workflow 'code_review' completed",
-            "[2025-09-22 10:31:15] ERROR api.request - "
-            "Invalid request format",
+            "[2025-09-22 10:31:15] ERROR api.request - " "Invalid request format",
             "[2025-09-22 10:31:20] INFO  core.agent - Agent 'tester' initialized",
         ]
 

@@ -1,23 +1,24 @@
 """Protocol management commands."""
 
-import click
-import os
-import yaml
 import json
-from typing import List, Optional
+import os
 from datetime import datetime
+from typing import List, Optional
 
-# Import Rich formatting
-from engine_cli.formatting import success, error, key_value, table, print_table
+import click
+import yaml
 
 # Import engine core components
 from engine_core import (
-    ProtocolBuilder,
-    IntentCategory,
+    CommandContext,
     CommandType,
     ContextScope,
-    CommandContext,
+    IntentCategory,
+    ProtocolBuilder,
 )
+
+# Import Rich formatting
+from engine_cli.formatting import error, key_value, print_table, success, table
 
 
 class ProtocolStorage:
