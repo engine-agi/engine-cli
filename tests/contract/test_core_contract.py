@@ -2,15 +2,18 @@
 
 import pytest
 
-from engine_core.core.agents.agent_builder import AgentBuilder
-from engine_core.core.teams.team_builder import TeamBuilder, TeamMemberRole, TeamCoordinationStrategy
-from engine_core.core.workflows.workflow_builder import WorkflowBuilder
-from engine_core.core.book.book_builder import BookBuilder
-from engine_core.core.protocols.protocol_builder import ProtocolBuilder
-from engine_core.core.tools.tool_builder import ToolBuilder
-from engine_core.core.workflows.workflow_engine import WorkflowEngine
+from engine_core import (
+    AgentBuilder,
+    TeamBuilder,
+    WorkflowBuilder,
+    BookBuilder,
+    ProtocolBuilder,
+    ToolBuilder,
+    WorkflowEngine,
+    __version__ as core_version
+)
+from engine_core.core.teams.team_builder import TeamMemberRole, TeamCoordinationStrategy
 from engine_core.models.tool import ToolType
-from engine_core import __version__ as core_version
 
 
 class TestEngineCoreContract:
@@ -175,7 +178,7 @@ class TestEngineCoreContract:
                .with_id("test-tool")
                .with_name("Test Tool")
                .with_description("A test tool")
-               .with_type("cli")  # Add required type
+               .with_type(ToolType.CLI)  # Add required type
                .build())
 
         assert tool is not None

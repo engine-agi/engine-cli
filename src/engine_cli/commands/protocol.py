@@ -10,13 +10,10 @@ import json
 from engine_cli.formatting import success, error, header, key_value, table, print_table
 
 # Import engine core components
-from engine_core import ProtocolBuilder
-
-# Lazy imports to avoid database dependencies
-def _get_protocol_enums():
-    """Lazy import of protocol enums."""
-    from engine_core.core.protocols.protocol import IntentCategory, CommandType, ContextScope, CommandContext
-    return IntentCategory, CommandType, ContextScope, CommandContext
+from engine_core import (
+    ProtocolBuilder, IntentCategory, CommandType, 
+    ContextScope, CommandContext
+)
 
 
 class ProtocolStorage:
@@ -113,7 +110,6 @@ def create(name, description, author, version, tags, intents, command_types, sco
 
         # Configure intents
         if intents:
-            IntentCategory, CommandType, ContextScope, CommandContext = _get_protocol_enums()
             intent_list = []
             for intent_name in intents.split(','):
                 intent_name = intent_name.strip().upper()
@@ -124,7 +120,6 @@ def create(name, description, author, version, tags, intents, command_types, sco
 
         # Configure command types
         if command_types:
-            IntentCategory, CommandType, ContextScope, CommandContext = _get_protocol_enums()
             cmd_type_list = []
             for cmd_type in command_types.split(','):
                 cmd_type = cmd_type.strip().upper()
@@ -134,7 +129,6 @@ def create(name, description, author, version, tags, intents, command_types, sco
                 builder = builder.with_supported_command_types(cmd_type_list)
 
         # Configure scope
-        IntentCategory, CommandType, ContextScope, CommandContext = _get_protocol_enums()
         scope_enum = ContextScope(scope)
         builder = builder.with_default_scope(scope_enum)
 
@@ -350,7 +344,6 @@ def test(name, command, context):
                 return
 
         # Create mock context for testing
-        IntentCategory, CommandType, ContextScope, CommandContext = _get_protocol_enums()
         test_context = CommandContext(
             user_id=context_data.get('user_id', 'test_user'),
             session_id=context_data.get('session_id', 'test_session'),

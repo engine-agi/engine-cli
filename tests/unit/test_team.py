@@ -83,9 +83,13 @@ class MockTeamMemberRole:
 # Mock the engine-core imports
 @pytest.fixture
 def mock_team_enums():
-    with patch('engine_cli.commands.team._get_team_enums') as mock_get:
-        mock_get.return_value = (MockTeamCoordinationStrategy, MockTeamMemberRole)
-        yield mock_get
+    # Import enums directly from engine_core instead of using _get_team_enums
+    try:
+        from engine_core import TeamCoordinationStrategy, TeamMemberRole
+        yield TeamCoordinationStrategy, TeamMemberRole
+    except ImportError:
+        # Fallback for when engine_core is not available
+        yield None, None
 
 @pytest.fixture
 def mock_team_builder():
@@ -775,14 +779,14 @@ class TestTeamCLICommands:
 class TestTeamUtilityFunctions:
     """Test utility functions"""
 
-    def test_get_team_enums(self, mock_team_enums):
-        """Test lazy loading of team enums"""
-        from engine_cli.commands.team import _get_team_enums
-
-        enums = _get_team_enums()
-        assert len(enums) == 2
-        assert enums[0] == MockTeamCoordinationStrategy
-        assert enums[1] == MockTeamMemberRole
+    def test_team_enums_import(self):
+        """Test that team enums can be imported from engine_core"""
+        try:
+            from engine_core import TeamCoordinationStrategy, TeamMemberRole
+            assert TeamCoordinationStrategy is not None
+            assert TeamMemberRole is not None
+        except ImportError:
+            pytest.skip("engine_core not available")
 
     def test_get_team_storage(self):
         """Test getting team storage instance"""

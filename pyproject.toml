@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "engine-cli"
-version = "1.0.1"
+version = "1.1.0"
 description = "Engine Framework CLI - Command Line Interface for AI Agent Orchestration"
 authors = ["Engine Framework Team <engine@example.com>"]
 readme = "README.md"
@@ -33,16 +33,6 @@ pydantic = "^2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"
-pytest-asyncio = "^0.21.1"
-pytest-cov = "^4.1.0"
-black = "^23.11.0"
-isort = "^5.12.0"
-mypy = "^1.7.1"
-flake8 = "^6.1.0"
-pre-commit = "^3.6.0"
-httpx = "^0.25.2"
-pytest-mock = "^3.12.0"
-factory-boy = "^3.3.0"
 
 [tool.poetry.scripts]
 engine = "engine_cli.main:cli"

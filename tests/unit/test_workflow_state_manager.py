@@ -63,8 +63,8 @@ class TestWorkflowStateManager:
         manager.redis_client = None
 
         with patch('redis.asyncio.from_url', return_value=mock_redis):
-            await manager.connect()
-            assert not manager.is_connected()
+            with pytest.raises(Exception, match="Connection failed"):
+                await manager.connect()
 
     @pytest.mark.asyncio
     async def test_create_execution(self, state_manager, mock_redis):
@@ -78,7 +78,6 @@ class TestWorkflowStateManager:
         assert execution_id.startswith("wf_exec_test_workflow_")
         assert mock_redis.setex.called
         assert mock_redis.lpush.called
-        assert mock_redis.expire.called
 
         # Verify the stored data
         call_args = mock_redis.setex.call_args

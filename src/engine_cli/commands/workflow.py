@@ -29,11 +29,8 @@ def _get_workflow_execution_service():
     except ImportError:
         return None
 
-# Lazy imports to avoid database dependencies
-def _get_workflow_enums():
-    """Lazy import of workflow enums."""
-    from engine_core.core.workflows.workflow_engine import WorkflowState
-    return WorkflowState
+# Import engine core components
+from engine_core import WorkflowBuilder, WorkflowEngine, WorkflowState
 
 
 class WorkflowStorage:
@@ -1054,10 +1051,10 @@ def status(execution_id, workflow, active, limit):
                         state = vertex_state.get('state', 'unknown')
                         updated = vertex_state.get('updated_at', 'unknown')
                         output = vertex_state.get('output_data', '')
-                        error = vertex_state.get('error_message', '')
+                        error_msg = vertex_state.get('error_message', '')
                         info = output[:50] + "..." if len(str(output)) > 50 else str(output)
-                        if error:
-                            info = f"ERROR: {error[:50]}..."
+                        if error_msg:
+                            info = f"ERROR: {error_msg[:50]}..."
                         vertex_table.add_row(vertex_id, state.upper(), updated, info)
                     print_table(vertex_table)
 

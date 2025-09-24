@@ -25,17 +25,11 @@ from ..formatting import success, error, header, table, print_table, key_value
 # Import BookService and related components
 try:
     from engine_core.services.book_service import BookService
-    from engine_core import BookBuilder
+    from engine_core import (
+        BookBuilder, ContentType, AccessLevel, ContentStatus,
+        SearchScope, SearchQuery
+    )
     BOOK_SERVICE_AVAILABLE = True
-
-    # Lazy imports for enums not exposed in public API
-    def _get_book_enums():
-        """Lazy import of book enums."""
-        from engine_core.core.book.book_builder import (
-            ContentType, AccessLevel, ContentStatus,
-            SearchScope, SearchQuery
-        )
-        return ContentType, AccessLevel, ContentStatus, SearchScope, SearchQuery
 
 except ImportError:
     BOOK_SERVICE_AVAILABLE = False
@@ -279,9 +273,6 @@ def search(book_id: str, query: str, max_results: int = 10):
     async def _search():
         try:
             service = get_book_service()
-
-            # Get enums using lazy import
-            ContentType, AccessLevel, ContentStatus, SearchScope, SearchQuery = _get_book_enums()
 
             search_query = SearchQuery(
                 query_text=query,

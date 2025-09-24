@@ -10,13 +10,7 @@ import json
 from engine_cli.formatting import success, error, header, key_value, table, print_table
 
 # Import engine core components
-from engine_core import TeamBuilder
-
-# Lazy imports for enums not exposed in public API
-def _get_team_enums():
-    """Lazy import of team enums."""
-    from engine_core.core.teams.team_builder import TeamCoordinationStrategy, TeamMemberRole
-    return TeamCoordinationStrategy, TeamMemberRole
+from engine_core import TeamBuilder, TeamCoordinationStrategy, TeamMemberRole
 
 
 class TeamStorage:
@@ -91,8 +85,7 @@ def cli():
 def create(name, agents, leader, strategy, description, save, output):
     """Create a new team with agent coordination."""
     try:
-        # Convert string to enum using lazy import
-        TeamCoordinationStrategy, TeamMemberRole = _get_team_enums()
+        # Convert string to enum
         strategy_enum = TeamCoordinationStrategy(strategy.lower())
 
         # Build the team using TeamBuilder

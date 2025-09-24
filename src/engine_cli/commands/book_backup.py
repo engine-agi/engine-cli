@@ -10,13 +10,7 @@ import json
 from engine_cli.formatting import success, error, header, key_value, table, print_table
 
 # Import engine core components
-from engine_core import WorkflowBuilder, WorkflowEngine
-
-# Lazy imports to avoid database dependencies
-def _get_workflow_enums():
-    """Lazy import of workflow enums."""
-    from engine_core.core.workflows.workflow_engine import WorkflowState
-    return WorkflowState
+from engine_core import WorkflowBuilder, WorkflowEngine, WorkflowState
 
 
 class WorkflowStorage:

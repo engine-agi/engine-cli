@@ -85,14 +85,15 @@ class MockCommandContext:
 # Mock the engine-core imports
 @pytest.fixture
 def mock_protocol_enums():
-    with patch('engine_cli.commands.protocol._get_protocol_enums') as mock_get:
-        mock_get.return_value = (
-            MockIntentCategory,
-            MockCommandType,
-            MockContextScope,
-            MockCommandContext
+    # Import enums directly from engine_core instead of using _get_protocol_enums
+    try:
+        from engine_core import (
+            IntentCategory, CommandType, ContextScope, CommandContext
         )
-        yield mock_get
+        yield IntentCategory, CommandType, ContextScope, CommandContext
+    except ImportError:
+        # Fallback for when engine_core is not available
+        yield None, None, None, None
 
 @pytest.fixture
 def mock_protocol_builder():
@@ -477,16 +478,18 @@ class TestProtocolCLICommands:
 class TestProtocolUtilityFunctions:
     """Test utility functions"""
 
-    def test_get_protocol_enums(self, mock_protocol_enums):
-        """Test lazy loading of protocol enums"""
-        from engine_cli.commands.protocol import _get_protocol_enums
-
-        enums = _get_protocol_enums()
-        assert len(enums) == 4
-        assert enums[0] == MockIntentCategory
-        assert enums[1] == MockCommandType
-        assert enums[2] == MockContextScope
-        assert enums[3] == MockCommandContext
+    def test_protocol_enums_import(self):
+        """Test that protocol enums can be imported from engine_core"""
+        try:
+            from engine_core import (
+                IntentCategory, CommandType, ContextScope, CommandContext
+            )
+            assert IntentCategory is not None
+            assert CommandType is not None
+            assert ContextScope is not None
+            assert CommandContext is not None
+        except ImportError:
+            pytest.skip("engine_core not available")
 
 if __name__ == "__main__":
     pytest.main([__file__])
