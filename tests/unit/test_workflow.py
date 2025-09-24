@@ -154,7 +154,7 @@ class TestWorkflowStorage:
         mock_builder.edge_specs = [{"from": "agent1", "to": "agent2"}]
 
         result = storage.save_workflow(mock_workflow)
-        assert result == True
+        assert result is True
 
     def test_load_workflow_success(self):
         """Test loading a workflow successfully."""
@@ -200,7 +200,7 @@ class TestWorkflowStorage:
         assert os.path.exists(workflow_path)
 
         result = storage.delete_workflow("delete_test")
-        assert result == True
+        assert result is True
         assert not os.path.exists(workflow_path)
 
     def test_delete_workflow_not_found(self):
@@ -208,7 +208,7 @@ class TestWorkflowStorage:
         storage = WorkflowStorage()
 
         result = storage.delete_workflow("non_existent")
-        assert result == False
+        assert result is False
 
 
 class TestWorkflowResolver:

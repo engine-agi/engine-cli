@@ -214,7 +214,7 @@ class TestAgentStorage:
 
         # Delete agent
         result = storage.delete_agent("test_agent")
-        assert result == True
+        assert result is True
         assert not os.path.exists(agent_path)
 
     def test_list_agents_with_invalid_yaml(self):
@@ -267,7 +267,7 @@ class TestAgentStorage:
         # Mock os.remove to raise exception
         with patch("os.remove", side_effect=OSError("Permission denied")):
             result = storage.delete_agent("test_agent")
-            assert result == False
+            assert result is False
             # File should still exist
             assert os.path.exists(agent_path)
 

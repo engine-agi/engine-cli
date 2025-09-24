@@ -151,14 +151,14 @@ class TestWorkflowStorage:
 
         # Delete workflow
         result = storage.delete_workflow("test_workflow")
-        assert result == True
+        assert result is True
         assert not os.path.exists(workflow_path)
 
     def test_delete_workflow_not_exists(self):
         """Test deleting a non-existing workflow."""
         storage = WorkflowStorage()
         result = storage.delete_workflow("nonexistent")
-        assert result == False
+        assert result is False
 
     def test_delete_workflow_file_error(self):
         """Test deleting workflow when file operation fails."""
@@ -173,7 +173,7 @@ class TestWorkflowStorage:
         # Mock os.remove to raise exception
         with patch("os.remove", side_effect=OSError("Permission denied")):
             result = storage.delete_workflow("test_workflow")
-            assert result == False
+            assert result is False
             # File should still exist
             assert os.path.exists(workflow_path)
 
@@ -196,7 +196,7 @@ class TestWorkflowStorage:
         mock_workflow.config.version = "1.0.0"
 
         result = storage.save_workflow(mock_workflow)
-        assert result == True
+        assert result is True
 
         # Verify yaml.safe_dump was called
         mock_yaml_dump.assert_called_once()
@@ -238,7 +238,7 @@ class TestWorkflowStorage:
         builder.edge_specs = [{"from": "agent1", "to": "team1"}]
 
         result = storage.save_workflow(mock_workflow, builder)
-        assert result == True
+        assert result is True
 
         # Verify yaml.safe_dump was called
         mock_yaml_dump.assert_called_once()
@@ -266,7 +266,7 @@ class TestWorkflowStorage:
         mock_makedirs.side_effect = OSError("Permission denied")
 
         result = storage.save_workflow(mock_workflow)
-        assert result == False
+        assert result is False
 
         # Verify yaml.safe_dump was NOT called due to directory creation error
         mock_yaml_dump.assert_not_called()
@@ -412,14 +412,14 @@ class TestWorkflowResolver:
 
         # Delete workflow
         result = storage.delete_workflow("test_workflow")
-        assert result == True
+        assert result is True
         assert not os.path.exists(workflow_path)
 
     def test_delete_workflow_not_exists(self):
         """Test deleting a non-existing workflow."""
         storage = WorkflowStorage()
         result = storage.delete_workflow("nonexistent")
-        assert result == False
+        assert result is False
 
     def test_delete_workflow_file_error(self):
         """Test deleting workflow when file operation fails."""
@@ -434,7 +434,7 @@ class TestWorkflowResolver:
         # Mock os.remove to raise exception
         with patch("os.remove", side_effect=OSError("Permission denied")):
             result = storage.delete_workflow("test_workflow")
-            assert result == False
+            assert result is False
             # File should still exist
             assert os.path.exists(workflow_path)
 
@@ -457,7 +457,7 @@ class TestWorkflowResolver:
         mock_workflow.config.version = "1.0.0"
 
         result = storage.save_workflow(mock_workflow)
-        assert result == True
+        assert result is True
 
         # Verify yaml.safe_dump was called
         mock_yaml_dump.assert_called_once()
@@ -499,7 +499,7 @@ class TestWorkflowResolver:
         builder.edge_specs = [{"from": "agent1", "to": "team1"}]
 
         result = storage.save_workflow(mock_workflow, builder)
-        assert result == True
+        assert result is True
 
         # Verify yaml.safe_dump was called
         mock_yaml_dump.assert_called_once()
@@ -527,7 +527,7 @@ class TestWorkflowResolver:
         mock_makedirs.side_effect = OSError("Permission denied")
 
         result = storage.save_workflow(mock_workflow)
-        assert result == False
+        assert result is False
 
 
 class TestCLIWorkflowBuilder:

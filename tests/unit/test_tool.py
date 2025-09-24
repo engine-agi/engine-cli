@@ -128,14 +128,14 @@ class TestToolStorage:
 
         # Delete tool
         result = storage.delete_tool("test_tool")
-        assert result == True
+        assert result is True
         assert not os.path.exists(tool_path)
 
     def test_delete_tool_not_exists(self):
         """Test deleting a non-existing tool."""
         storage = ToolStorage()
         result = storage.delete_tool("nonexistent")
-        assert result == False
+        assert result is False
 
 
 class TestToolFunctions:
