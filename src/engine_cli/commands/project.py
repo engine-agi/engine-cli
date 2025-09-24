@@ -16,7 +16,7 @@ def cli():
 def create(name, description, template):
     """Create a new project."""
     try:
-        click.echo(f"⚠ Project creation not yet implemented")
+        click.echo("⚠ Project creation not yet implemented")
         click.echo(f"Would create project '{name}' with template: {template}")
 
         # TODO: Implement project creation with templates
@@ -56,7 +56,7 @@ def delete(name, force):
         if not force:
             click.echo(f"⚠ This will delete project '{name}'. Use --force to confirm.")
             return
-        click.echo(f"⚠ Project deletion not yet implemented")
+        click.echo("⚠ Project deletion not yet implemented")
     except Exception as e:
         click.echo(f"✗ Error deleting project: {e}")
 
