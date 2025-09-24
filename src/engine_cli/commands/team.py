@@ -9,7 +9,7 @@ import click
 import yaml
 
 # Import engine core components
-from engine_core import TeamBuilder, TeamCoordinationStrategy, TeamMemberRole
+from engine_core import TeamBuilder, TeamCoordinationStrategy
 
 # Import Rich formatting
 from engine_cli.formatting import error, key_value, print_table, success, table

@@ -8,7 +8,7 @@ import click
 import yaml
 
 # Import engine core components
-from engine_core import WorkflowBuilder, WorkflowEngine, WorkflowState
+from engine_core import WorkflowBuilder
 
 # Import Rich formatting
 from engine_cli.formatting import error, header, key_value, print_table, success, table

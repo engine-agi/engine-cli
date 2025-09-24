@@ -1,22 +1,12 @@
 """Engine CLI - Command Line Interface for AI Agent Orchestration."""
 
-import os
-import sys
-from datetime import datetime
-from typing import List, Optional
-
 import click
-import yaml
-
-# Import cache system
-from engine_cli.cache import cli_cache
 
 # Import Rich formatting
 from engine_cli.formatting import error as error_msg
 from engine_cli.formatting import (
     header,
     info,
-    key_value,
     print_table,
     separator,
 )

@@ -3,7 +3,6 @@
 import os
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import Completer, Completion

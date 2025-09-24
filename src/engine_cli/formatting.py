@@ -2,7 +2,6 @@
 
 from typing import Any, Dict, List, Optional
 
-import click
 from rich import box
 from rich.columns import Columns
 from rich.console import Console
@@ -15,7 +14,6 @@ from rich.progress import (
     TimeElapsedColumn,
 )
 from rich.table import Table
-from rich.text import Text
 
 # Initialize Rich console
 console = Console()

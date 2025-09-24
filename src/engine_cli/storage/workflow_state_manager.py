@@ -1,6 +1,5 @@
 """Workflow State Manager - Redis-based volatile state for workflow execution."""
 
-import asyncio
 import json
 import os
 from dataclasses import asdict, dataclass, field
