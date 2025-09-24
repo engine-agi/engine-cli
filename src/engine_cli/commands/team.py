@@ -9,7 +9,16 @@ import click
 import yaml
 
 # Import engine core components
-from engine_core import TeamBuilder, TeamCoordinationStrategy
+try:
+    from engine_core import TeamBuilder  # type: ignore
+    from engine_core import TeamCoordinationStrategy  # type: ignore
+
+    TEAM_BUILDER_AVAILABLE = True
+
+except ImportError:
+    TEAM_BUILDER_AVAILABLE = False
+    TeamBuilder = None
+    TeamCoordinationStrategy = None
 
 # Import Rich formatting
 from engine_cli.formatting import error, key_value, print_table, success, table
@@ -94,11 +103,15 @@ def cli():
 def create(name, agents, leader, strategy, description, save, output):
     """Create a new team with agent coordination."""
     try:
+        if not TEAM_BUILDER_AVAILABLE:
+            error("Engine Core not available. Please install engine-core first.")
+            return
+
         # Convert string to enum
-        strategy_enum = TeamCoordinationStrategy(strategy.lower())
+        strategy_enum = TeamCoordinationStrategy(strategy.lower())  # type: ignore
 
         # Build the team using TeamBuilder
-        builder = TeamBuilder()
+        builder = TeamBuilder()  # type: ignore
         builder = builder.with_id(name)
         builder = builder.with_name(name)
         builder = builder.with_coordination_strategy(strategy_enum)
@@ -120,9 +133,19 @@ def create(name, agents, leader, strategy, description, save, output):
 
         # Create real agent objects for the build method
         for agent_id in agent_ids:
-            from engine_core import AgentBuilder
+            try:
+                from engine_core import AgentBuilder  # type: ignore
 
-            agent_builder = AgentBuilder()
+                agent_builder_available = True
+            except ImportError:
+                agent_builder_available = False
+                AgentBuilder = None
+
+            if not agent_builder_available:
+                error("Engine Core not available. Please install engine-core first.")
+                return
+
+            agent_builder = AgentBuilder()  # type: ignore
             agent_builder = agent_builder.with_id(agent_id)
             agent_builder = agent_builder.with_name(agent_id)
             agent_builder = agent_builder.with_model("claude-3.5-sonnet")

@@ -9,13 +9,22 @@ import click
 import yaml
 
 # Import engine core components
-from engine_core import (
-    CommandContext,
-    CommandType,
-    ContextScope,
-    IntentCategory,
-    ProtocolBuilder,
-)
+try:
+    from engine_core import CommandContext  # type: ignore
+    from engine_core import CommandType  # type: ignore
+    from engine_core import ContextScope  # type: ignore
+    from engine_core import IntentCategory  # type: ignore
+    from engine_core import ProtocolBuilder  # type: ignore
+
+    PROTOCOL_BUILDER_AVAILABLE = True
+
+except ImportError:
+    PROTOCOL_BUILDER_AVAILABLE = False
+    CommandContext = None
+    CommandType = None
+    ContextScope = None
+    IntentCategory = None
+    ProtocolBuilder = None
 
 # Import Rich formatting
 from engine_cli.formatting import error, key_value, print_table, success, table
@@ -115,7 +124,11 @@ def create(
 ):
     """Create a new protocol."""
     try:
-        builder = ProtocolBuilder()
+        if not PROTOCOL_BUILDER_AVAILABLE:
+            error("Engine Core not available. Please install engine-core first.")
+            return
+
+        builder = ProtocolBuilder()  # type: ignore
         builder = builder.with_id(name)
         builder = builder.with_name(name)
 
@@ -137,8 +150,10 @@ def create(
             intent_list = []
             for intent_name in intents.split(","):
                 intent_name = intent_name.strip().upper()
-                if hasattr(IntentCategory, intent_name):
-                    intent_list.append(getattr(IntentCategory, intent_name))
+                if hasattr(IntentCategory, intent_name):  # type: ignore
+                    intent_list.append(
+                        getattr(IntentCategory, intent_name)  # type: ignore
+                    )
             if intent_list:
                 builder = builder.with_supported_intents(intent_list)
 
@@ -147,13 +162,13 @@ def create(
             cmd_type_list = []
             for cmd_type in command_types.split(","):
                 cmd_type = cmd_type.strip().upper()
-                if hasattr(CommandType, cmd_type):
-                    cmd_type_list.append(getattr(CommandType, cmd_type))
+                if hasattr(CommandType, cmd_type):  # type: ignore
+                    cmd_type_list.append(getattr(CommandType, cmd_type))  # type: ignore
             if cmd_type_list:
                 builder = builder.with_supported_command_types(cmd_type_list)
 
         # Configure scope
-        scope_enum = ContextScope(scope)
+        scope_enum = ContextScope(scope)  # type: ignore
         builder = builder.with_default_scope(scope_enum)
 
         if strict_validation:
@@ -411,6 +426,10 @@ def test(name, command, context):
             error("Please provide a command to test with --command")
             return
 
+        if not PROTOCOL_BUILDER_AVAILABLE:
+            error("Engine Core not available. Please install engine-core first.")
+            return
+
         success(f"Testing protocol '{name}'...")
 
         # Parse context if provided
@@ -423,7 +442,7 @@ def test(name, command, context):
                 return
 
         # Create mock context for testing
-        test_context = CommandContext(
+        test_context = CommandContext(  # type: ignore
             user_id=context_data.get("user_id", "test_user"),
             session_id=context_data.get("session_id", "test_session"),
             project_id=context_data.get("project_id", "test_project"),

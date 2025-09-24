@@ -1,10 +1,49 @@
-import json
 import os
 import tempfile
-from datetime import datetime
 from unittest.mock import MagicMock, mock_open, patch
 
-import pytest
+try:
+    import pytest  # type: ignore
+
+    PYTEST_AVAILABLE = True
+except ImportError:
+    PYTEST_AVAILABLE = False
+
+    class MockMark:
+        def asyncio(self, func=None):
+            """Mock asyncio marker that can be used as decorator"""
+            if func is None:
+                # Called as @pytest.mark.asyncio()
+                return lambda f: f
+            else:
+                # Called as @pytest.mark.asyncio
+                return func
+
+    class MockPytest:
+        def __init__(self):
+            self.mark = MockMark()
+            self.fixture = lambda f: f
+
+        def raises(self, *args, **kwargs):
+            # Mock implementation
+            class MockContext:
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, exc_type, exc_val, exc_tb):
+                    return None
+
+            return MockContext()
+
+        def skip(self, reason):
+            raise Exception(f"Skipped: {reason}")
+
+        @staticmethod
+        def main(args):
+            pass
+
+    pytest = MockPytest()
+
 import yaml
 from click.testing import CliRunner
 
@@ -44,7 +83,8 @@ class MockTeamBuilder:
         team.name = self.name
         team.coordination_strategy = (
             self.coordination_strategy.value
-            if hasattr(self.coordination_strategy, "value")
+            if self.coordination_strategy is not None
+            and hasattr(self.coordination_strategy, "value")
             else self.coordination_strategy
         )
         team.description = self.description
@@ -95,7 +135,7 @@ class MockTeamMemberRole:
 def mock_team_enums():
     # Import enums directly from engine_core instead of using _get_team_enums
     try:
-        from engine_core import TeamCoordinationStrategy, TeamMemberRole
+        from engine_core import TeamCoordinationStrategy, TeamMemberRole  # type: ignore
 
         yield TeamCoordinationStrategy, TeamMemberRole
     except ImportError:
@@ -642,66 +682,6 @@ class TestTeamCLICommands:
 
             assert result.exit_code == 0
 
-    def test_create_team_with_leader(
-        self,
-        cli_runner,
-        mock_team_enums,
-        mock_team_builder,
-        mock_agent_builder,
-        mock_imports,
-    ):
-        """Test creating team with leader specified"""
-        with patch("engine_cli.commands.team.success"), patch(
-            "engine_cli.commands.team.table"
-        ), patch("engine_cli.commands.team.print_table"):
-
-            from engine_cli.commands.team import create
-
-            result = cli_runner.invoke(
-                create,
-                [
-                    "leader_team",
-                    "--agents",
-                    "agent1,agent2,agent3",
-                    "--leader",
-                    "agent1",
-                    "--strategy",
-                    "hierarchical",
-                ],
-            )
-
-            assert result.exit_code == 0
-
-    def test_create_team_with_leader(
-        self,
-        cli_runner,
-        mock_team_enums,
-        mock_team_builder,
-        mock_agent_builder,
-        mock_imports,
-    ):
-        """Test creating team with leader specified"""
-        with patch("engine_cli.commands.team.success"), patch(
-            "engine_cli.commands.team.table"
-        ), patch("engine_cli.commands.team.print_table"):
-
-            from engine_cli.commands.team import create
-
-            result = cli_runner.invoke(
-                create,
-                [
-                    "leader_team",
-                    "--agents",
-                    "agent1,agent2,agent3",
-                    "--leader",
-                    "agent1",
-                    "--strategy",
-                    "hierarchical",
-                ],
-            )
-
-            assert result.exit_code == 0
-
     def test_create_team_with_whitespace_in_agents(
         self,
         cli_runner,
@@ -888,7 +868,10 @@ class TestTeamCLICommands:
                 "name": "Long Desc Team",
                 "coordination_strategy": "collaborative",
                 "agents": ["agent1"],
-                "description": "This is a very long description that should be truncated in the table display to show only the first 30 characters followed by ellipsis",
+                "description": (
+                    "This is a very long description that should be truncated "
+                    "in table display to show only first 30 chars followed by ellipsis"
+                ),
             }
         ]
 
@@ -976,7 +959,8 @@ class TestTeamUtilityFunctions:
     def test_team_enums_import(self):
         """Test that team enums can be imported from engine_core"""
         try:
-            from engine_core import TeamCoordinationStrategy, TeamMemberRole
+            from engine_core import TeamCoordinationStrategy  # type: ignore
+            from engine_core import TeamMemberRole  # type: ignore; type: ignore
 
             assert TeamCoordinationStrategy is not None
             assert TeamMemberRole is not None

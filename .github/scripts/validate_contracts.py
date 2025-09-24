@@ -7,13 +7,13 @@ This script checks that the Engine CLI uses only public APIs from engine-core,
 following the contract specifications.
 """
 
-import os
-import sys
-import re
 import ast
 import importlib.util
+import os
+import re
+import sys
 from pathlib import Path
-from typing import Set, List, Dict, Tuple
+from typing import Dict, List, Set, Tuple
 
 
 class ContractValidator:
@@ -30,8 +30,8 @@ class ContractValidator:
 
         # Forbidden import patterns
         self.forbidden_patterns = [
-            r'from engine_core\.core\.',  # Direct internal imports
-            r'import engine_core\.core\.',  # Direct internal imports
+            r"from engine_core\.core\.",  # Direct internal imports
+            r"import engine_core\.core\.",  # Direct internal imports
         ]
 
     def _load_public_interfaces(self) -> Set[str]:
@@ -49,10 +49,12 @@ class ContractValidator:
                 spec.loader.exec_module(module)
 
                 # Get __all__ if it exists
-                if hasattr(module, '__all__'):
+                if hasattr(module, "__all__"):
                     return set(module.__all__)
                 else:
-                    self.warnings.append("engine-core __init__.py has no __all__ defined")
+                    self.warnings.append(
+                        "engine-core __init__.py has no __all__ defined"
+                    )
                     return set()
             else:
                 self.violations.append(f"Could not load engine-core __init__.py")
@@ -73,7 +75,7 @@ class ContractValidator:
     def _check_file_imports(self, file_path: Path) -> None:
         """Check imports in a single file"""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             # Check for forbidden import patterns
@@ -90,7 +92,7 @@ class ContractValidator:
 
             for node in ast.walk(tree):
                 if isinstance(node, ast.ImportFrom):
-                    if node.module and node.module.startswith('engine_core.core.'):
+                    if node.module and node.module.startswith("engine_core.core."):
                         # This is a violation - using internal modules
                         imported_items = [alias.name for alias in node.names]
                         self.violations.append(
@@ -100,7 +102,7 @@ class ContractValidator:
 
                 elif isinstance(node, ast.Import):
                     for alias in node.names:
-                        if alias.name.startswith('engine_core.core.'):
+                        if alias.name.startswith("engine_core.core."):
                             self.violations.append(
                                 f"INTERNAL IMPORT in {file_path}: import {alias.name}"
                             )
@@ -116,19 +118,20 @@ class ContractValidator:
         # For now, just check that __version__ is accessible
         try:
             spec = importlib.util.spec_from_file_location(
-                "engine_core",
-                self.core_root / "src" / "engine_core" / "__init__.py"
+                "engine_core", self.core_root / "src" / "engine_core" / "__init__.py"
             )
             if spec and spec.loader:
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
 
-                if not hasattr(module, '__version__'):
+                if not hasattr(module, "__version__"):
                     self.violations.append("__version__ not exported from engine-core")
                 else:
                     version = module.__version__
                     if not isinstance(version, str) or not version:
-                        self.warnings.append(f"__version__ is not a valid string: {version}")
+                        self.warnings.append(
+                            f"__version__ is not a valid string: {version}"
+                        )
 
         except Exception as e:
             self.violations.append(f"Error checking __version__: {e}")
@@ -175,7 +178,9 @@ class ContractValidator:
 def main():
     """Main entry point"""
     # Determine paths
-    script_dir = Path(__file__).parent.parent.parent  # .github/scripts/validate_contracts.py -> engine-cli/
+    script_dir = Path(
+        __file__
+    ).parent.parent.parent  # .github/scripts/validate_contracts.py -> engine-cli/
     cli_root = script_dir
     core_root = cli_root.parent / "engine-core"  # Assume engine-core is sibling
 
