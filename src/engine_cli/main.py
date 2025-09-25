@@ -1,5 +1,7 @@
 """Engine CLI - Command Line Interface for AI Agent Orchestration."""
 
+from typing import TYPE_CHECKING
+
 import click
 
 # Import Rich formatting
@@ -10,6 +12,19 @@ from engine_cli.formatting import table
 
 # Import interactive mode
 from engine_cli.interactive import start_interactive
+
+# Import engine core components for type checking
+if TYPE_CHECKING:
+    try:
+        from engine_core import (  # type: ignore
+            AgentBuilder,
+            TeamBuilder,
+            WorkflowBuilder,
+        )
+        from engine_core import __version__ as core_version_type  # type: ignore
+    except ImportError:
+        # Type stubs not available
+        pass
 
 
 @click.group()
@@ -23,7 +38,7 @@ def cli():
 def version():
     """Show version information."""
     try:
-        from engine_core import __version__ as core_version
+        from engine_core import __version__ as core_version  # type: ignore
     except ImportError:
         core_version = "Not available"
 
@@ -59,21 +74,21 @@ def status():
         status_checks = {}
 
         try:
-            from engine_core import AgentBuilder
+            from engine_core import AgentBuilder  # type: ignore
 
             status_checks["Agent module"] = True
         except ImportError:
             status_checks["Agent module"] = False
 
         try:
-            from engine_core import TeamBuilder
+            from engine_core import TeamBuilder  # type: ignore
 
             status_checks["Team module"] = True
         except ImportError:
             status_checks["Team module"] = False
 
         try:
-            from engine_core import WorkflowBuilder
+            from engine_core import WorkflowBuilder  # type: ignore
 
             status_checks["Workflow module"] = True
         except ImportError:
