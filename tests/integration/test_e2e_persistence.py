@@ -47,9 +47,7 @@ class TestEndToEndPersistence:
         os.chdir(original_cwd)
         shutil.rmtree(temp_dir, ignore_errors=True)
 
-    def test_agent_create_and_save_e2e(
-        self, runner, temp_workspace, monkeypatch
-    ):
+    def test_agent_create_and_save_e2e(self, runner, temp_workspace, monkeypatch):
         """Test end-to-end agent creation and persistence."""
         agent_name = "test-agent-e2e"
 
@@ -196,9 +194,7 @@ class TestEndToEndPersistence:
 
             # Verify count - only check that we have at least the expected number
             # (there might be pre-existing agents from other tests)
-            result_json = runner.invoke(
-                cli, ["agent", "list", "--format", "json"]
-            )
+            result_json = runner.invoke(cli, ["agent", "list", "--format", "json"])
             assert result_json.exit_code == 0
             agents_data = json.loads(result_json.output)
             assert len(agents_data) >= len(agents)
@@ -433,9 +429,7 @@ class TestEndToEndPersistence:
         assert "created successfully" in result.output
 
         # Verify the agent can be loaded and has correct structure
-        result = runner.invoke(
-            cli, ["agent", "show", agent_name, "--format", "json"]
-        )
+        result = runner.invoke(cli, ["agent", "show", agent_name, "--format", "json"])
         assert result.exit_code == 0
 
         agent_data = json.loads(result.output)
@@ -449,9 +443,7 @@ class TestEndToEndPersistence:
         assert agent_data["speciality"] == "Integration Testing"
         assert agent_data["stack"] == ["python", "testing"]
 
-    def test_cli_core_integration_workflow_execution(
-        self, runner, temp_workspace
-    ):
+    def test_cli_core_integration_workflow_execution(self, runner, temp_workspace):
         """Test CLI to core integration for workflow execution."""
         workflow_name = "test-integration-workflow"
         agent_name = "test-integration-exec-agent"
@@ -507,9 +499,7 @@ class TestEndToEndPersistence:
         # Verify execution was attempted (check for execution-related output)
         assert "workflow" in result.output.lower()
 
-    def test_persistence_cross_session_consistency(
-        self, runner, temp_workspace
-    ):
+    def test_persistence_cross_session_consistency(self, runner, temp_workspace):
         """Test that persisted data remains consistent across sessions."""
         agent_name = "test-consistency-agent"
 
@@ -530,9 +520,7 @@ class TestEndToEndPersistence:
         assert result.exit_code == 0
 
         # Get agent data
-        result = runner.invoke(
-            cli, ["agent", "show", agent_name, "--format", "json"]
-        )
+        result = runner.invoke(cli, ["agent", "show", agent_name, "--format", "json"])
         assert result.exit_code == 0
         original_data = json.loads(result.output)
 
@@ -543,9 +531,7 @@ class TestEndToEndPersistence:
         agents_list = json.loads(result.output)
 
         # Find our agent in the list
-        agent_in_list = next(
-            (a for a in agents_list if a["id"] == agent_name), None
-        )
+        agent_in_list = next((a for a in agents_list if a["id"] == agent_name), None)
         assert agent_in_list is not None
 
         # Verify data consistency
@@ -617,9 +603,7 @@ class TestEndToEndPersistence:
 
         # Bulk delete
         for agent_name in agents:
-            result = runner.invoke(
-                cli, ["agent", "delete", agent_name, "--force"]
-            )
+            result = runner.invoke(cli, ["agent", "delete", agent_name, "--force"])
             assert result.exit_code == 0
 
         # Verify all deleted

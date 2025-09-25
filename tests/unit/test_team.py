@@ -712,11 +712,9 @@ class TestTeamCLICommands:
 
     def test_list_teams_table_format(self, cli_runner, mock_team_storage):
         """Test listing teams in table format"""
-        with patch(
-            "engine_cli.commands.team.team_storage", mock_team_storage
-        ), patch("engine_cli.commands.team.table"), patch(
-            "engine_cli.commands.team.print_table"
-        ), patch(
+        with patch("engine_cli.commands.team.team_storage", mock_team_storage), patch(
+            "engine_cli.commands.team.table"
+        ), patch("engine_cli.commands.team.print_table"), patch(
             "engine_cli.commands.team.success"
         ):
 
@@ -753,9 +751,7 @@ class TestTeamCLICommands:
         mock_empty_storage = MagicMock()
         mock_empty_storage.list_teams.return_value = []
 
-        with patch(
-            "engine_cli.commands.team.team_storage", mock_empty_storage
-        ):
+        with patch("engine_cli.commands.team.team_storage", mock_empty_storage):
             from engine_cli.commands.team import list
 
             result = cli_runner.invoke(list)
@@ -765,15 +761,13 @@ class TestTeamCLICommands:
 
     def test_show_team_table_format(self, cli_runner, mock_team_storage):
         """Test showing team details in table format"""
-        with patch(
-            "engine_cli.commands.team.team_storage", mock_team_storage
-        ), patch("engine_cli.commands.team.key_value"):
+        with patch("engine_cli.commands.team.team_storage", mock_team_storage), patch(
+            "engine_cli.commands.team.key_value"
+        ):
 
             from engine_cli.commands.team import show
 
-            result = cli_runner.invoke(
-                show, ["test_team_1", "--format", "table"]
-            )
+            result = cli_runner.invoke(show, ["test_team_1", "--format", "table"])
 
             assert result.exit_code == 0
 
@@ -782,9 +776,7 @@ class TestTeamCLICommands:
         with patch("engine_cli.commands.team.team_storage", mock_team_storage):
             from engine_cli.commands.team import show
 
-            result = cli_runner.invoke(
-                show, ["test_team_1", "--format", "json"]
-            )
+            result = cli_runner.invoke(show, ["test_team_1", "--format", "json"])
 
             assert result.exit_code == 0
             assert "test_team_1" in result.output
@@ -794,9 +786,7 @@ class TestTeamCLICommands:
         with patch("engine_cli.commands.team.team_storage", mock_team_storage):
             from engine_cli.commands.team import show
 
-            result = cli_runner.invoke(
-                show, ["test_team_1", "--format", "yaml"]
-            )
+            result = cli_runner.invoke(show, ["test_team_1", "--format", "yaml"])
 
             assert result.exit_code == 0
             assert "test_team_1" in result.output
@@ -806,9 +796,9 @@ class TestTeamCLICommands:
         mock_empty_storage = MagicMock()
         mock_empty_storage.get_team.return_value = None
 
-        with patch(
-            "engine_cli.commands.team.team_storage", mock_empty_storage
-        ), patch("engine_cli.commands.team.error"):
+        with patch("engine_cli.commands.team.team_storage", mock_empty_storage), patch(
+            "engine_cli.commands.team.error"
+        ):
 
             from engine_cli.commands.team import show
 
@@ -818,9 +808,9 @@ class TestTeamCLICommands:
 
     def test_delete_team_success(self, cli_runner, mock_team_storage):
         """Test deleting a team successfully"""
-        with patch(
-            "engine_cli.commands.team.team_storage", mock_team_storage
-        ), patch("engine_cli.commands.team.success"):
+        with patch("engine_cli.commands.team.team_storage", mock_team_storage), patch(
+            "engine_cli.commands.team.success"
+        ):
 
             from engine_cli.commands.team import delete
 
@@ -833,9 +823,9 @@ class TestTeamCLICommands:
         mock_empty_storage = MagicMock()
         mock_empty_storage.get_team.return_value = None
 
-        with patch(
-            "engine_cli.commands.team.team_storage", mock_empty_storage
-        ), patch("engine_cli.commands.team.error"):
+        with patch("engine_cli.commands.team.team_storage", mock_empty_storage), patch(
+            "engine_cli.commands.team.error"
+        ):
 
             from engine_cli.commands.team import delete
 
@@ -843,15 +833,11 @@ class TestTeamCLICommands:
 
             assert result.exit_code == 0
 
-    def test_delete_team_with_confirmation(
-        self, cli_runner, mock_team_storage
-    ):
+    def test_delete_team_with_confirmation(self, cli_runner, mock_team_storage):
         """Test deleting a team with user confirmation"""
-        with patch(
-            "engine_cli.commands.team.team_storage", mock_team_storage
-        ), patch("engine_cli.commands.team.success"), patch(
-            "click.confirm", return_value=True
-        ):
+        with patch("engine_cli.commands.team.team_storage", mock_team_storage), patch(
+            "engine_cli.commands.team.success"
+        ), patch("click.confirm", return_value=True):
 
             from engine_cli.commands.team import delete
 
@@ -864,9 +850,9 @@ class TestTeamCLICommands:
         mock_error_storage = MagicMock()
         mock_error_storage.list_teams.side_effect = Exception("Storage error")
 
-        with patch(
-            "engine_cli.commands.team.team_storage", mock_error_storage
-        ), patch("engine_cli.commands.team.error"):
+        with patch("engine_cli.commands.team.team_storage", mock_error_storage), patch(
+            "engine_cli.commands.team.error"
+        ):
 
             from engine_cli.commands.team import list
 
@@ -874,9 +860,7 @@ class TestTeamCLICommands:
 
             assert result.exit_code == 0
 
-    def test_list_teams_with_long_description(
-        self, cli_runner, mock_team_storage
-    ):
+    def test_list_teams_with_long_description(self, cli_runner, mock_team_storage):
         """Test list teams with long description truncation"""
         mock_team_storage.list_teams.return_value = [
             {
@@ -891,11 +875,9 @@ class TestTeamCLICommands:
             }
         ]
 
-        with patch(
-            "engine_cli.commands.team.team_storage", mock_team_storage
-        ), patch("engine_cli.commands.team.table"), patch(
-            "engine_cli.commands.team.print_table"
-        ), patch(
+        with patch("engine_cli.commands.team.team_storage", mock_team_storage), patch(
+            "engine_cli.commands.team.table"
+        ), patch("engine_cli.commands.team.print_table"), patch(
             "engine_cli.commands.team.success"
         ):
 
@@ -910,9 +892,9 @@ class TestTeamCLICommands:
         mock_error_storage = MagicMock()
         mock_error_storage.get_team.side_effect = Exception("Storage error")
 
-        with patch(
-            "engine_cli.commands.team.team_storage", mock_error_storage
-        ), patch("engine_cli.commands.team.error"):
+        with patch("engine_cli.commands.team.team_storage", mock_error_storage), patch(
+            "engine_cli.commands.team.error"
+        ):
 
             from engine_cli.commands.team import show
 
@@ -932,9 +914,9 @@ class TestTeamCLICommands:
             "created_at": "2024-01-01T12:00:00",
         }
 
-        with patch(
-            "engine_cli.commands.team.team_storage", mock_team_storage
-        ), patch("engine_cli.commands.team.key_value"):
+        with patch("engine_cli.commands.team.team_storage", mock_team_storage), patch(
+            "engine_cli.commands.team.key_value"
+        ):
 
             from engine_cli.commands.team import show
 
@@ -947,9 +929,9 @@ class TestTeamCLICommands:
         mock_team_storage.get_team.return_value = {"id": "error_team"}
         mock_team_storage.delete_team.side_effect = Exception("Delete error")
 
-        with patch(
-            "engine_cli.commands.team.team_storage", mock_team_storage
-        ), patch("engine_cli.commands.team.error"):
+        with patch("engine_cli.commands.team.team_storage", mock_team_storage), patch(
+            "engine_cli.commands.team.error"
+        ):
 
             from engine_cli.commands.team import delete
 
@@ -957,15 +939,11 @@ class TestTeamCLICommands:
 
             assert result.exit_code == 0
 
-    def test_delete_team_confirmation_prompt(
-        self, cli_runner, mock_team_storage
-    ):
+    def test_delete_team_confirmation_prompt(self, cli_runner, mock_team_storage):
         """Test delete team confirmation prompt behavior"""
-        with patch(
-            "engine_cli.commands.team.team_storage", mock_team_storage
-        ), patch("click.confirm", return_value=True), patch(
-            "engine_cli.commands.team.success"
-        ):
+        with patch("engine_cli.commands.team.team_storage", mock_team_storage), patch(
+            "click.confirm", return_value=True
+        ), patch("engine_cli.commands.team.success"):
 
             from engine_cli.commands.team import delete
 

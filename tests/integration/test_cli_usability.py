@@ -49,9 +49,7 @@ class TestCLIUsability:
 
         for cmd in commands_to_test:
             result = runner.invoke(cli, cmd)
-            assert (
-                result.exit_code == 0
-            ), f"Help failed for command: {' '.join(cmd)}"
+            assert result.exit_code == 0, f"Help failed for command: {' '.join(cmd)}"
 
             # Basic help quality checks
             assert "Options:" in result.output or "Usage:" in result.output
@@ -97,9 +95,7 @@ class TestCLIUsability:
         for output in outputs:
             # Should not have obvious formatting errors
             assert not output.startswith("\n\n")  # No double newlines at start
-            assert not re.search(
-                r"\n\s*\n\s*\n", output
-            )  # No excessive blank lines
+            assert not re.search(r"\n\s*\n\s*\n", output)  # No excessive blank lines
 
     def test_progress_feedback(self, runner):
         """Test that commands provide appropriate progress feedback."""
@@ -134,9 +130,7 @@ class TestCLIUsability:
         ]
 
         for cmd in main_commands:
-            assert (
-                cmd in result.output
-            ), f"Command '{cmd}' not listed in main help"
+            assert cmd in result.output, f"Command '{cmd}' not listed in main help"
 
     def test_option_clarity(self, runner):
         """Test that command options are clearly named and described."""

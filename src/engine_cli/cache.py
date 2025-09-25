@@ -48,9 +48,7 @@ class CLICache:
         cache = self._load_cache(self.commands_cache_file)
         return cache.get(command_name)
 
-    def set_command_info(
-        self, command_name: str, info: Dict[str, Any]
-    ) -> None:
+    def set_command_info(self, command_name: str, info: Dict[str, Any]) -> None:
         """Cache command information."""
         cache = self._load_cache(self.commands_cache_file)
         cache[command_name] = info

@@ -226,9 +226,7 @@ class TestCoreCLIIntegration:
         assert "team-agent-2" in member_ids
 
         # Verify leader role
-        leader_member = next(
-            m for m in loaded_team["members"] if m["role"] == "leader"
-        )
+        leader_member = next(m for m in loaded_team["members"] if m["role"] == "leader")
         assert leader_member["id"] == "team-agent-1"
 
     @pytest.mark.integration
@@ -250,12 +248,8 @@ class TestCoreCLIIntegration:
             WorkflowBuilder()
             .with_id("integration-workflow")
             .with_name("Integration Test Workflow")
-            .add_agent_vertex(
-                "analyze", workflow_agent, "Analyze requirements"
-            )
-            .add_agent_vertex(
-                "implement", workflow_agent, "Implement solution"
-            )
+            .add_agent_vertex("analyze", workflow_agent, "Analyze requirements")
+            .add_agent_vertex("implement", workflow_agent, "Implement solution")
             .add_edge("analyze", "implement")
             .build()
         )
@@ -311,9 +305,7 @@ class TestCoreCLIIntegration:
 
         # Verify vertex-agent relationships
         vertex_agent_ids = [v["agent_id"] for v in loaded_workflow["vertices"]]
-        assert all(
-            agent_id == "workflow-executor" for agent_id in vertex_agent_ids
-        )
+        assert all(agent_id == "workflow-executor" for agent_id in vertex_agent_ids)
 
         # Verify edge connectivity
         edge = loaded_workflow["edges"][0]
@@ -366,15 +358,9 @@ class TestCoreCLIIntegration:
                 senior_dev,
                 "Analyze requirements and design solution",
             )
-            .add_agent_vertex(
-                "implementation", senior_dev, "Implement the solution"
-            )
-            .add_agent_vertex(
-                "testing", qa_engineer, "Test the implementation"
-            )
-            .add_agent_vertex(
-                "review", senior_dev, "Review and approve changes"
-            )
+            .add_agent_vertex("implementation", senior_dev, "Implement the solution")
+            .add_agent_vertex("testing", qa_engineer, "Test the implementation")
+            .add_agent_vertex("review", senior_dev, "Review and approve changes")
             .add_edge("analysis", "implementation")
             .add_edge("implementation", "testing")
             .add_edge("testing", "review")
@@ -572,9 +558,7 @@ class TestCoreCLIIntegration:
         for i in range(5):
             agent_data = {
                 "id": f"bulk-agent-{i}",
-                "model": (
-                    "claude-3.5-sonnet" if i % 2 == 0 else "claude-3-haiku"
-                ),
+                "model": ("claude-3.5-sonnet" if i % 2 == 0 else "claude-3-haiku"),
                 "name": f"Bulk Agent {i}",
                 "speciality": f"Speciality {i}",
                 "stack": ["python", f"skill-{i}"],
@@ -593,11 +577,7 @@ class TestCoreCLIIntegration:
             team_members.append((agent_data["id"], role))
 
         # Build team using core
-        bulk_team = (
-            TeamBuilder()
-            .with_id("bulk-team")
-            .with_name("Bulk Operations Team")
-        )
+        bulk_team = TeamBuilder().with_id("bulk-team").with_name("Bulk Operations Team")
 
         for agent_id, role in team_members:
             bulk_team = bulk_team.add_member(agent_id, role)

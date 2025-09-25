@@ -170,9 +170,7 @@ class TestPerformanceBenchmarks:
         )
 
     @pytest.mark.performance
-    def test_agent_creation_100_agents(
-        self, temp_workspace, performance_reporter
-    ):
+    def test_agent_creation_100_agents(self, temp_workspace, performance_reporter):
         """Benchmark creating 100 agents."""
 
         def create_agent(i):
@@ -216,9 +214,7 @@ class TestPerformanceBenchmarks:
         ), f"Agent creation P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
 
     @pytest.mark.performance
-    def test_agent_loading_100_agents(
-        self, temp_workspace, performance_reporter
-    ):
+    def test_agent_loading_100_agents(self, temp_workspace, performance_reporter):
         """Benchmark loading 100 agents from storage."""
         # First create 100 agents
         for i in range(100):
@@ -252,9 +248,7 @@ class TestPerformanceBenchmarks:
             )
             return agent
 
-        metric = self._measure_operation(
-            "Agent Loading (100 agents)", 100, load_agent
-        )
+        metric = self._measure_operation("Agent Loading (100 agents)", 100, load_agent)
         performance_reporter.add_metric(metric)
 
         # Assert performance requirement: P95 < 100ms
@@ -263,9 +257,7 @@ class TestPerformanceBenchmarks:
         ), f"Agent loading P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
 
     @pytest.mark.performance
-    def test_team_creation_with_50_members(
-        self, temp_workspace, performance_reporter
-    ):
+    def test_team_creation_with_50_members(self, temp_workspace, performance_reporter):
         """Benchmark creating teams with 50 members each."""
         # Create 100 agents first
         agents = []
@@ -295,9 +287,7 @@ class TestPerformanceBenchmarks:
 
             # Add members with alternating roles
             for j, agent in enumerate(team_agents):
-                role = (
-                    TeamMemberRole.LEADER if j == 0 else TeamMemberRole.MEMBER
-                )
+                role = TeamMemberRole.LEADER if j == 0 else TeamMemberRole.MEMBER
                 team_builder = team_builder.add_member(agent.id, role)
 
             team = team_builder.build()
@@ -337,9 +327,7 @@ class TestPerformanceBenchmarks:
         ), f"Team creation P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
 
     @pytest.mark.performance
-    def test_workflow_creation_complex(
-        self, temp_workspace, performance_reporter
-    ):
+    def test_workflow_creation_complex(self, temp_workspace, performance_reporter):
         """Benchmark creating complex workflows with multiple vertices."""
         # Create 10 agents for workflow vertices
         agents = []
@@ -388,10 +376,7 @@ class TestPerformanceBenchmarks:
                     }
                     for j in range(10)
                 ],
-                "edges": [
-                    {"from": f"task-{j}", "to": f"task-{j+1}"}
-                    for j in range(9)
-                ]
+                "edges": [{"from": f"task-{j}", "to": f"task-{j+1}"} for j in range(9)]
                 + [
                     {"from": "task-0", "to": "task-5"},
                     {"from": "task-2", "to": "task-7"},
@@ -421,9 +406,7 @@ class TestPerformanceBenchmarks:
         ), f"Workflow creation P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
 
     @pytest.mark.performance
-    def test_bulk_operations_1000_items(
-        self, temp_workspace, performance_reporter
-    ):
+    def test_bulk_operations_1000_items(self, temp_workspace, performance_reporter):
         """Benchmark bulk operations with 1000 items."""
 
         def bulk_agent_creation(i):
@@ -475,9 +458,7 @@ class TestPerformanceBenchmarks:
                 agent = (
                     AgentBuilder()
                     .with_id(f"project-{i}-agent-{j}")
-                    .with_model(
-                        "claude-3.5-sonnet" if j % 2 == 0 else "claude-3-haiku"
-                    )
+                    .with_model("claude-3.5-sonnet" if j % 2 == 0 else "claude-3-haiku")
                     .with_name(f"Project {i} Agent {j}")
                     .with_speciality(f"Role {j}")
                     .with_stack(["python", f"skill-{j}"])
@@ -493,9 +474,7 @@ class TestPerformanceBenchmarks:
             )
 
             for j, agent in enumerate(project_agents):
-                role = (
-                    TeamMemberRole.LEADER if j == 0 else TeamMemberRole.MEMBER
-                )
+                role = TeamMemberRole.LEADER if j == 0 else TeamMemberRole.MEMBER
                 team_builder = team_builder.add_member(agent.id, role)
 
             team = team_builder.build()
@@ -599,9 +578,7 @@ class TestPerformanceBenchmarks:
             len(list(Path("agents").glob("*.yaml"))) == 100
         )  # 10 projects * 10 agents
         assert len(list(Path("teams").glob("*.yaml"))) == 10  # 10 teams
-        assert (
-            len(list(Path("workflows").glob("*.yaml"))) == 10
-        )  # 10 workflows
+        assert len(list(Path("workflows").glob("*.yaml"))) == 10  # 10 workflows
 
         # Assert performance requirement: P95 < 100ms
         assert (
@@ -609,9 +586,7 @@ class TestPerformanceBenchmarks:
         ), f"End-to-end project creation P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
 
     @pytest.mark.performance
-    def test_generate_performance_report(
-        self, temp_workspace, performance_reporter
-    ):
+    def test_generate_performance_report(self, temp_workspace, performance_reporter):
         """Generate and save performance report."""
 
         # Run a quick benchmark to have data for the report
@@ -644,9 +619,7 @@ class TestPerformanceBenchmarks:
         assert "# 🚀 Engine CLI Performance Report" in report_content
         assert "Quick Agent Creation Sample" in report_content
         assert "10" in report_content  # Count
-        assert (
-            "<100ms" in report_content or ">100ms" in report_content
-        )  # Status
+        assert "<100ms" in report_content or ">100ms" in report_content  # Status
 
         print(f"\n📊 Performance Report Generated: {report_path}")
         print("Sample Report Content:")

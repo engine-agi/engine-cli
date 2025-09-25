@@ -342,9 +342,7 @@ class TestProtocolCLICommands:
             assert result.exit_code == 0
             assert "Engine Core not available" in result.output
 
-    def test_list_protocols_table_format(
-        self, cli_runner, mock_protocol_storage
-    ):
+    def test_list_protocols_table_format(self, cli_runner, mock_protocol_storage):
         """Test listing protocols in table format"""
         with patch(
             "engine_cli.commands.protocol.protocol_storage",
@@ -361,9 +359,7 @@ class TestProtocolCLICommands:
 
             assert result.exit_code == 0
 
-    def test_list_protocols_json_format(
-        self, cli_runner, mock_protocol_storage
-    ):
+    def test_list_protocols_json_format(self, cli_runner, mock_protocol_storage):
         """Test listing protocols in JSON format"""
         with patch(
             "engine_cli.commands.protocol.protocol_storage",
@@ -377,9 +373,7 @@ class TestProtocolCLICommands:
             # Should contain JSON output
             assert "test_protocol_1" in result.output
 
-    def test_list_protocols_yaml_format(
-        self, cli_runner, mock_protocol_storage
-    ):
+    def test_list_protocols_yaml_format(self, cli_runner, mock_protocol_storage):
         """Test listing protocols in YAML format"""
         with patch(
             "engine_cli.commands.protocol.protocol_storage",
@@ -393,9 +387,7 @@ class TestProtocolCLICommands:
             # Should contain YAML output
             assert "test_protocol_1" in result.output
 
-    def test_list_protocols_with_filters(
-        self, cli_runner, mock_protocol_storage
-    ):
+    def test_list_protocols_with_filters(self, cli_runner, mock_protocol_storage):
         """Test listing protocols with tag and author filters"""
         with patch(
             "engine_cli.commands.protocol.protocol_storage",
@@ -419,9 +411,7 @@ class TestProtocolCLICommands:
         mock_empty_storage = MagicMock()
         mock_empty_storage.list_protocols.return_value = []
 
-        with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_empty_storage
-        ):
+        with patch("engine_cli.commands.protocol.protocol_storage", mock_empty_storage):
             from engine_cli.commands.protocol import list
 
             result = cli_runner.invoke(list)
@@ -429,9 +419,7 @@ class TestProtocolCLICommands:
             assert result.exit_code == 0
             assert "No protocols found" in result.output
 
-    def test_show_protocol_table_format(
-        self, cli_runner, mock_protocol_storage
-    ):
+    def test_show_protocol_table_format(self, cli_runner, mock_protocol_storage):
         """Test showing protocol details in table format"""
         with patch(
             "engine_cli.commands.protocol.protocol_storage",
@@ -440,15 +428,11 @@ class TestProtocolCLICommands:
 
             from engine_cli.commands.protocol import show
 
-            result = cli_runner.invoke(
-                show, ["test_protocol_1", "--format", "table"]
-            )
+            result = cli_runner.invoke(show, ["test_protocol_1", "--format", "table"])
 
             assert result.exit_code == 0
 
-    def test_show_protocol_json_format(
-        self, cli_runner, mock_protocol_storage
-    ):
+    def test_show_protocol_json_format(self, cli_runner, mock_protocol_storage):
         """Test showing protocol details in JSON format"""
         with patch(
             "engine_cli.commands.protocol.protocol_storage",
@@ -456,16 +440,12 @@ class TestProtocolCLICommands:
         ):
             from engine_cli.commands.protocol import show
 
-            result = cli_runner.invoke(
-                show, ["test_protocol_1", "--format", "json"]
-            )
+            result = cli_runner.invoke(show, ["test_protocol_1", "--format", "json"])
 
             assert result.exit_code == 0
             assert "test_protocol_1" in result.output
 
-    def test_show_protocol_yaml_format(
-        self, cli_runner, mock_protocol_storage
-    ):
+    def test_show_protocol_yaml_format(self, cli_runner, mock_protocol_storage):
         """Test showing protocol details in YAML format"""
         with patch(
             "engine_cli.commands.protocol.protocol_storage",
@@ -473,9 +453,7 @@ class TestProtocolCLICommands:
         ):
             from engine_cli.commands.protocol import show
 
-            result = cli_runner.invoke(
-                show, ["test_protocol_1", "--format", "yaml"]
-            )
+            result = cli_runner.invoke(show, ["test_protocol_1", "--format", "yaml"])
 
             assert result.exit_code == 0
             assert "test_protocol_1" in result.output
@@ -523,9 +501,7 @@ class TestProtocolCLICommands:
 
             assert result.exit_code == 0
 
-    def test_delete_protocol_with_confirmation(
-        self, cli_runner, mock_protocol_storage
-    ):
+    def test_delete_protocol_with_confirmation(self, cli_runner, mock_protocol_storage):
         """Test deleting a protocol with user confirmation"""
         with patch(
             "engine_cli.commands.protocol.protocol_storage",
@@ -540,9 +516,7 @@ class TestProtocolCLICommands:
 
             assert result.exit_code == 0
 
-    def test_delete_protocol_cancelled(
-        self, cli_runner, mock_protocol_storage
-    ):
+    def test_delete_protocol_cancelled(self, cli_runner, mock_protocol_storage):
         """Test cancelling protocol deletion"""
         with patch(
             "engine_cli.commands.protocol.protocol_storage",
@@ -591,9 +565,7 @@ class TestProtocolCLICommands:
 
             from engine_cli.commands.protocol import test
 
-            result = cli_runner.invoke(
-                test, ["nonexistent", "--command", "test"]
-            )
+            result = cli_runner.invoke(test, ["nonexistent", "--command", "test"])
 
             assert result.exit_code == 0
 
@@ -614,9 +586,7 @@ class TestProtocolCLICommands:
                 or "Please provide a command to test" in result.output
             )
 
-    def test_test_protocol_invalid_context(
-        self, cli_runner, mock_protocol_storage
-    ):
+    def test_test_protocol_invalid_context(self, cli_runner, mock_protocol_storage):
         """Test testing a protocol with invalid JSON context"""
         with patch(
             "engine_cli.commands.protocol.protocol_storage",
@@ -637,10 +607,7 @@ class TestProtocolCLICommands:
             )
 
             # Should exit with error code when invalid JSON provided
-            assert (
-                result.exit_code == 1
-                or "Invalid JSON context" in result.output
-            )
+            assert result.exit_code == 1 or "Invalid JSON context" in result.output
 
 
 class TestProtocolUtilityFunctions:

@@ -209,9 +209,7 @@ def list():
 
 @cli.command()
 @click.argument("book_id")
-@click.option(
-    "--force", "-f", is_flag=True, help="Force deletion without confirmation"
-)
+@click.option("--force", "-f", is_flag=True, help="Force deletion without confirmation")
 def delete(book_id: str, force: bool = False):
     """Delete a book."""
 
@@ -220,9 +218,7 @@ def delete(book_id: str, force: bool = False):
             service = get_book_service()
 
             if not force:
-                if not click.confirm(
-                    f"This will delete book '{book_id}'. Continue?"
-                ):
+                if not click.confirm(f"This will delete book '{book_id}'. Continue?"):
                     return
 
             success_flag = await service.delete_book(book_id)
@@ -245,9 +241,7 @@ def delete(book_id: str, force: bool = False):
 @click.argument("chapter_id")
 @click.argument("title")
 @click.option("--description", "-d", help="Chapter description")
-def add_chapter(
-    book_id: str, chapter_id: str, title: str, description: str = ""
-):
+def add_chapter(book_id: str, chapter_id: str, title: str, description: str = ""):
     """Add a chapter to a book."""
 
     async def _add_chapter():
@@ -261,9 +255,7 @@ def add_chapter(
             )
 
             if chapter_id_result:
-                success(
-                    f"Chapter '{chapter_id_result}' added to book '{book_id}'"
-                )
+                success(f"Chapter '{chapter_id_result}' added to book '{book_id}'")
             else:
                 error(f"Failed to add chapter to book '{book_id}'")
 
@@ -289,9 +281,7 @@ def list_chapters(book_id: str):
                 if book.chapters:
                     for chapter in book.chapters:
                         stats = chapter.to_dict()["statistics"]
-                        click.echo(
-                            f"  • {chapter.title} ({chapter.chapter_id})"
-                        )
+                        click.echo(f"  • {chapter.title} ({chapter.chapter_id})")
                         click.echo(
                             f"    {stats['page_count']} pages, "
                             f"{stats['section_count']} sections, "
@@ -314,9 +304,7 @@ def list_chapters(book_id: str):
 @cli.command()
 @click.argument("book_id")
 @click.argument("query")
-@click.option(
-    "--max-results", "-m", type=int, default=10, help="Maximum results"
-)
+@click.option("--max-results", "-m", type=int, default=10, help="Maximum results")
 def search(book_id: str, query: str, max_results: int = 10):
     """Search content in a book."""
     if not BOOK_SERVICE_AVAILABLE:
@@ -324,9 +312,7 @@ def search(book_id: str, query: str, max_results: int = 10):
         return
 
     if SearchQuery is None or SearchScope is None:
-        error(
-            "Search functionality not available in current engine-core version."
-        )
+        error("Search functionality not available in current engine-core version.")
         return
 
     async def _search():
@@ -362,9 +348,7 @@ def search(book_id: str, query: str, max_results: int = 10):
                         )
 
                     if result.highlights:
-                        click.echo(
-                            f"  Highlights: {', '.join(result.highlights[:3])}"
-                        )
+                        click.echo(f"  Highlights: {', '.join(result.highlights[:3])}")
             else:
                 click.echo(f"No results found for query: {query}")
 

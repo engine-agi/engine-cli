@@ -39,9 +39,7 @@ def _get_workflow_execution_service():
         from engine_core.services.workflow_service import (
             WorkflowExecutionService,  # type: ignore
         )
-        from engine_core.services.workflow_service import (
-            MockWorkflowRepository,
-        )
+        from engine_core.services.workflow_service import MockWorkflowRepository
 
         mock_repo = MockWorkflowRepository()
         return WorkflowExecutionService(mock_repo)
@@ -73,14 +71,10 @@ class WorkflowStorage:
                             workflows.append(
                                 {
                                     "id": data.get("id", "unknown"),
-                                    "name": data.get(
-                                        "name", data.get("id", "unknown")
-                                    ),
+                                    "name": data.get("name", data.get("id", "unknown")),
                                     "version": data.get("version", "1.0.0"),
                                     "description": data.get("description", ""),
-                                    "vertex_count": data.get(
-                                        "vertex_count", 0
-                                    ),
+                                    "vertex_count": data.get("vertex_count", 0),
                                     "edge_count": data.get("edge_count", 0),
                                     "created_at": data.get("created_at", ""),
                                     "file": file,
@@ -223,12 +217,8 @@ class WorkflowResolver:
         try:
             # Create a new workflow builder
             builder = WorkflowBuilder()
-            builder = builder.with_id(
-                workflow_data.get("id", "resolved_workflow")
-            )
-            builder = builder.with_name(
-                workflow_data.get("name", "Resolved Workflow")
-            )
+            builder = builder.with_id(workflow_data.get("id", "resolved_workflow"))
+            builder = builder.with_name(workflow_data.get("name", "Resolved Workflow"))
 
             # Create a detailed execution simulation that shows what would happen
             config = workflow_data.get("config", {})
@@ -273,9 +263,7 @@ class WorkflowResolver:
                         from_vertex = edge.get("from_vertex")
                         to_vertex = edge.get("to_vertex")
                         if from_vertex not in processed:
-                            execution_info["execution_order"].append(
-                                from_vertex
-                            )
+                            execution_info["execution_order"].append(from_vertex)
                             processed.add(from_vertex)
                         if to_vertex not in processed:
                             execution_info["execution_order"].append(to_vertex)
@@ -326,18 +314,14 @@ class CLIWorkflowBuilder:
         return self
 
     def with_description(self, description: str):
-        self.workflow_builder = self.workflow_builder.with_description(
-            description
-        )
+        self.workflow_builder = self.workflow_builder.with_description(description)
         return self
 
     def with_version(self, version: str):
         self.workflow_builder = self.workflow_builder.with_version(version)
         return self
 
-    def add_agent_vertex(
-        self, vertex_id: str, agent_id: str, instruction: str
-    ):
+    def add_agent_vertex(self, vertex_id: str, agent_id: str, instruction: str):
         """Add agent vertex spec for CLI - stores for later resolution."""
         self.agent_specs.append(
             {
@@ -388,9 +372,7 @@ class CLIWorkflowBuilder:
 
     def add_edge(self, from_vertex: str, to_vertex: str):
         self.edge_specs.append({"from": from_vertex, "to": to_vertex})
-        self.workflow_builder = self.workflow_builder.add_edge(
-            from_vertex, to_vertex
-        )
+        self.workflow_builder = self.workflow_builder.add_edge(from_vertex, to_vertex)
         return self
 
     def build(self):
@@ -439,9 +421,7 @@ def cli():
     type=click.Path(),
     help="Output file for workflow configuration",
 )
-def create(
-    name, description, version, simple, agent, team, edge, config, save, output
-):
+def create(name, description, version, simple, agent, team, edge, config, save, output):
     """Create a new workflow."""
     try:
         builder = CLIWorkflowBuilder()  # Initialize with default builder
@@ -458,9 +438,7 @@ def create(
             builder = builder.with_description(
                 workflow_config.get("description", description or "")
             )
-            builder = builder.with_version(
-                workflow_config.get("version", version)
-            )
+            builder = builder.with_version(workflow_config.get("version", version))
 
             # Add vertices from config
             vertices = config_data.get("vertices", [])
@@ -471,15 +449,11 @@ def create(
                 if vertex_type == "agent":
                     agent_id = vertex.get("agent_id")
                     instruction = vertex.get("instruction", "")
-                    builder = builder.add_agent_vertex(
-                        vertex_id, agent_id, instruction
-                    )
+                    builder = builder.add_agent_vertex(vertex_id, agent_id, instruction)
                 elif vertex_type == "team":
                     team_id = vertex.get("team_id")
                     tasks = vertex.get("tasks", [])
-                    builder = builder.add_team_vertex(
-                        vertex_id, team_id, tasks
-                    )
+                    builder = builder.add_team_vertex(vertex_id, team_id, tasks)
                 elif vertex_type == "function":
                     # For function vertices in config, we'd need to define them
                     # For now, skip or add placeholder
@@ -512,9 +486,7 @@ def create(
                     )
                     return
                 vertex_id, agent_id, instruction = parts
-                builder = builder.add_agent_vertex(
-                    vertex_id, agent_id, instruction
-                )
+                builder = builder.add_agent_vertex(vertex_id, agent_id, instruction)
 
             # Add team vertices
             for team_spec in team:
@@ -525,9 +497,7 @@ def create(
                     )
                     return
                 vertex_id, team_id, tasks_str = parts
-                tasks = [
-                    {"task": task.strip()} for task in tasks_str.split(",")
-                ]
+                tasks = [{"task": task.strip()} for task in tasks_str.split(",")]
                 builder = builder.add_team_vertex(vertex_id, team_id, tasks)
 
             # Add edges
@@ -549,9 +519,7 @@ def create(
                         "input": input_data,
                     }
 
-                builder = builder.add_function_vertex(
-                    "demo_task", demo_function
-                )
+                builder = builder.add_function_vertex("demo_task", demo_function)
 
         workflow = builder.build()
 
@@ -564,9 +532,7 @@ def create(
         workflow_table.add_row(
             "Description", getattr(workflow.config, "description", "")
         )
-        workflow_table.add_row(
-            "Version", getattr(workflow.config, "version", "1.0.0")
-        )
+        workflow_table.add_row("Version", getattr(workflow.config, "version", "1.0.0"))
         workflow_table.add_row("Vertices", str(workflow.vertex_count))
         workflow_table.add_row("Edges", str(workflow.edge_count))
         workflow_table.add_row("State", workflow.state.value)
@@ -657,9 +623,7 @@ def show(name):
         # Basic information
         info_data = {
             "ID": workflow_data.get("id", "unknown"),
-            "Name": workflow_data.get(
-                "name", workflow_data.get("id", "unknown")
-            ),
+            "Name": workflow_data.get("name", workflow_data.get("id", "unknown")),
             "Description": workflow_data.get("description", ""),
             "Version": workflow_data.get("version", "1.0.0"),
             "Vertices": str(workflow_data.get("vertex_count", 0)),
@@ -721,16 +685,12 @@ def show(name):
 
 @cli.command()
 @click.argument("name")
-@click.option(
-    "--force", is_flag=True, help="Force deletion without confirmation"
-)
+@click.option("--force", is_flag=True, help="Force deletion without confirmation")
 def delete(name, force):
     """Delete a workflow."""
     try:
         if not force:
-            error(
-                f"This will delete workflow '{name}'. Use --force to confirm."
-            )
+            error(f"This will delete workflow '{name}'. Use --force to confirm.")
             return
 
         if workflow_storage.delete_workflow(name):
@@ -807,18 +767,12 @@ def run(name, input_data):
                 execution_record = None
                 if execution_service:
                     try:
-                        execution_record = (
-                            await execution_service.start_execution(
-                                workflow_id=name
-                            )
+                        execution_record = await execution_service.start_execution(
+                            workflow_id=name
                         )
-                        click.echo(
-                            f"📋 Persistent Execution ID: {execution_record.id}"
-                        )
+                        click.echo(f"📋 Persistent Execution ID: {execution_record.id}")
                     except Exception as e:
-                        warning(
-                            f"Could not create persistent execution record: {e}"
-                        )
+                        warning(f"Could not create persistent execution record: {e}")
 
                 try:
                     # Update progress as we start
@@ -840,9 +794,7 @@ def run(name, input_data):
                                 WorkflowExecutionStatus.RUNNING,
                             )
                         except Exception as e:
-                            warning(
-                                f"Could not update persistent execution: {e}"
-                            )
+                            warning(f"Could not update persistent execution: {e}")
 
                     result = await resolved_workflow.execute(input_dict)
 
@@ -869,9 +821,7 @@ def run(name, input_data):
                                 WorkflowExecutionStatus.COMPLETED,
                             )
                         except Exception as e:
-                            warning(
-                                f"Could not complete persistent execution: {e}"
-                            )
+                            warning(f"Could not complete persistent execution: {e}")
 
                     return result
 
@@ -894,9 +844,7 @@ def run(name, input_data):
                                 WorkflowExecutionStatus.FAILED,
                             )
                         except Exception as e:
-                            warning(
-                                f"Could not fail persistent execution: {e}"
-                            )
+                            warning(f"Could not fail persistent execution: {e}")
 
                     raise
 
@@ -1027,16 +975,12 @@ def status(execution_id, workflow, active, limit):
                 success(f"Execution Status: {execution_id}")
 
                 # Create status table
-                status_table = table(
-                    "Execution Details", ["Property", "Value"]
-                )
+                status_table = table("Execution Details", ["Property", "Value"])
                 status_table.add_row("Execution ID", status.execution_id)
                 status_table.add_row("Workflow ID", status.workflow_id)
                 status_table.add_row("Workflow Name", status.workflow_name)
                 status_table.add_row("State", status.state.value.upper())
-                status_table.add_row(
-                    "Progress", f"{status.progress_percentage:.1f}%"
-                )
+                status_table.add_row("Progress", f"{status.progress_percentage:.1f}%")
                 status_table.add_row(
                     "Start Time",
                     status.start_time.strftime("%Y-%m-%d %H:%M:%S"),
@@ -1047,9 +991,7 @@ def status(execution_id, workflow, active, limit):
                         status.end_time.strftime("%Y-%m-%d %H:%M:%S"),
                     )
                 if status.current_vertex:
-                    status_table.add_row(
-                        "Current Vertex", status.current_vertex
-                    )
+                    status_table.add_row("Current Vertex", status.current_vertex)
                 status_table.add_row(
                     "Input Data",
                     (
@@ -1094,9 +1036,7 @@ def status(execution_id, workflow, active, limit):
                         )
                         if error_msg:
                             info = f"ERROR: {error_msg[:50]}..."
-                        vertex_table.add_row(
-                            vertex_id, state.upper(), updated, info
-                        )
+                        vertex_table.add_row(vertex_id, state.upper(), updated, info)
                     print_table(vertex_table)
 
             finally:
@@ -1146,20 +1086,14 @@ def status(execution_id, workflow, active, limit):
             asyncio.set_event_loop(loop)
             try:
                 executions = loop.run_until_complete(
-                    workflow_state_manager.get_workflow_executions(
-                        workflow, limit
-                    )
+                    workflow_state_manager.get_workflow_executions(workflow, limit)
                 )
 
                 if not executions:
-                    click.echo(
-                        f"No executions found for workflow '{workflow}'"
-                    )
+                    click.echo(f"No executions found for workflow '{workflow}'")
                     return
 
-                success(
-                    f"Executions for Workflow '{workflow}' ({len(executions)})"
-                )
+                success(f"Executions for Workflow '{workflow}' ({len(executions)})")
 
                 workflow_table = table(
                     "Workflow Executions",
@@ -1186,18 +1120,14 @@ def status(execution_id, workflow, active, limit):
         else:
             # Show recent executions overview
             click.echo("Usage:")
-            click.echo(
-                "  status <execution_id>     - Show specific execution details"
-            )
+            click.echo("  status <execution_id>     - Show specific execution details")
             click.echo(
                 "  status --active           - Show currently running executions"
             )
             click.echo(
                 "  status --workflow <id>    - Show executions for specific workflow"
             )
-            click.echo(
-                "  status --limit <n>        - Limit results (default: 10)"
-            )
+            click.echo("  status --limit <n>        - Limit results (default: 10)")
 
     except Exception as e:
         error(f"Failed to get execution status: {e}")
@@ -1205,9 +1135,7 @@ def status(execution_id, workflow, active, limit):
 
 @cli.command()
 @click.argument("workflow_id", required=False)
-@click.option(
-    "--limit", default=20, help="Maximum number of executions to show"
-)
+@click.option("--limit", default=20, help="Maximum number of executions to show")
 @click.option(
     "--status",
     "status_filter",
@@ -1228,10 +1156,8 @@ def history(workflow_id, limit, status_filter):
             try:
                 if workflow_id:
                     # Show history for specific workflow
-                    executions = (
-                        await execution_service.list_workflow_executions(
-                            workflow_id
-                        )
+                    executions = await execution_service.list_workflow_executions(
+                        workflow_id
                     )
 
                     if not executions:

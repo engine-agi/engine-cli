@@ -17,14 +17,7 @@ else:
         WorkflowBuilder = None  # type: ignore
 
 # Import Rich formatting
-from engine_cli.formatting import (
-    error,
-    header,
-    key_value,
-    print_table,
-    success,
-    table,
-)
+from engine_cli.formatting import error, header, key_value, print_table, success, table
 
 
 class WorkflowStorage:
@@ -47,14 +40,10 @@ class WorkflowStorage:
                             workflows.append(
                                 {
                                     "id": data.get("id", "unknown"),
-                                    "name": data.get(
-                                        "name", data.get("id", "unknown")
-                                    ),
+                                    "name": data.get("name", data.get("id", "unknown")),
                                     "version": data.get("version", "1.0.0"),
                                     "description": data.get("description", ""),
-                                    "vertex_count": data.get(
-                                        "vertex_count", 0
-                                    ),
+                                    "vertex_count": data.get("vertex_count", 0),
                                     "edge_count": data.get("edge_count", 0),
                                     "created_at": data.get("created_at", ""),
                                     "file": file,
@@ -198,12 +187,8 @@ class WorkflowResolver:
         try:
             # Create a new workflow builder
             builder = WorkflowBuilder()
-            builder = builder.with_id(
-                workflow_data.get("id", "resolved_workflow")
-            )
-            builder = builder.with_name(
-                workflow_data.get("name", "Resolved Workflow")
-            )
+            builder = builder.with_id(workflow_data.get("id", "resolved_workflow"))
+            builder = builder.with_name(workflow_data.get("name", "Resolved Workflow"))
 
             # Create a detailed execution simulation that shows what would happen
             config = workflow_data.get("config", {})
@@ -248,9 +233,7 @@ class WorkflowResolver:
                         from_vertex = edge.get("from_vertex")
                         to_vertex = edge.get("to_vertex")
                         if from_vertex not in processed:
-                            execution_info["execution_order"].append(
-                                from_vertex
-                            )
+                            execution_info["execution_order"].append(from_vertex)
                             processed.add(from_vertex)
                         if to_vertex not in processed:
                             execution_info["execution_order"].append(to_vertex)
@@ -302,18 +285,14 @@ class CLIWorkflowBuilder:
         return self
 
     def with_description(self, description: str):
-        self.workflow_builder = self.workflow_builder.with_description(
-            description
-        )
+        self.workflow_builder = self.workflow_builder.with_description(description)
         return self
 
     def with_version(self, version: str):
         self.workflow_builder = self.workflow_builder.with_version(version)
         return self
 
-    def add_agent_vertex(
-        self, vertex_id: str, agent_id: str, instruction: str
-    ):
+    def add_agent_vertex(self, vertex_id: str, agent_id: str, instruction: str):
         """Add agent vertex spec for CLI - stores for later resolution."""
         self.agent_specs.append(
             {
@@ -364,9 +343,7 @@ class CLIWorkflowBuilder:
 
     def add_edge(self, from_vertex: str, to_vertex: str):
         self.edge_specs.append({"from": from_vertex, "to": to_vertex})
-        self.workflow_builder = self.workflow_builder.add_edge(
-            from_vertex, to_vertex
-        )
+        self.workflow_builder = self.workflow_builder.add_edge(from_vertex, to_vertex)
         return self
 
     def build(self):
@@ -416,9 +393,7 @@ def cli():
     type=click.Path(),
     help="Output file for workflow configuration",
 )
-def create(
-    name, description, version, simple, agent, team, edge, config, save, output
-):
+def create(name, description, version, simple, agent, team, edge, config, save, output):
     """Create a new workflow."""
     try:
         builder = CLIWorkflowBuilder()  # Initialize with default builder
@@ -435,9 +410,7 @@ def create(
             builder = builder.with_description(
                 workflow_config.get("description", description or "")
             )
-            builder = builder.with_version(
-                workflow_config.get("version", version)
-            )
+            builder = builder.with_version(workflow_config.get("version", version))
 
             # Add vertices from config
             vertices = config_data.get("vertices", [])
@@ -448,15 +421,11 @@ def create(
                 if vertex_type == "agent":
                     agent_id = vertex.get("agent_id")
                     instruction = vertex.get("instruction", "")
-                    builder = builder.add_agent_vertex(
-                        vertex_id, agent_id, instruction
-                    )
+                    builder = builder.add_agent_vertex(vertex_id, agent_id, instruction)
                 elif vertex_type == "team":
                     team_id = vertex.get("team_id")
                     tasks = vertex.get("tasks", [])
-                    builder = builder.add_team_vertex(
-                        vertex_id, team_id, tasks
-                    )
+                    builder = builder.add_team_vertex(vertex_id, team_id, tasks)
                 elif vertex_type == "function":
                     # For function vertices in config, we'd need to define them
 
@@ -490,9 +459,7 @@ def create(
                     )
                     return
                 vertex_id, agent_id, instruction = parts
-                builder = builder.add_agent_vertex(
-                    vertex_id, agent_id, instruction
-                )
+                builder = builder.add_agent_vertex(vertex_id, agent_id, instruction)
 
             # Add team vertices
             for team_spec in team:
@@ -503,9 +470,7 @@ def create(
                     )
                     return
                 vertex_id, team_id, tasks_str = parts
-                tasks = [
-                    {"task": task.strip()} for task in tasks_str.split(",")
-                ]
+                tasks = [{"task": task.strip()} for task in tasks_str.split(",")]
                 builder = builder.add_team_vertex(vertex_id, team_id, tasks)
 
             # Add edges
@@ -527,9 +492,7 @@ def create(
                         "input": input_data,
                     }
 
-                builder = builder.add_function_vertex(
-                    "demo_task", demo_function
-                )
+                builder = builder.add_function_vertex("demo_task", demo_function)
 
         workflow = builder.build()
 
@@ -542,9 +505,7 @@ def create(
         workflow_table.add_row(
             "Description", getattr(workflow.config, "description", "")
         )
-        workflow_table.add_row(
-            "Version", getattr(workflow.config, "version", "1.0.0")
-        )
+        workflow_table.add_row("Version", getattr(workflow.config, "version", "1.0.0"))
         workflow_table.add_row("Vertices", str(workflow.vertex_count))
         workflow_table.add_row("Edges", str(workflow.edge_count))
         workflow_table.add_row("State", workflow.state.value)
@@ -633,9 +594,7 @@ def show(name):
         # Basic information
         info_data = {
             "ID": workflow_data.get("id", "unknown"),
-            "Name": workflow_data.get(
-                "name", workflow_data.get("id", "unknown")
-            ),
+            "Name": workflow_data.get("name", workflow_data.get("id", "unknown")),
             "Description": workflow_data.get("description", ""),
             "Version": workflow_data.get("version", "1.0.0"),
             "Vertices": str(workflow_data.get("vertex_count", 0)),
@@ -697,16 +656,12 @@ def show(name):
 
 @cli.command()
 @click.argument("name")
-@click.option(
-    "--force", is_flag=True, help="Force deletion without confirmation"
-)
+@click.option("--force", is_flag=True, help="Force deletion without confirmation")
 def delete(name, force):
     """Delete a workflow."""
     try:
         if not force:
-            error(
-                f"This will delete workflow '{name}'. Use --force to confirm."
-            )
+            error(f"This will delete workflow '{name}'. Use --force to confirm.")
             return
 
         if workflow_storage.delete_workflow(name):

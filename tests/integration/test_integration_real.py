@@ -17,12 +17,7 @@ import pytest
 def test_engine_core_initialization():
     """Testa inicialização completa do Engine Core"""
     try:
-        from engine_core import (
-            AgentBuilder,
-            BookBuilder,
-            TeamBuilder,
-            WorkflowBuilder,
-        )
+        from engine_core import AgentBuilder, BookBuilder, TeamBuilder, WorkflowBuilder
 
         # Test Book Builder
         book = (
@@ -71,9 +66,7 @@ def test_cli_with_real_dependencies():
         from engine_cli.cache import CLICache
         from engine_cli.config import ConfigManager
         from engine_cli.storage.agent_book_storage import AgentBookStorage
-        from engine_cli.storage.workflow_state_manager import (
-            WorkflowStateManager,
-        )
+        from engine_cli.storage.workflow_state_manager import WorkflowStateManager
 
         with tempfile.TemporaryDirectory() as temp_dir:
             # Test Cache com Redis real (se disponível)
@@ -114,9 +107,7 @@ def test_cli_with_real_dependencies():
 async def test_workflow_execution_real():
     """Testa execução real de workflow com dependências"""
     try:
-        from engine_cli.storage.workflow_state_manager import (
-            WorkflowStateManager,
-        )
+        from engine_cli.storage.workflow_state_manager import WorkflowStateManager
 
         # Test with real Redis if available
         try:
@@ -215,9 +206,7 @@ async def test_end_to_end_agent_workflow():
     """Teste end-to-end: criar agente -> executar workflow -> verificar resultado"""
     try:
         from engine_cli.storage.agent_book_storage import AgentBookStorage
-        from engine_cli.storage.workflow_state_manager import (
-            WorkflowStateManager,
-        )
+        from engine_cli.storage.workflow_state_manager import WorkflowStateManager
 
         with tempfile.TemporaryDirectory() as temp_dir:
             # Setup storage

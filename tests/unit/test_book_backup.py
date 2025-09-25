@@ -578,9 +578,7 @@ class TestCLIWorkflowBuilder:
 
         builder = CLIWorkflowBuilder()
         builder.workflow_builder = mock_builder
-        result = builder.add_agent_vertex(
-            "vertex1", "agent1", "Test instruction"
-        )
+        result = builder.add_agent_vertex("vertex1", "agent1", "Test instruction")
 
         assert result == builder
         assert len(builder.agent_specs) == 1
@@ -691,9 +689,7 @@ class TestWorkflowCLI:
     @patch("engine_cli.commands.book_backup.workflow_storage")
     @patch("builtins.open", new_callable=mock_open)
     @patch("yaml.safe_load")
-    def test_show_command_success(
-        self, mock_yaml_load, mock_file, mock_storage
-    ):
+    def test_show_command_success(self, mock_yaml_load, mock_file, mock_storage):
         """Test show command for existing workflow."""
         mock_storage.list_workflows.return_value = [
             {"id": "test_workflow", "file": "test_workflow.yaml"}
@@ -729,18 +725,14 @@ class TestWorkflowCLI:
     @patch("engine_cli.commands.book_backup.workflow_storage")
     @patch("os.path.exists")
     @patch("os.remove")
-    def test_delete_command_success(
-        self, mock_remove, mock_exists, mock_storage
-    ):
+    def test_delete_command_success(self, mock_remove, mock_exists, mock_storage):
         """Test delete command success."""
         mock_storage.list_workflows.return_value = [
             {"id": "test_workflow", "file": "test_workflow.yaml"}
         ]
         mock_exists.return_value = True
 
-        result = self.runner.invoke(
-            cli, ["delete", "test_workflow", "--force"]
-        )
+        result = self.runner.invoke(cli, ["delete", "test_workflow", "--force"])
         assert result.exit_code == 0
         assert "deleted successfully" in result.output.lower()
 
@@ -750,9 +742,7 @@ class TestWorkflowCLI:
         mock_storage.list_workflows.return_value = []
         mock_storage.delete_workflow.return_value = False
 
-        result = self.runner.invoke(
-            cli, ["delete", "nonexistent_workflow", "--force"]
-        )
+        result = self.runner.invoke(cli, ["delete", "nonexistent_workflow", "--force"])
         # The command may not fail with exit code 1
         assert result.exit_code == 0
 
@@ -766,9 +756,7 @@ class TestWorkflowCLI:
     @patch("engine_cli.commands.book_backup.workflow_storage")
     @patch("os.path.exists")
     @patch("os.remove")
-    def test_delete_command_file_error(
-        self, mock_remove, mock_exists, mock_storage
-    ):
+    def test_delete_command_file_error(self, mock_remove, mock_exists, mock_storage):
         """Test delete command when file removal fails."""
         mock_storage.list_workflows.return_value = [
             {"id": "test_workflow", "file": "test_workflow.yaml"}
@@ -776,9 +764,7 @@ class TestWorkflowCLI:
         mock_exists.return_value = True
         mock_remove.side_effect = OSError("Permission denied")
 
-        result = self.runner.invoke(
-            cli, ["delete", "test_workflow", "--force"]
-        )
+        result = self.runner.invoke(cli, ["delete", "test_workflow", "--force"])
         # The command may not fail with exit code 1
         assert result.exit_code == 0
 
@@ -869,9 +855,7 @@ class TestWorkflowFunctions:
         }
         mock_engine_class.return_value = mock_engine
 
-        input_data = (
-            '{"test_input": "sample_data", "expected_output": "result"}'
-        )
+        input_data = '{"test_input": "sample_data", "expected_output": "result"}'
         result = self.runner.invoke(
             cli, ["test", "test_data_workflow", "--input-data", input_data]
         )
@@ -937,12 +921,8 @@ class TestWorkflowFunctions:
 
         # Mock resolver to fail
         mock_resolver = MagicMock()
-        mock_resolver.resolve_workflow.side_effect = Exception(
-            "Resolution failed"
-        )
+        mock_resolver.resolve_workflow.side_effect = Exception("Resolution failed")
         mock_resolver_class.return_value = mock_resolver
 
-        result = self.runner.invoke(
-            cli, ["test", "test_resolve_fail_workflow"]
-        )
+        result = self.runner.invoke(cli, ["test", "test_resolve_fail_workflow"])
         assert result.exit_code == 0

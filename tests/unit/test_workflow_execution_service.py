@@ -31,9 +31,7 @@ try:
         WorkflowExecutionService,
     )
 except ImportError:
-    pytest.skip(
-        "Workflow execution service not available", allow_module_level=True
-    )
+    pytest.skip("Workflow execution service not available", allow_module_level=True)
 
 
 class TestWorkflowExecutionService:
@@ -90,20 +88,14 @@ class TestWorkflowExecutionService:
             "exec_123",
             {
                 "status": WorkflowExecutionStatus.RUNNING.value,
-                "started_at": mock_repository.update_workflow_execution.call_args[
-                    1
-                ][
+                "started_at": mock_repository.update_workflow_execution.call_args[1][
                     "updates"
-                ][
-                    "started_at"
-                ],
+                ]["started_at"],
             },
         )
 
     @pytest.mark.asyncio
-    async def test_complete_execution_success(
-        self, execution_service, mock_repository
-    ):
+    async def test_complete_execution_success(self, execution_service, mock_repository):
         """Test completing an execution successfully."""
         # Setup mock
         mock_execution = MagicMock()
@@ -139,9 +131,7 @@ class TestWorkflowExecutionService:
         assert mock_repository.update_workflow_execution.call_count == 2
 
     @pytest.mark.asyncio
-    async def test_get_execution_analytics(
-        self, execution_service, mock_repository
-    ):
+    async def test_get_execution_analytics(self, execution_service, mock_repository):
         """Test getting execution analytics."""
         # Setup mock
         mock_repository.get_execution_analytics.return_value = {
@@ -151,17 +141,13 @@ class TestWorkflowExecutionService:
         }
 
         # Execute
-        result = await execution_service.get_execution_analytics(
-            "workflow_123"
-        )
+        result = await execution_service.get_execution_analytics("workflow_123")
 
         # Assert
         assert result["total_executions"] == 10
         assert result["successful_executions"] == 8
         assert result["success_rate"] == 0.8
-        mock_repository.get_execution_analytics.assert_called_once_with(
-            "workflow_123"
-        )
+        mock_repository.get_execution_analytics.assert_called_once_with("workflow_123")
 
 
 class TestPostgreSQLWorkflowExecutionRepository:
@@ -178,9 +164,7 @@ class TestPostgreSQLWorkflowExecutionRepository:
         return PostgreSQLWorkflowExecutionRepository(mock_session_factory)
 
     @pytest.mark.asyncio
-    async def test_create_workflow_execution(
-        self, repository, mock_session_factory
-    ):
+    async def test_create_workflow_execution(self, repository, mock_session_factory):
         """Test creating a workflow execution in PostgreSQL."""
         # Setup mocks
         mock_session = AsyncMock()
@@ -208,9 +192,7 @@ class TestPostgreSQLWorkflowExecutionRepository:
             mock_session.refresh.assert_called_once_with(mock_execution)
 
     @pytest.mark.asyncio
-    async def test_get_workflow_execution(
-        self, repository, mock_session_factory
-    ):
+    async def test_get_workflow_execution(self, repository, mock_session_factory):
         """Test getting a workflow execution by ID."""
         # Setup mocks
         mock_session = AsyncMock()
@@ -228,9 +210,7 @@ class TestPostgreSQLWorkflowExecutionRepository:
         mock_session.execute.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_get_workflow_executions(
-        self, repository, mock_session_factory
-    ):
+    async def test_get_workflow_executions(self, repository, mock_session_factory):
         """Test getting workflow executions."""
         # Setup mocks
         mock_session = AsyncMock()
@@ -241,9 +221,7 @@ class TestPostgreSQLWorkflowExecutionRepository:
         mock_result.scalars.return_value = mock_executions
 
         # Execute
-        result = await repository.get_workflow_executions(
-            "workflow_123", limit=10
-        )
+        result = await repository.get_workflow_executions("workflow_123", limit=10)
 
         # Assert
         assert result == mock_executions

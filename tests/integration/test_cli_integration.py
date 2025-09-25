@@ -180,9 +180,7 @@ class TestEndToEndWorkflows:
             )
             assert result.exit_code == 0
 
-            result = runner.invoke(
-                cli, ["config", "set", "core.debug", "true"]
-            )
+            result = runner.invoke(cli, ["config", "set", "core.debug", "true"])
             assert result.exit_code == 0
 
             # Get values back
@@ -216,17 +214,13 @@ class TestErrorHandling:
 
     def test_invalid_config_key(self, runner):
         """Test handling of invalid config keys."""
-        result = runner.invoke(
-            cli, ["config", "get", "invalid.nonexistent.key"]
-        )
+        result = runner.invoke(cli, ["config", "get", "invalid.nonexistent.key"])
         assert result.exit_code == 0  # CLI should handle gracefully
         assert "not found" in result.output
 
     def test_config_validate_nonexistent_file(self, runner):
         """Test config validate with non-existent file."""
-        result = runner.invoke(
-            cli, ["config", "validate", "/nonexistent/file.yaml"]
-        )
+        result = runner.invoke(cli, ["config", "validate", "/nonexistent/file.yaml"])
         assert result.exit_code in [1, 2]  # Should fail for non-existent file
 
     def test_invalid_command(self, runner):

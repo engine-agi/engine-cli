@@ -62,16 +62,12 @@ def interactive():
             elif command in ["help", "h", "?"]:
                 show_help()
             elif command:
-                console.print(
-                    f"[warning]Command not implemented: {command}[/warning]"
-                )
+                console.print(f"[warning]Command not implemented: {command}[/warning]")
             else:
                 continue
 
         except KeyboardInterrupt:
-            console.print(
-                "\n[warning]Interrupted. Type 'exit' to quit.[/warning]"
-            )
+            console.print("\n[warning]Interrupted. Type 'exit' to quit.[/warning]")
         except EOFError:
             console.print("\n[success]Goodbye! 👋[/success]")
             break

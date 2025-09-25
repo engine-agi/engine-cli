@@ -28,14 +28,7 @@ def test_config_module_import():
 
 def test_formatting_module_import():
     """Testa se o módulo formatting pode ser importado"""
-    from engine_cli.formatting import (
-        error,
-        header,
-        info,
-        success,
-        table,
-        warning,
-    )
+    from engine_cli.formatting import error, header, info, success, table, warning
 
     assert success is not None
     assert error is not None
@@ -137,14 +130,7 @@ def test_config_operations():
 # Testes funcionais para formatting
 def test_formatting_functions():
     """Testa funções de formatação"""
-    from engine_cli.formatting import (
-        error,
-        header,
-        info,
-        success,
-        table,
-        warning,
-    )
+    from engine_cli.formatting import error, header, info, success, table, warning
 
     # Test that functions exist and can be called (without actually printing)
     # We'll mock console.print to avoid actual output

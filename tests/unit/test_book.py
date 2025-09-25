@@ -103,9 +103,7 @@ class MockSearchResult:
         self.title = "Test Page"
         self.content_id = "test_page_1"
         self.relevance_score = 0.85
-        self.content_snippet = (
-            "This is a test content snippet for search results"
-        )
+        self.content_snippet = "This is a test content snippet for search results"
         self.highlights = ["test", "content", "search"]
 
 
@@ -194,9 +192,7 @@ def mock_book_service():
     """Mock BookService"""
     service = MockBookService()
     with patch("engine_cli.commands.book.BookService", return_value=service):
-        with patch(
-            "engine_cli.commands.book.get_book_service", return_value=service
-        ):
+        with patch("engine_cli.commands.book.get_book_service", return_value=service):
             yield service
 
 
@@ -242,18 +238,14 @@ class TestBookServiceIntegration:
 
             from engine_cli.commands.book import get_book_service
 
-            with pytest.raises(
-                click.ClickException, match="BookService not available"
-            ):
+            with pytest.raises(click.ClickException, match="BookService not available"):
                 get_book_service()
 
 
 class TestBookCLICommands:
     """Test CLI commands for book management"""
 
-    def test_create_book_basic(
-        self, cli_runner, mock_book_service, mock_imports
-    ):
+    def test_create_book_basic(self, cli_runner, mock_book_service, mock_imports):
         """Test creating a basic book"""
         from engine_cli.commands.book import create
 
@@ -270,9 +262,7 @@ class TestBookCLICommands:
         assert result.exit_code == 0
         assert "Book 'test_book_1' created successfully" in result.output
 
-    def test_create_book_with_author(
-        self, cli_runner, mock_book_service, mock_imports
-    ):
+    def test_create_book_with_author(self, cli_runner, mock_book_service, mock_imports):
         """Test creating a book with author"""
         from engine_cli.commands.book import create
 
@@ -309,9 +299,7 @@ class TestBookCLICommands:
         assert "Title" in result.output
         assert "Statistics" in result.output
 
-    def test_show_book_not_found(
-        self, cli_runner, mock_book_service, mock_imports
-    ):
+    def test_show_book_not_found(self, cli_runner, mock_book_service, mock_imports):
         """Test showing a non-existent book"""
         from engine_cli.commands.book import show
 
@@ -336,9 +324,7 @@ class TestBookCLICommands:
         assert result.exit_code == 0
         assert "Books" in result.output
 
-    def test_list_books_empty(
-        self, cli_runner, mock_book_service, mock_imports
-    ):
+    def test_list_books_empty(self, cli_runner, mock_book_service, mock_imports):
         """Test listing books when none exist"""
         from engine_cli.commands.book import list
 
@@ -347,9 +333,7 @@ class TestBookCLICommands:
         assert result.exit_code == 0
         assert "No books found" in result.output
 
-    def test_delete_book_success(
-        self, cli_runner, mock_book_service, mock_imports
-    ):
+    def test_delete_book_success(self, cli_runner, mock_book_service, mock_imports):
         """Test deleting a book successfully"""
         # Create a book first
         from engine_cli.commands.book import create
@@ -364,9 +348,7 @@ class TestBookCLICommands:
         assert result.exit_code == 0
         assert "Book 'book_to_delete' deleted successfully" in result.output
 
-    def test_delete_book_not_found(
-        self, cli_runner, mock_book_service, mock_imports
-    ):
+    def test_delete_book_not_found(self, cli_runner, mock_book_service, mock_imports):
         """Test deleting a non-existent book"""
         from engine_cli.commands.book import delete
 
@@ -393,9 +375,7 @@ class TestBookCLICommands:
         assert result.exit_code == 0
         assert "deleted successfully" in result.output
 
-    def test_delete_book_cancelled(
-        self, cli_runner, mock_book_service, mock_imports
-    ):
+    def test_delete_book_cancelled(self, cli_runner, mock_book_service, mock_imports):
         """Test cancelling book deletion"""
         # Create a book first
         from engine_cli.commands.book import create
@@ -437,10 +417,7 @@ class TestChapterCLICommands:
         )
 
         assert result.exit_code == 0
-        assert (
-            "Chapter 'chapter_1' added to book 'book_with_chapter'"
-            in result.output
-        )
+        assert "Chapter 'chapter_1' added to book 'book_with_chapter'" in result.output
 
     def test_add_chapter_book_not_found(
         self, cli_runner, mock_book_service, mock_imports
@@ -494,13 +471,9 @@ class TestSearchCLICommands:
         from engine_cli.commands.book import search
 
         # Mock BOOK_SERVICE_AVAILABLE and required classes
-        with patch(
-            "engine_cli.commands.book.BOOK_SERVICE_AVAILABLE", True
-        ), patch(
+        with patch("engine_cli.commands.book.BOOK_SERVICE_AVAILABLE", True), patch(
             "engine_cli.commands.book.SearchQuery", MockSearchQuery
-        ), patch(
-            "engine_cli.commands.book.SearchScope", MockSearchScope
-        ):
+        ), patch("engine_cli.commands.book.SearchScope", MockSearchScope):
             result = cli_runner.invoke(
                 search, ["test_book", "test query", "--max-results", "5"]
             )
@@ -515,19 +488,13 @@ class TestSearchCLICommands:
         from engine_cli.commands.book import search
 
         # Mock BOOK_SERVICE_AVAILABLE and required classes
-        with patch(
-            "engine_cli.commands.book.BOOK_SERVICE_AVAILABLE", True
-        ), patch(
+        with patch("engine_cli.commands.book.BOOK_SERVICE_AVAILABLE", True), patch(
             "engine_cli.commands.book.SearchQuery", MockSearchQuery
-        ), patch(
-            "engine_cli.commands.book.SearchScope", MockSearchScope
-        ):
+        ), patch("engine_cli.commands.book.SearchScope", MockSearchScope):
             # Mock empty search results
             mock_book_service.search_books = AsyncMock(return_value=[])
 
-            result = cli_runner.invoke(
-                search, ["test_book", "nonexistent query"]
-            )
+            result = cli_runner.invoke(search, ["test_book", "nonexistent query"])
 
             assert result.exit_code == 0
             assert "No results found" in result.output

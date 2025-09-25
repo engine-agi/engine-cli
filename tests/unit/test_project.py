@@ -18,10 +18,7 @@ class TestProjectCLICommands:
 
         assert result.exit_code == 0
         assert "Project creation not yet implemented" in result.output
-        assert (
-            "Would create project 'my_project' with template: None"
-            in result.output
-        )
+        assert "Would create project 'my_project' with template: None" in result.output
 
     def test_create_command_with_description(self, cli_runner):
         """Test create command with description"""
@@ -33,18 +30,13 @@ class TestProjectCLICommands:
 
         assert result.exit_code == 0
         assert "Project creation not yet implemented" in result.output
-        assert (
-            "Would create project 'my_project' with template: None"
-            in result.output
-        )
+        assert "Would create project 'my_project' with template: None" in result.output
 
     def test_create_command_with_template(self, cli_runner):
         """Test create command with template"""
         from engine_cli.commands.project import create
 
-        result = cli_runner.invoke(
-            create, ["my_project", "--template", "basic_agent"]
-        )
+        result = cli_runner.invoke(create, ["my_project", "--template", "basic_agent"])
 
         assert result.exit_code == 0
         assert "Project creation not yet implemented" in result.output
@@ -92,10 +84,7 @@ class TestProjectCLICommands:
         result = cli_runner.invoke(show, ["my_project"])
 
         assert result.exit_code == 0
-        assert (
-            "Project details for 'my_project' not yet implemented"
-            in result.output
-        )
+        assert "Project details for 'my_project' not yet implemented" in result.output
         assert (
             "This will show detailed information about the specified project"
             in result.output
@@ -109,8 +98,7 @@ class TestProjectCLICommands:
 
         assert result.exit_code == 0
         assert (
-            "Project details for 'my project name' not yet implemented"
-            in result.output
+            "Project details for 'my project name' not yet implemented" in result.output
         )
 
     def test_delete_command_without_force(self, cli_runner):
@@ -159,8 +147,7 @@ class TestProjectCLICommands:
 
         assert result.exit_code == 0
         assert (
-            "Project deployment for 'my_project' not yet implemented"
-            in result.output
+            "Project deployment for 'my_project' not yet implemented" in result.output
         )
         assert "This will deploy the specified project" in result.output
 
