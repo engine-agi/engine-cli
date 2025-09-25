@@ -329,7 +329,7 @@ def search(book_id: str, query: str, max_results: int = 10):
             results = await service.search_books(search_query)
 
             if results:
-                click.echo(f"\n{header(f'Search Results for \"{query}\"')}")
+                click.echo(f"\n{header(f'Search Results for "{query}"')}")
                 for i, result in enumerate(results, 1):
                     click.echo(f"\nResult {i}:")
                     key_value(
