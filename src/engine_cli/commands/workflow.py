@@ -767,14 +767,10 @@ def run(name, input_data):
                 execution_record = None
                 if execution_service:
                     try:
-                        execution_record = await execution_service.create_execution(
-                            workflow_id=name,
-                            workflow_name=workflow_data.get("name", name),
-                            input_data=input_dict,
+                        execution_record = await execution_service.start_execution(
+                            workflow_id=name
                         )
-                        click.echo(
-                            f"📋 Persistent Execution ID: {execution_record.execution_id}"
-                        )
+                        click.echo(f"📋 Persistent Execution ID: {execution_record.id}")
                     except Exception as e:
                         warning(f"Could not create persistent execution record: {e}")
 
@@ -789,8 +785,12 @@ def run(name, input_data):
                     # Mark persistent execution as started
                     if execution_service and execution_record:
                         try:
-                            await execution_service.start_execution(
-                                execution_record.execution_id
+                            from engine_core.services.workflow_service import (
+                                WorkflowExecutionStatus,
+                            )
+
+                            await execution_service.update_execution_status(
+                                execution_record.id, WorkflowExecutionStatus.RUNNING
                             )
                         except Exception as e:
                             warning(f"Could not update persistent execution: {e}")
@@ -811,10 +811,12 @@ def run(name, input_data):
                     # Mark persistent execution as completed
                     if execution_service and execution_record:
                         try:
-                            await execution_service.complete_execution(
-                                execution_record.execution_id,
-                                success=True,
-                                output_data=result,
+                            from engine_core.services.workflow_service import (
+                                WorkflowExecutionStatus,
+                            )
+
+                            await execution_service.update_execution_status(
+                                execution_record.id, WorkflowExecutionStatus.COMPLETED
                             )
                         except Exception as e:
                             warning(f"Could not complete persistent execution: {e}")
@@ -831,8 +833,12 @@ def run(name, input_data):
                     # Mark persistent execution as failed
                     if execution_service and execution_record:
                         try:
-                            await execution_service.fail_execution(
-                                execution_record.execution_id, str(exec_error)
+                            from engine_core.services.workflow_service import (
+                                WorkflowExecutionStatus,
+                            )
+
+                            await execution_service.update_execution_status(
+                                execution_record.id, WorkflowExecutionStatus.FAILED
                             )
                         except Exception as e:
                             warning(f"Could not fail persistent execution: {e}")
@@ -1147,8 +1153,8 @@ def history(workflow_id, limit, status_filter):
             try:
                 if workflow_id:
                     # Show history for specific workflow
-                    executions = await execution_service.get_workflow_executions(
-                        workflow_id=workflow_id, limit=limit
+                    executions = await execution_service.list_workflow_executions(
+                        workflow_id
                     )
 
                     if not executions:
@@ -1174,20 +1180,21 @@ def history(workflow_id, limit, status_filter):
 
                     for execution in executions:
                         duration = "N/A"
-                        if execution.duration_seconds:
-                            duration = f"{execution.duration_seconds:.1f}s"
+                        # Duration calculation not implemented yet
 
                         success_status = "N/A"
-                        if execution.success is not None:
-                            success_status = "✓" if execution.success else "✗"
+                        if execution.status.value == "completed":
+                            success_status = "✓"
+                        elif execution.status.value == "failed":
+                            success_status = "✗"
 
                         started = "N/A"
-                        if hasattr(execution, "started_at") and execution.started_at:
-                            started = execution.started_at.strftime("%Y-%m-%d %H:%M:%S")
+                        if execution.started_at:
+                            started = execution.started_at
 
                         history_table.add_row(
-                            execution.execution_id[:16] + "...",
-                            getattr(execution, "status", "unknown").upper(),
+                            execution.id[:16] + "...",
+                            execution.status.value.upper(),
                             started,
                             duration,
                             success_status,
@@ -1195,23 +1202,10 @@ def history(workflow_id, limit, status_filter):
 
                     print_table(history_table)
 
-                    # Show analytics
-                    try:
-                        analytics = await execution_service.get_execution_analytics(
-                            workflow_id
-                        )
-                        click.echo("\n📊 Analytics:")
-                        click.echo(
-                            f"   Total Executions: {analytics.get('total_executions', 0)}"
-                        )
-                        click.echo(
-                            f"   Success Rate: {analytics.get('success_rate', 0):.1%}"
-                        )
-                        click.echo(
-                            f"   Average Duration: {analytics.get('average_duration', 0):.1f}s"
-                        )
-                    except Exception as e:
-                        warning(f"Could not load analytics: {e}")
+                    # Analytics not available in current implementation
+                    click.echo(
+                        "\n📊 Analytics: Not available in current implementation"
+                    )
 
                 else:
                     # Show recent executions across all workflows
