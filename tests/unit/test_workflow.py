@@ -323,7 +323,9 @@ class TestWorkflowResolver:
         assert result == mock_storage
         assert resolver.team_storage == mock_storage
 
-    @patch("engine_cli.commands.team.get_team_storage", side_effect=ImportError())
+    @patch(
+        "engine_cli.commands.team.get_team_storage", side_effect=ImportError()
+    )
     def test_get_team_storage_import_error(self, mock_get_team_storage):
         """Test _get_team_storage when import fails."""
         resolver = WorkflowResolver()
@@ -428,7 +430,9 @@ class TestCLIWorkflowBuilder:
     def test_add_agent_vertex(self):
         """Test adding agent vertex."""
         builder = CLIWorkflowBuilder()
-        result = builder.add_agent_vertex("vertex1", "agent1", "Test instruction")
+        result = builder.add_agent_vertex(
+            "vertex1", "agent1", "Test instruction"
+        )
         assert result == builder
         assert len(builder.agent_specs) == 1
         assert builder.agent_specs[0]["vertex_id"] == "vertex1"
@@ -454,7 +458,9 @@ class TestWorkflowFunctions:
 
     def test_get_workflow_execution_service_import_error(self):
         """Test workflow execution service when import fails."""
-        with patch.dict("sys.modules", {"engine_core.services.workflow_service": None}):
+        with patch.dict(
+            "sys.modules", {"engine_core.services.workflow_service": None}
+        ):
             service = _get_workflow_execution_service()
             assert service is None
 
@@ -469,7 +475,9 @@ class TestWorkflowCLI:
     @patch("engine_cli.commands.workflow.WorkflowStorage")
     @patch("builtins.open", new_callable=mock_open)
     @patch("yaml.safe_load")
-    def test_show_command_success(self, mock_yaml_load, mock_file, mock_storage_class):
+    def test_show_command_success(
+        self, mock_yaml_load, mock_file, mock_storage_class
+    ):
         """Test show command for existing workflow."""
         mock_storage = MagicMock()
         mock_storage.list_workflows.return_value = [
@@ -491,7 +499,9 @@ class TestWorkflowCLI:
     @patch("engine_cli.commands.workflow.WorkflowStorage")
     @patch("os.path.exists")
     @patch("os.remove")
-    def test_delete_command_success(self, mock_remove, mock_exists, mock_storage_class):
+    def test_delete_command_success(
+        self, mock_remove, mock_exists, mock_storage_class
+    ):
         """Test delete command success."""
         mock_storage = MagicMock()
         mock_storage.list_workflows.return_value = [
@@ -501,7 +511,9 @@ class TestWorkflowCLI:
 
         mock_exists.return_value = True
 
-        result = self.runner.invoke(cli, ["delete", "test_workflow", "--force"])
+        result = self.runner.invoke(
+            cli, ["delete", "test_workflow", "--force"]
+        )
         assert result.exit_code == 0
 
     def test_create_from_config_file(self):
@@ -670,7 +682,9 @@ class TestWorkflowCLI:
         """Test deleting a workflow successfully."""
         mock_storage.delete_workflow.return_value = True
 
-        result = self.runner.invoke(cli, ["delete", "test_workflow", "--force"])
+        result = self.runner.invoke(
+            cli, ["delete", "test_workflow", "--force"]
+        )
 
         assert result.exit_code == 0
         assert "deleted successfully" in result.output
@@ -715,7 +729,9 @@ class TestWorkflowCLI:
         mock_workflow_data = {"id": "test_workflow", "name": "Test Workflow"}
         mock_storage.load_workflow.return_value = mock_workflow_data
 
-        result = self.runner.invoke(cli, ["run", "test_workflow", "--input-data", '""'])
+        result = self.runner.invoke(
+            cli, ["run", "test_workflow", "--input-data", '""']
+        )
 
         assert result.exit_code == 0
         # Empty string is valid JSON, so should not show "Invalid JSON"
@@ -832,7 +848,9 @@ class TestWorkflowCLI:
         mock_storage.load_workflow.return_value = mock_workflow_data
 
         # Create deeply nested JSON
-        nested_data = {"level1": {"level2": {"level3": {"level4": {"level5": "deep"}}}}}
+        nested_data = {
+            "level1": {"level2": {"level3": {"level4": {"level5": "deep"}}}}
+        }
         nested_json = json.dumps(nested_data)
 
         result = self.runner.invoke(
@@ -850,7 +868,9 @@ class TestWorkflowCLI:
         mock_storage.load_workflow.return_value = mock_workflow_data
 
         # Create deeply nested JSON
-        nested_data = {"level1": {"level2": {"level3": {"level4": {"level5": "deep"}}}}}
+        nested_data = {
+            "level1": {"level2": {"level3": {"level4": {"level5": "deep"}}}}
+        }
         nested_json = json.dumps(nested_data)
 
         result = self.runner.invoke(
@@ -1060,7 +1080,9 @@ class TestWorkflowCLI:
         """Test deleting a workflow with ID containing spaces."""
         mock_storage.delete_workflow.return_value = False
 
-        result = self.runner.invoke(cli, ["delete", "workflow with spaces", "--force"])
+        result = self.runner.invoke(
+            cli, ["delete", "workflow with spaces", "--force"]
+        )
 
         assert result.exit_code == 1
         assert "not found" in result.output.lower()
@@ -1100,7 +1122,9 @@ class TestWorkflowCLI:
         """Test deleting a workflow with ID containing special characters."""
         mock_storage.delete_workflow.return_value = False
 
-        result = self.runner.invoke(cli, ["delete", "workflow@#$%^&*()", "--force"])
+        result = self.runner.invoke(
+            cli, ["delete", "workflow@#$%^&*()", "--force"]
+        )
 
         assert result.exit_code == 1
         assert "not found" in result.output.lower()

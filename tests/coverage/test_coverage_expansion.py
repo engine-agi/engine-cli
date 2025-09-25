@@ -56,7 +56,9 @@ class TestAdvancedCommandsCoverage:
         if advanced_group is None:
             pytest.skip("Advanced command group not available")
         assert advanced_group is not None
-        assert hasattr(advanced_group, "commands")  # Click group has commands attribute
+        assert hasattr(
+            advanced_group, "commands"
+        )  # Click group has commands attribute
 
     def test_advanced_batch_operations(self, temp_workspace):
         """Test batch operations in advanced commands."""
@@ -143,7 +145,9 @@ class TestAdvancedCommandsCoverage:
         for file_path in test_files:
             Path(file_path).parent.mkdir(exist_ok=True)
             with open(file_path, "w") as f:
-                yaml.dump({"id": file_path.split("/")[-1].replace(".yaml", "")}, f)
+                yaml.dump(
+                    {"id": file_path.split("/")[-1].replace(".yaml", "")}, f
+                )
 
         # Test diagnostics logic
         diagnostics = {
@@ -547,7 +551,9 @@ class TestBookCommandsCoverage:
             "archived",
         ]
         assert isinstance(valid_metadata["created_at"], datetime)
-        assert valid_metadata["version"].count(".") >= 1  # Should have at least one dot
+        assert (
+            valid_metadata["version"].count(".") >= 1
+        )  # Should have at least one dot
 
     def test_book_hierarchy_operations(self, temp_workspace):
         """Test book hierarchy operations (book -> chapter -> page -> section)."""
@@ -567,7 +573,9 @@ class TestBookCommandsCoverage:
         for parent, child in relationships:
             assert parent in hierarchy_levels
             assert child in hierarchy_levels
-            assert hierarchy_levels.index(parent) < hierarchy_levels.index(child)
+            assert hierarchy_levels.index(parent) < hierarchy_levels.index(
+                child
+            )
 
     def test_book_content_types(self, temp_workspace):
         """Test different content types in books."""
@@ -644,7 +652,9 @@ class TestBookCommandsCoverage:
                 {
                     "chapter_id": "1",
                     "title": "Chapter 1",
-                    "pages": [{"page_id": "1.1", "title": "Page 1.1", "sections": []}],
+                    "pages": [
+                        {"page_id": "1.1", "title": "Page 1.1", "sections": []}
+                    ],
                 }
             ],
         }
@@ -751,7 +761,10 @@ class TestWorkflowCommandsCoverage:
 
             vertex_ids = {v["id"] for v in data.get("vertices", [])}
             for edge in data.get("edges", []):
-                if edge["from"] not in vertex_ids or edge["to"] not in vertex_ids:
+                if (
+                    edge["from"] not in vertex_ids
+                    or edge["to"] not in vertex_ids
+                ):
                     return False, "Invalid edge reference"
 
             return True, "Valid workflow"

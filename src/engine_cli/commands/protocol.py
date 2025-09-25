@@ -44,7 +44,9 @@ class ProtocolStorage:
             for file in os.listdir(self.protocols_dir):
                 if file.endswith(".yaml"):
                     try:
-                        with open(os.path.join(self.protocols_dir, file), "r") as f:
+                        with open(
+                            os.path.join(self.protocols_dir, file), "r"
+                        ) as f:
                             protocol_data = yaml.safe_load(f)
                             if protocol_data:
                                 protocols.append(protocol_data)
@@ -99,14 +101,18 @@ def cli():
 @click.option("--version", default="1.0.0", help="Protocol version")
 @click.option("--tags", help="Protocol tags (comma-separated)")
 @click.option("--intents", help="Supported intents (comma-separated)")
-@click.option("--command-types", help="Supported command types (comma-separated)")
+@click.option(
+    "--command-types", help="Supported command types (comma-separated)"
+)
 @click.option(
     "--scope",
     type=click.Choice(["global", "project", "session", "command"]),
     default="global",
     help="Default context scope",
 )
-@click.option("--strict-validation", is_flag=True, help="Enable strict validation")
+@click.option(
+    "--strict-validation", is_flag=True, help="Enable strict validation"
+)
 @click.option("--save", is_flag=True, help="Save protocol to storage")
 @click.option(
     "--output",
@@ -129,7 +135,9 @@ def create(
     """Create a new protocol."""
     try:
         if not PROTOCOL_BUILDER_AVAILABLE:
-            error("Engine Core not available. Please install engine-core first.")
+            error(
+                "Engine Core not available. Please install engine-core first."
+            )
             return
 
         builder = ProtocolBuilder()  # type: ignore
@@ -201,7 +209,9 @@ def create(
             ", ".join(
                 [
                     i.value
-                    for i in getattr(protocol.configuration, "supported_intents", [])
+                    for i in getattr(
+                        protocol.configuration, "supported_intents", []
+                    )
                 ]
             ),
         )
@@ -228,7 +238,9 @@ def create(
                     "id": protocol.id,
                     "name": protocol.name,
                     "description": protocol.description,
-                    "version": getattr(protocol.configuration, "version", "1.0.0"),
+                    "version": getattr(
+                        protocol.configuration, "version", "1.0.0"
+                    ),
                     "author": getattr(protocol.configuration, "author", None),
                     "tags": getattr(protocol.configuration, "tags", []),
                     "supported_intents": [
@@ -379,7 +391,9 @@ def show(name, format):
                 protocol_info["Default Scope"] = protocol["default_scope"]
 
             if protocol.get("strict_validation"):
-                protocol_info["Strict Validation"] = str(protocol["strict_validation"])
+                protocol_info["Strict Validation"] = str(
+                    protocol["strict_validation"]
+                )
 
             if protocol.get("created_at"):
                 protocol_info["Created"] = protocol["created_at"]
@@ -392,7 +406,9 @@ def show(name, format):
 
 @cli.command()
 @click.argument("name")
-@click.option("--force", is_flag=True, help="Force deletion without confirmation")
+@click.option(
+    "--force", is_flag=True, help="Force deletion without confirmation"
+)
 def delete(name, force):
     """Delete a protocol."""
     try:
@@ -435,7 +451,9 @@ def test(name, command, context):
             return
 
         if not PROTOCOL_BUILDER_AVAILABLE:
-            error("Engine Core not available. Please install engine-core first.")
+            error(
+                "Engine Core not available. Please install engine-core first."
+            )
             return
 
         success(f"Testing protocol '{name}'...")

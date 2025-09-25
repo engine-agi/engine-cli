@@ -160,7 +160,9 @@ def edit(config_file):
                     config_path = path
                     break
             else:
-                error("No configuration file found. Use 'config init' to create one.")
+                error(
+                    "No configuration file found. Use 'config init' to create one."
+                )
                 return
 
         if not config_path.exists():
@@ -199,7 +201,9 @@ def paths():
     list_items(paths_info, bullet="")
 
     header("Environment Variables")
-    info(f"Environment variables with prefix '{config_manager.env_prefix}' are loaded")
+    info(
+        f"Environment variables with prefix '{config_manager.env_prefix}' are loaded"
+    )
     info("Examples: ENGINE_API_BASE_URL, ENGINE_DEBUG, ENGINE_LOG_LEVEL")
 
 
@@ -214,7 +218,9 @@ def reset(section):
             current_config = load_config()
 
             if hasattr(default_config, section):
-                setattr(current_config, section, getattr(default_config, section))
+                setattr(
+                    current_config, section, getattr(default_config, section)
+                )
                 success(f"Section '{section}' reset to defaults")
             else:
                 error(f"Unknown configuration section: {section}")

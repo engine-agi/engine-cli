@@ -87,7 +87,9 @@ class CLIRichFormatter:
         console.print(table)
 
     @staticmethod
-    def print_key_value_pairs(data: Dict[str, Any], title: Optional[str] = None):
+    def print_key_value_pairs(
+        data: Dict[str, Any], title: Optional[str] = None
+    ):
         """Print key-value pairs in a nice format."""
         if title:
             CLIRichFormatter.print_header(title)
@@ -126,7 +128,9 @@ class CLIRichFormatter:
         )
 
     @staticmethod
-    def print_columns(items: List[str], equal: bool = True, expand: bool = False):
+    def print_columns(
+        items: List[str], equal: bool = True, expand: bool = False
+    ):
         """Print items in columns."""
         columns = Columns(items, equal=equal, expand=expand)
         console.print(columns)
@@ -137,7 +141,9 @@ class CLIRichFormatter:
         console.print(f"[{style}]{char * length}[/{style}]")
 
     @staticmethod
-    def print_status_summary(statuses: Dict[str, bool], title: str = "Status Summary"):
+    def print_status_summary(
+        statuses: Dict[str, bool], title: str = "Status Summary"
+    ):
         """Print a status summary with checkmarks/X marks."""
         CLIRichFormatter.print_header(title)
 
@@ -201,7 +207,9 @@ def table(
     box_style=box.ROUNDED,
 ) -> Table:
     """Create table."""
-    return CLIRichFormatter.create_table(title, columns, show_header, box_style)
+    return CLIRichFormatter.create_table(
+        title, columns, show_header, box_style
+    )
 
 
 def print_table(table: Table):

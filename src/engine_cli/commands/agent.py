@@ -29,7 +29,9 @@ class AgentStorage:
             for file in os.listdir(self.agents_dir):
                 if file.endswith(".yaml"):
                     try:
-                        with open(os.path.join(self.agents_dir, file), "r") as f:
+                        with open(
+                            os.path.join(self.agents_dir, file), "r"
+                        ) as f:
                             agent_data = yaml.safe_load(f)
                             if agent_data:
                                 agents.append(agent_data)
@@ -86,7 +88,9 @@ def cli():
 @click.option("--workflow", help="Agent workflow ID")
 @click.option("--book", help="Agent memory book ID")
 @click.option("--save", is_flag=True, help="Save agent to storage")
-@click.option("--output", type=click.Path(), help="Output file for agent configuration")
+@click.option(
+    "--output", type=click.Path(), help="Output file for agent configuration"
+)
 def create(
     name,
     model,
@@ -221,7 +225,9 @@ def list(format):
             agents = agent_storage.list_agents()
 
         if not agents:
-            click.echo("No agents found. Create one with: engine agent create <name>")
+            click.echo(
+                "No agents found. Create one with: engine agent create <name>"
+            )
             return
 
         if format == "json":
@@ -235,7 +241,11 @@ def list(format):
             )
 
             for agent in agents:
-                stack = ", ".join(agent.get("stack", [])) if agent.get("stack") else ""
+                stack = (
+                    ", ".join(agent.get("stack", []))
+                    if agent.get("stack")
+                    else ""
+                )
                 agent_table.add_row(
                     agent.get("id", ""),
                     agent.get("name", ""),
@@ -319,12 +329,16 @@ def show(name, format):
 
 @cli.command()
 @click.argument("name")
-@click.option("--force", is_flag=True, help="Force deletion without confirmation")
+@click.option(
+    "--force", is_flag=True, help="Force deletion without confirmation"
+)
 def delete(name, force):
     """Delete an agent."""
     try:
         # Check if agent exists (try both storages)
-        agent = agent_book_storage.get_agent(name) or agent_storage.get_agent(name)
+        agent = agent_book_storage.get_agent(name) or agent_storage.get_agent(
+            name
+        )
         if not agent:
             error(f"Agent '{name}' not found")
             import sys
@@ -338,9 +352,9 @@ def delete(name, force):
                 return
 
         # Try to delete from Book storage first, then legacy storage
-        deleted = agent_book_storage.delete_agent(name) or agent_storage.delete_agent(
+        deleted = agent_book_storage.delete_agent(
             name
-        )
+        ) or agent_storage.delete_agent(name)
 
         if deleted:
             success(f"Agent '{name}' deleted successfully")
@@ -354,12 +368,16 @@ def delete(name, force):
 @click.command()
 @click.argument("name")
 @click.argument("task")
-@click.option("--async", "async_exec", is_flag=True, help="Execute asynchronously")
+@click.option(
+    "--async", "async_exec", is_flag=True, help="Execute asynchronously"
+)
 def execute(name, task, async_exec):
     """Execute a task with a specific agent."""
     try:
         # Load agent from storage (try Book storage first)
-        agent_data = agent_book_storage.get_agent(name) or agent_storage.get_agent(name)
+        agent_data = agent_book_storage.get_agent(
+            name
+        ) or agent_storage.get_agent(name)
         if not agent_data:
             error(f"Agent '{name}' not found")
             return
@@ -371,7 +389,9 @@ def execute(name, task, async_exec):
         builder = builder.with_id(agent_data["id"])
         if agent_data.get("name"):
             builder = builder.with_name(agent_data["name"])
-        builder = builder.with_model(agent_data.get("model", "claude-3.5-sonnet"))
+        builder = builder.with_model(
+            agent_data.get("model", "claude-3.5-sonnet")
+        )
 
         if agent_data.get("speciality"):
             builder = builder.with_speciality(agent_data["speciality"])
@@ -411,7 +431,9 @@ def execute(name, task, async_exec):
             click.echo(f"✅ Task completed in {duration:.2f}s")
             click.echo(
                 "📄 Response: {}".format(
-                    result.messages[-1].content if result.messages else "No response"
+                    result.messages[-1].content
+                    if result.messages
+                    else "No response"
                 )
             )
 

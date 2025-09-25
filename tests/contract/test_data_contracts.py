@@ -117,7 +117,9 @@ class CLISchemaValidator:
             member_required = ["id", "role", "name"]
             for key in member_required:
                 if key not in member:
-                    raise ValueError(f"Team member {i} missing required key: {key}")
+                    raise ValueError(
+                        f"Team member {i} missing required key: {key}"
+                    )
 
         return True
 
@@ -178,7 +180,9 @@ class TestDataContractValidation:
     def test_cli_config_schema_validation(self):
         """Test CLI configuration schema validation."""
         # Load actual CLI config
-        config_path = Path(__file__).parent.parent.parent / "config" / "cli-config.yaml"
+        config_path = (
+            Path(__file__).parent.parent.parent / "config" / "cli-config.yaml"
+        )
         with open(config_path, "r") as f:
             config_data = yaml.safe_load(f)
 
@@ -216,7 +220,9 @@ class TestDataContractValidation:
         # Test invalid model type
         invalid_agent2 = valid_agent.copy()
         invalid_agent2["model"] = ""
-        with pytest.raises(ValueError, match="Agent model must be a non-empty string"):
+        with pytest.raises(
+            ValueError, match="Agent model must be a non-empty string"
+        ):
             CLISchemaValidator.validate_agent_schema(invalid_agent2)
 
     @pytest.mark.contract
@@ -227,7 +233,9 @@ class TestDataContractValidation:
             "id": "test-workflow",
             "name": "Test Workflow",
             "description": "A test workflow",
-            "vertices": [{"id": "task1", "agent": "agent1", "task": "Test task"}],
+            "vertices": [
+                {"id": "task1", "agent": "agent1", "task": "Test task"}
+            ],
             "edges": [],
         }
 
@@ -236,13 +244,17 @@ class TestDataContractValidation:
         # Test missing required field
         invalid_workflow = valid_workflow.copy()
         del invalid_workflow["vertices"]
-        with pytest.raises(ValueError, match="Missing required workflow key: vertices"):
+        with pytest.raises(
+            ValueError, match="Missing required workflow key: vertices"
+        ):
             CLISchemaValidator.validate_workflow_schema(invalid_workflow)
 
         # Test invalid vertices type
         invalid_workflow2 = valid_workflow.copy()
         invalid_workflow2["vertices"] = "not_a_list"
-        with pytest.raises(ValueError, match="Workflow vertices must be a list"):
+        with pytest.raises(
+            ValueError, match="Workflow vertices must be a list"
+        ):
             CLISchemaValidator.validate_workflow_schema(invalid_workflow2)
 
     @pytest.mark.contract
@@ -274,7 +286,9 @@ class TestDataContractValidation:
         # Test missing required field
         invalid_team = valid_team.copy()
         del invalid_team["members"]
-        with pytest.raises(ValueError, match="Missing required team key: members"):
+        with pytest.raises(
+            ValueError, match="Missing required team key: members"
+        ):
             CLISchemaValidator.validate_team_schema(invalid_team)
 
         # Test invalid members type
@@ -286,7 +300,9 @@ class TestDataContractValidation:
         # Test member missing required field
         invalid_team3 = valid_team.copy()
         invalid_team3["members"][0].pop("id")
-        with pytest.raises(ValueError, match="Team member 0 missing required key: id"):
+        with pytest.raises(
+            ValueError, match="Team member 0 missing required key: id"
+        ):
             CLISchemaValidator.validate_team_schema(invalid_team3)
 
     @pytest.mark.contract
@@ -298,7 +314,9 @@ class TestDataContractValidation:
             "title": "Test Book",
             "author": "Test Author",
             "description": "A test book",
-            "chapters": [{"id": "chap1", "title": "Chapter 1", "content": "Content"}],
+            "chapters": [
+                {"id": "chap1", "title": "Chapter 1", "content": "Content"}
+            ],
         }
 
         assert CLISchemaValidator.validate_book_schema(valid_book)
@@ -306,7 +324,9 @@ class TestDataContractValidation:
         # Test missing required field
         invalid_book = valid_book.copy()
         del invalid_book["title"]
-        with pytest.raises(ValueError, match="Missing required book key: title"):
+        with pytest.raises(
+            ValueError, match="Missing required book key: title"
+        ):
             CLISchemaValidator.validate_book_schema(invalid_book)
 
         # Test invalid chapters type
@@ -334,13 +354,17 @@ class TestDataContractValidation:
         # Test missing required field
         invalid_protocol = valid_protocol.copy()
         del invalid_protocol["name"]
-        with pytest.raises(ValueError, match="Missing required protocol key: name"):
+        with pytest.raises(
+            ValueError, match="Missing required protocol key: name"
+        ):
             CLISchemaValidator.validate_protocol_schema(invalid_protocol)
 
         # Test invalid commands type
         invalid_protocol2 = valid_protocol.copy()
         invalid_protocol2["commands"] = "not_a_list"
-        with pytest.raises(ValueError, match="Protocol commands must be a list"):
+        with pytest.raises(
+            ValueError, match="Protocol commands must be a list"
+        ):
             CLISchemaValidator.validate_protocol_schema(invalid_protocol2)
 
     @pytest.mark.contract
@@ -360,20 +384,26 @@ class TestDataContractValidation:
         # Test missing required field
         invalid_tool = valid_tool.copy()
         del invalid_tool["type"]
-        with pytest.raises(ValueError, match="Missing required tool key: type"):
+        with pytest.raises(
+            ValueError, match="Missing required tool key: type"
+        ):
             CLISchemaValidator.validate_tool_schema(invalid_tool)
 
         # Test invalid type
         invalid_tool2 = valid_tool.copy()
         invalid_tool2["type"] = "invalid_type"
-        with pytest.raises(ValueError, match="Invalid tool type: invalid_type"):
+        with pytest.raises(
+            ValueError, match="Invalid tool type: invalid_type"
+        ):
             CLISchemaValidator.validate_tool_schema(invalid_tool2)
 
     @pytest.mark.contract
     def test_yaml_file_parsing(self):
         """Test that YAML files can be parsed correctly."""
         # Test parsing CLI config
-        config_path = Path(__file__).parent.parent.parent / "config" / "cli-config.yaml"
+        config_path = (
+            Path(__file__).parent.parent.parent / "config" / "cli-config.yaml"
+        )
         with open(config_path, "r") as f:
             data = yaml.safe_load(f)
 
@@ -382,7 +412,9 @@ class TestDataContractValidation:
 
         # Test parsing workflow file
         workflow_path = (
-            Path(__file__).parent.parent.parent / "workflows" / "test-workflow-e2e.yaml"
+            Path(__file__).parent.parent.parent
+            / "workflows"
+            / "test-workflow-e2e.yaml"
         )
         with open(workflow_path, "r") as f:
             workflow_data = yaml.safe_load(f)
@@ -394,7 +426,9 @@ class TestDataContractValidation:
     def test_json_serialization_compatibility(self):
         """Test that YAML data can be converted to JSON."""
         # Test CLI config JSON conversion
-        config_path = Path(__file__).parent.parent.parent / "config" / "cli-config.yaml"
+        config_path = (
+            Path(__file__).parent.parent.parent / "config" / "cli-config.yaml"
+        )
         with open(config_path, "r") as f:
             yaml_data = yaml.safe_load(f)
 
@@ -445,7 +479,9 @@ class TestDataContractValidation:
         team_single_member = {
             "id": "single-member-team",
             "name": "Single Member Team",
-            "members": [{"id": "only-member", "role": "leader", "name": "Only Member"}],
+            "members": [
+                {"id": "only-member", "role": "leader", "name": "Only Member"}
+            ],
         }
 
         assert CLISchemaValidator.validate_team_schema(team_single_member)

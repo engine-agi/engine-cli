@@ -38,7 +38,9 @@ class TeamStorage:
             for file in os.listdir(self.teams_dir):
                 if file.endswith(".yaml"):
                     try:
-                        with open(os.path.join(self.teams_dir, file), "r") as f:
+                        with open(
+                            os.path.join(self.teams_dir, file), "r"
+                        ) as f:
                             team_data = yaml.safe_load(f)
                             if team_data:
                                 teams.append(team_data)
@@ -93,23 +95,31 @@ def cli():
 )
 @click.option(
     "--strategy",
-    type=click.Choice(["hierarchical", "collaborative", "parallel", "sequential"]),
+    type=click.Choice(
+        ["hierarchical", "collaborative", "parallel", "sequential"]
+    ),
     default="collaborative",
     help="Coordination strategy",
 )
 @click.option("--description", help="Team description")
 @click.option("--save", is_flag=True, help="Save team to storage")
-@click.option("--output", type=click.Path(), help="Output file for team configuration")
+@click.option(
+    "--output", type=click.Path(), help="Output file for team configuration"
+)
 def create(name, agents, leader, strategy, description, save, output):
     """Create a new team with agent coordination."""
     try:
         if not TEAM_BUILDER_AVAILABLE:
-            error("Engine Core not available. Please install engine-core first.")
+            error(
+                "Engine Core not available. Please install engine-core first."
+            )
             return
 
         # Convert string to enum
         if not TEAM_BUILDER_AVAILABLE or TeamCoordinationStrategy is None:
-            error("Engine Core not available. Please install engine-core first.")
+            error(
+                "Engine Core not available. Please install engine-core first."
+            )
             return
         strategy_enum = TeamCoordinationStrategy(strategy.lower())
 
@@ -145,7 +155,9 @@ def create(name, agents, leader, strategy, description, save, output):
                 AgentBuilder = None
 
             if not agent_builder_available:
-                error("Engine Core not available. Please install engine-core first.")
+                error(
+                    "Engine Core not available. Please install engine-core first."
+                )
                 return
 
             agent_builder = AgentBuilder()  # type: ignore
@@ -187,7 +199,9 @@ def create(name, agents, leader, strategy, description, save, output):
                     "name": team.name,
                     "coordination_strategy": team.coordination_strategy,
                     "agents": (
-                        [a.id for a in team.agents.values()] if team.agents else []
+                        [a.id for a in team.agents.values()]
+                        if team.agents
+                        else []
                     ),
                     "leader": leader,
                     "description": description,
@@ -227,7 +241,9 @@ def list(format):
         teams = team_storage.list_teams()
 
         if not teams:
-            click.echo("No teams found. Create one with: engine team create <name>")
+            click.echo(
+                "No teams found. Create one with: engine team create <name>"
+            )
             return
 
         if format == "json":
@@ -241,10 +257,15 @@ def list(format):
             )
 
             for team in teams:
-                agents = ", ".join(team.get("agents", [])) if team.get("agents") else ""
+                agents = (
+                    ", ".join(team.get("agents", []))
+                    if team.get("agents")
+                    else ""
+                )
                 desc = (
                     team.get("description", "")[:30] + "..."
-                    if team.get("description") and len(team.get("description", "")) > 30
+                    if team.get("description")
+                    and len(team.get("description", "")) > 30
                     else team.get("description", "")
                 )
                 team_table.add_row(
@@ -308,7 +329,9 @@ def show(name, format):
 
 @cli.command()
 @click.argument("name")
-@click.option("--force", is_flag=True, help="Force deletion without confirmation")
+@click.option(
+    "--force", is_flag=True, help="Force deletion without confirmation"
+)
 def delete(name, force):
     """Delete a team."""
     try:

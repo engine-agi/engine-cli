@@ -9,7 +9,11 @@ import pytest
 from prompt_toolkit.completion import Completion
 from prompt_toolkit.document import Document
 
-from engine_cli.interactive import EngineCLICompleter, InteractiveCLI, start_interactive
+from engine_cli.interactive import (
+    EngineCLICompleter,
+    InteractiveCLI,
+    start_interactive,
+)
 
 
 class TestEngineCLICompleter:
@@ -41,7 +45,9 @@ class TestEngineCLICompleter:
         document = Document(text="")
         complete_event = Mock()
 
-        completions = list(self.completer.get_completions(document, complete_event))
+        completions = list(
+            self.completer.get_completions(document, complete_event)
+        )
 
         # Should complete all main commands
         command_names = [c.text for c in completions]
@@ -55,7 +61,9 @@ class TestEngineCLICompleter:
         document = Document(text="ag")
         complete_event = Mock()
 
-        completions = list(self.completer.get_completions(document, complete_event))
+        completions = list(
+            self.completer.get_completions(document, complete_event)
+        )
 
         # Should complete 'agent'
         assert len(completions) == 1
@@ -67,7 +75,9 @@ class TestEngineCLICompleter:
         document = Document(text="agent ")
         complete_event = Mock()
 
-        completions = list(self.completer.get_completions(document, complete_event))
+        completions = list(
+            self.completer.get_completions(document, complete_event)
+        )
 
         # Should complete agent subcommands
         subcommand_names = [c.text for c in completions]
@@ -81,7 +91,9 @@ class TestEngineCLICompleter:
         document = Document(text="agent create ")
         complete_event = Mock()
 
-        completions = list(self.completer.get_completions(document, complete_event))
+        completions = list(
+            self.completer.get_completions(document, complete_event)
+        )
 
         # Should complete agent options
         option_names = [c.text for c in completions]
@@ -94,7 +106,9 @@ class TestEngineCLICompleter:
         document = Document(text="workflow create ")
         complete_event = Mock()
 
-        completions = list(self.completer.get_completions(document, complete_event))
+        completions = list(
+            self.completer.get_completions(document, complete_event)
+        )
 
         # Should complete workflow options
         option_names = [c.text for c in completions]
@@ -108,7 +122,9 @@ class TestEngineCLICompleter:
         document = Document(text="agent create --model gpt-4 ")
         complete_event = Mock()
 
-        completions = list(self.completer.get_completions(document, complete_event))
+        completions = list(
+            self.completer.get_completions(document, complete_event)
+        )
 
         # Should not complete --model again
         option_names = [c.text for c in completions]
@@ -121,7 +137,9 @@ class TestEngineCLICompleter:
         document = Document(text="unknown ")
         complete_event = Mock()
 
-        completions = list(self.completer.get_completions(document, complete_event))
+        completions = list(
+            self.completer.get_completions(document, complete_event)
+        )
 
         # Should not complete anything for unknown command
         assert len(completions) == 0
@@ -141,7 +159,9 @@ class TestInteractiveCLI:
 
         interactive = InteractiveCLI()
 
-        assert interactive.history_file == Path("/home/test/.engine_cli_history")
+        assert interactive.history_file == Path(
+            "/home/test/.engine_cli_history"
+        )
         assert interactive.session is not None
         # Verify session has completer and history
         assert interactive.session.completer is not None
@@ -223,7 +243,9 @@ class TestInteractiveCLI:
 
         assert result is True
         mock_split.assert_called_with("agent list")
-        mock_cli.assert_called_with(args=["agent", "list"], standalone_mode=False)
+        mock_cli.assert_called_with(
+            args=["agent", "list"], standalone_mode=False
+        )
 
     @patch("engine_cli.main.cli")
     @patch("shlex.split")
@@ -240,7 +262,9 @@ class TestInteractiveCLI:
     @patch("engine_cli.main.cli")
     @patch("shlex.split")
     @patch("engine_cli.interactive.error")
-    def test_execute_command_cli_exception(self, mock_error, mock_split, mock_cli):
+    def test_execute_command_cli_exception(
+        self, mock_error, mock_split, mock_cli
+    ):
         """Test CLI command that raises exception."""
         mock_split.return_value = ["invalid", "command"]
         mock_cli.side_effect = Exception("Command failed")
@@ -281,7 +305,9 @@ class TestInteractiveCLI:
 
         # Verify table creation and population
         mock_table.assert_called_with("Commands", ["Command", "Description"])
-        assert mock_table_instance.add_row.call_count > 10  # Multiple commands added
+        assert (
+            mock_table_instance.add_row.call_count > 10
+        )  # Multiple commands added
 
         # Verify table printing
         mock_print_table.assert_called_with(mock_table_instance)
@@ -301,11 +327,15 @@ class TestInteractiveCLI:
         self, mock_success, mock_separator, mock_info, mock_header
     ):
         """Test run method with immediate exit."""
-        with patch.object(self.interactive.session, "prompt", side_effect=EOFError()):
+        with patch.object(
+            self.interactive.session, "prompt", side_effect=EOFError()
+        ):
             result = self.interactive.run()
 
             assert result == 0
-            mock_header.assert_called_with("Welcome to Engine CLI Interactive Mode")
+            mock_header.assert_called_with(
+                "Welcome to Engine CLI Interactive Mode"
+            )
             mock_info.assert_called_with(
                 "Type 'help' for available commands or 'exit' to quit"
             )
@@ -342,7 +372,9 @@ class TestInteractiveCLI:
     @patch("engine_cli.interactive.info")
     @patch("engine_cli.interactive.separator")
     @patch("engine_cli.interactive.error")
-    def test_run_exception(self, mock_error, mock_separator, mock_info, mock_header):
+    def test_run_exception(
+        self, mock_error, mock_separator, mock_info, mock_header
+    ):
         """Test run method with general exception."""
         with patch.object(
             self.interactive.session,
@@ -386,14 +418,18 @@ class TestStartInteractive:
 
     @patch("engine_cli.interactive.InteractiveCLI")
     @patch("engine_cli.interactive.error")
-    def test_start_interactive_exception(self, mock_error, mock_interactive_class):
+    def test_start_interactive_exception(
+        self, mock_error, mock_interactive_class
+    ):
         """Test start_interactive with general exception."""
         mock_interactive_class.side_effect = Exception("Init failed")
 
         result = start_interactive()
 
         assert result == 1
-        mock_error.assert_called_with("Failed to start interactive mode: Init failed")
+        mock_error.assert_called_with(
+            "Failed to start interactive mode: Init failed"
+        )
 
 
 if __name__ == "__main__":

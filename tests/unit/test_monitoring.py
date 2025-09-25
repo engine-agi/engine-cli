@@ -58,7 +58,9 @@ class TestMonitoringCLICommands:
         result = cli_runner.invoke(health, ["--component", "database"])
 
         assert result.exit_code == 0
-        assert "Health check for 'database' not yet implemented" in result.output
+        assert (
+            "Health check for 'database' not yet implemented" in result.output
+        )
 
     def test_alerts_command(self, cli_runner):
         """Test alerts command"""

@@ -103,7 +103,9 @@ class EngineConfig(BaseModel):
         if "base_url" in v:
             url = v["base_url"]
             if not (url.startswith("http://") or url.startswith("https://")):
-                raise ValueError("API base_url must start with http:// or https://")
+                raise ValueError(
+                    "API base_url must start with http:// or https://"
+                )
 
         return v
 
@@ -165,7 +167,9 @@ class ConfigManager:
         if config_file:
             config_file = Path(config_file)
             if not config_file.exists():
-                raise FileNotFoundError(f"Configuration file not found: {config_file}")
+                raise FileNotFoundError(
+                    f"Configuration file not found: {config_file}"
+                )
             self._config_file = config_file
             config = self._load_from_file(config_file)
             # Always merge environment variables
@@ -216,7 +220,9 @@ class ConfigManager:
                 error(f"  {error_detail['loc'][0]}: {error_detail['msg']}")
             raise
         except Exception as e:
-            raise RuntimeError(f"Failed to load configuration from {file_path}: {e}")
+            raise RuntimeError(
+                f"Failed to load configuration from {file_path}: {e}"
+            )
 
     def _merge_env_vars(self, config: EngineConfig) -> EngineConfig:
         """Merge environment variables into configuration."""
@@ -285,7 +291,9 @@ class ConfigManager:
     ):
         """Save configuration to file."""
         if file_path is None:
-            file_path = self._config_file or (Path.home() / ".engine" / "config.yaml")
+            file_path = self._config_file or (
+                Path.home() / ".engine" / "config.yaml"
+            )
 
         file_path = Path(file_path)
         file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -407,7 +415,9 @@ def load_config(
     return config_manager.load_config(config_file)
 
 
-def save_config(config: EngineConfig, file_path: Optional[Union[str, Path]] = None):
+def save_config(
+    config: EngineConfig, file_path: Optional[Union[str, Path]] = None
+):
     """Save configuration (convenience function)."""
     config_manager.save_config(config, file_path)
 

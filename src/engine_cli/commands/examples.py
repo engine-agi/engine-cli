@@ -26,7 +26,9 @@ def hello():
 def list(level):
     """List available examples."""
     try:
-        click.echo(f"⚠ Examples listing for level '{level}' not yet implemented")
+        click.echo(
+            f"⚠ Examples listing for level '{level}' not yet implemented"
+        )
         click.echo(
             "This will list all available examples organized by difficulty level"
         )

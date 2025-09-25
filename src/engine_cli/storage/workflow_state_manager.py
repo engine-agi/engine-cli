@@ -53,7 +53,9 @@ class WorkflowExecutionStatus:
         # Convert enums to strings
         data["state"] = self.state.value
         for vertex_id, vertex_state in data["vertex_states"].items():
-            if "state" in vertex_state and isinstance(vertex_state["state"], Enum):
+            if "state" in vertex_state and isinstance(
+                vertex_state["state"], Enum
+            ):
                 vertex_state["state"] = vertex_state["state"].value
         # Convert datetime to ISO string
         data["start_time"] = self.start_time.isoformat()
@@ -72,15 +74,21 @@ class WorkflowExecutionStatus:
         data["state"] = WorkflowExecutionState(data["state"])
         for vertex_id, vertex_state in data.get("vertex_states", {}).items():
             if "state" in vertex_state:
-                vertex_state["state"] = VertexExecutionState(vertex_state["state"])
+                vertex_state["state"] = VertexExecutionState(
+                    vertex_state["state"]
+                )
         return cls(**data)
 
 
 class WorkflowStateManager:
     """Redis-based volatile state manager for workflow executions."""
 
-    def __init__(self, redis_url: Optional[str] = None, enable_fallback: bool = True):
-        self.redis_url = redis_url or os.getenv("REDIS_URL", "redis://localhost:6379/0")
+    def __init__(
+        self, redis_url: Optional[str] = None, enable_fallback: bool = True
+    ):
+        self.redis_url = redis_url or os.getenv(
+            "REDIS_URL", "redis://localhost:6379/0"
+        )
         self.redis_client: Optional[redis.Redis] = None
         self._connected = False
         self.enable_fallback = enable_fallback
@@ -110,7 +118,9 @@ class WorkflowStateManager:
 
     def is_connected(self) -> bool:
         """Check if connected to Redis."""
-        return self._connected or (self.enable_fallback and self.redis_client is None)
+        return self._connected or (
+            self.enable_fallback and self.redis_client is None
+        )
 
     def _memory_get(self, key: str) -> Optional[str]:
         """Get value from memory storage."""
@@ -188,7 +198,9 @@ class WorkflowStateManager:
         """Create a new workflow execution and return execution ID."""
         await self.connect()
 
-        execution_id = f"wf_exec_{workflow_id}_{int(datetime.now().timestamp())}"
+        execution_id = (
+            f"wf_exec_{workflow_id}_{int(datetime.now().timestamp())}"
+        )
 
         status = WorkflowExecutionStatus(
             execution_id=execution_id,
@@ -281,7 +293,9 @@ class WorkflowStateManager:
             if vs.get("state") == VertexExecutionState.COMPLETED.value
         )
         status.progress_percentage = (
-            (completed_vertices / total_vertices * 100) if total_vertices > 0 else 0
+            (completed_vertices / total_vertices * 100)
+            if total_vertices > 0
+            else 0
         )
 
         await self._set_data(key, json.dumps(status.to_dict()), 86400)
@@ -304,7 +318,9 @@ class WorkflowStateManager:
         status.output_data = output_data
         await self._set_data(key, json.dumps(status.to_dict()), 86400)
 
-    async def set_execution_error(self, execution_id: str, error_message: str) -> None:
+    async def set_execution_error(
+        self, execution_id: str, error_message: str
+    ) -> None:
         """Set execution error."""
         await self.connect()
 

@@ -24,7 +24,9 @@ class AgentBookStorage:
         """Get the file path for an agent book."""
         return os.path.join(self.storage_dir, f"{agent_id}.json")
 
-    def _agent_to_book_data(self, agent_data: Dict[str, Any]) -> Dict[str, Any]:
+    def _agent_to_book_data(
+        self, agent_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Convert agent data to book format."""
         return {
             "book_id": f"agent_{agent_data['id']}",
@@ -35,7 +37,9 @@ class AgentBookStorage:
             "content": {
                 "agent_config": agent_data,
                 "metadata": {
-                    "created_at": agent_data.get("created_at", str(datetime.now())),
+                    "created_at": agent_data.get(
+                        "created_at", str(datetime.now())
+                    ),
                     "version": "1.0",
                     "type": "agent_configuration",
                 },
@@ -94,7 +98,9 @@ class AgentBookStorage:
                         **book_data,
                         "created_at": str(datetime.now()),
                         "book_object": (
-                            book.to_dict() if hasattr(book, "to_dict") else str(book)
+                            book.to_dict()
+                            if hasattr(book, "to_dict")
+                            else str(book)
                         ),
                     },
                     f,

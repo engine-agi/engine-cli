@@ -175,7 +175,10 @@ class TestMainCLI:
         assert result.exit_code == 0
         # Try to invoke a command that should show the error
         result = runner.invoke(cli, ["agent"])
-        assert "Agent commands not available" in result.output or result.exit_code == 0
+        assert (
+            "Agent commands not available" in result.output
+            or result.exit_code == 0
+        )
 
     @patch(
         "engine_cli.commands.team.cli",
@@ -188,7 +191,10 @@ class TestMainCLI:
         assert result.exit_code == 0
         # Try to invoke a command that should show the error
         result = runner.invoke(cli, ["team"])
-        assert "Team commands not available" in result.output or result.exit_code == 0
+        assert (
+            "Team commands not available" in result.output
+            or result.exit_code == 0
+        )
 
     @patch(
         "engine_cli.commands.workflow.cli",
@@ -200,7 +206,8 @@ class TestMainCLI:
         assert result.exit_code == 0
         result = runner.invoke(cli, ["workflow"])
         assert (
-            "Workflow commands not available" in result.output or result.exit_code == 0
+            "Workflow commands not available" in result.output
+            or result.exit_code == 0
         )
 
     @patch(
@@ -212,7 +219,10 @@ class TestMainCLI:
         result = runner.invoke(cli, ["tool", "--help"])
         assert result.exit_code == 0
         result = runner.invoke(cli, ["tool"])
-        assert "Tool commands not available" in result.output or result.exit_code == 0
+        assert (
+            "Tool commands not available" in result.output
+            or result.exit_code == 0
+        )
 
     @patch(
         "engine_cli.commands.protocol.cli",
@@ -224,7 +234,8 @@ class TestMainCLI:
         assert result.exit_code == 0
         result = runner.invoke(cli, ["protocol"])
         assert (
-            "Protocol commands not available" in result.output or result.exit_code == 0
+            "Protocol commands not available" in result.output
+            or result.exit_code == 0
         )
 
     @patch(
@@ -236,7 +247,10 @@ class TestMainCLI:
         result = runner.invoke(cli, ["book", "--help"])
         assert result.exit_code == 0
         result = runner.invoke(cli, ["book"])
-        assert "Book commands not available" in result.output or result.exit_code == 0
+        assert (
+            "Book commands not available" in result.output
+            or result.exit_code == 0
+        )
 
     @patch(
         "engine_cli.commands.project.cli",
@@ -248,7 +262,8 @@ class TestMainCLI:
         assert result.exit_code == 0
         result = runner.invoke(cli, ["project"])
         assert (
-            "Project commands not available" in result.output or result.exit_code == 0
+            "Project commands not available" in result.output
+            or result.exit_code == 0
         )
 
     @patch(
@@ -261,7 +276,8 @@ class TestMainCLI:
         assert result.exit_code == 0
         result = runner.invoke(cli, ["examples"])
         assert (
-            "Examples commands not available" in result.output or result.exit_code == 0
+            "Examples commands not available" in result.output
+            or result.exit_code == 0
         )
 
     @patch(
@@ -273,7 +289,10 @@ class TestMainCLI:
         result = runner.invoke(cli, ["config", "--help"])
         assert result.exit_code == 0
         result = runner.invoke(cli, ["config"])
-        assert "Config commands not available" in result.output or result.exit_code == 0
+        assert (
+            "Config commands not available" in result.output
+            or result.exit_code == 0
+        )
 
     @patch(
         "engine_cli.commands.advanced.cli",
@@ -285,7 +304,8 @@ class TestMainCLI:
         assert result.exit_code == 0
         result = runner.invoke(cli, ["advanced"])
         assert (
-            "Advanced commands not available" in result.output or result.exit_code == 0
+            "Advanced commands not available" in result.output
+            or result.exit_code == 0
         )
 
     @patch(

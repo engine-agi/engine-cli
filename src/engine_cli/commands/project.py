@@ -42,19 +42,25 @@ def show(name):
     """Show details of a specific project."""
     try:
         click.echo(f"⚠ Project details for '{name}' not yet implemented")
-        click.echo("This will show detailed information about the specified project")
+        click.echo(
+            "This will show detailed information about the specified project"
+        )
     except Exception as e:
         click.echo(f"✗ Error showing project: {e}")
 
 
 @cli.command()
 @click.argument("name")
-@click.option("--force", is_flag=True, help="Force deletion without confirmation")
+@click.option(
+    "--force", is_flag=True, help="Force deletion without confirmation"
+)
 def delete(name, force):
     """Delete a project."""
     try:
         if not force:
-            click.echo(f"⚠ This will delete project '{name}'. Use --force to confirm.")
+            click.echo(
+                f"⚠ This will delete project '{name}'. Use --force to confirm."
+            )
             return
         click.echo("⚠ Project deletion not yet implemented")
     except Exception as e:
@@ -66,8 +72,12 @@ def delete(name, force):
 def init(name):
     """Initialize a project in current directory."""
     try:
-        click.echo(f"⚠ Project initialization for '{name}' not yet implemented")
-        click.echo("This will initialize a new project in the current directory")
+        click.echo(
+            f"⚠ Project initialization for '{name}' not yet implemented"
+        )
+        click.echo(
+            "This will initialize a new project in the current directory"
+        )
     except Exception as e:
         click.echo(f"✗ Error initializing project: {e}")
 

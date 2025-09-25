@@ -64,7 +64,9 @@ class TestAdvancedCommands:
 
     def test_health_command_invalid_component(self, runner):
         """Test health command with invalid component."""
-        result = runner.invoke(advanced_cli, ["health", "--component", "invalid"])
+        result = runner.invoke(
+            advanced_cli, ["health", "--component", "invalid"]
+        )
         assert result.exit_code == 0
         assert "Component 'invalid' not found" in result.output
 
@@ -168,7 +170,9 @@ class TestConfigOperations:
     def test_config_import_merge(self, runner, temp_config_file):
         """Test config import command with merge."""
         with patch("engine_cli.commands.advanced.load_config") as mock_load:
-            with patch("engine_cli.commands.advanced.save_config") as mock_save:
+            with patch(
+                "engine_cli.commands.advanced.save_config"
+            ) as mock_save:
                 mock_config = MagicMock()
                 mock_load.return_value = mock_config
 

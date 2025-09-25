@@ -28,7 +28,8 @@ class TestExamplesCLICommands:
 
         assert result.exit_code == 0
         assert (
-            "Examples listing for level 'beginner' not yet implemented" in result.output
+            "Examples listing for level 'beginner' not yet implemented"
+            in result.output
         )
 
     def test_list_command_beginner_level(self, cli_runner):
@@ -39,7 +40,8 @@ class TestExamplesCLICommands:
 
         assert result.exit_code == 0
         assert (
-            "Examples listing for level 'beginner' not yet implemented" in result.output
+            "Examples listing for level 'beginner' not yet implemented"
+            in result.output
         )
 
     def test_list_command_intermediate_level(self, cli_runner):
@@ -62,7 +64,8 @@ class TestExamplesCLICommands:
 
         assert result.exit_code == 0
         assert (
-            "Examples listing for level 'advanced' not yet implemented" in result.output
+            "Examples listing for level 'advanced' not yet implemented"
+            in result.output
         )
 
     def test_list_command_invalid_level(self, cli_runner):
@@ -81,7 +84,10 @@ class TestExamplesCLICommands:
         result = cli_runner.invoke(run, ["basic_agent"])
 
         assert result.exit_code == 0
-        assert "Running example 'basic_agent' not yet implemented" in result.output
+        assert (
+            "Running example 'basic_agent' not yet implemented"
+            in result.output
+        )
 
     def test_run_command_with_spaces(self, cli_runner):
         """Test run command with name containing spaces"""
@@ -90,7 +96,10 @@ class TestExamplesCLICommands:
         result = cli_runner.invoke(run, ["my example name"])
 
         assert result.exit_code == 0
-        assert "Running example 'my example name' not yet implemented" in result.output
+        assert (
+            "Running example 'my example name' not yet implemented"
+            in result.output
+        )
 
     def test_create_command_basic(self, cli_runner):
         """Test create command without output directory"""
@@ -99,17 +108,25 @@ class TestExamplesCLICommands:
         result = cli_runner.invoke(create, ["new_example"])
 
         assert result.exit_code == 0
-        assert "Creating example 'new_example' not yet implemented" in result.output
+        assert (
+            "Creating example 'new_example' not yet implemented"
+            in result.output
+        )
         assert "Would create example in current directory" in result.output
 
     def test_create_command_with_output(self, cli_runner):
         """Test create command with output directory"""
         from engine_cli.commands.examples import create
 
-        result = cli_runner.invoke(create, ["new_example", "--output", "/tmp/examples"])
+        result = cli_runner.invoke(
+            create, ["new_example", "--output", "/tmp/examples"]
+        )
 
         assert result.exit_code == 0
-        assert "Creating example 'new_example' not yet implemented" in result.output
+        assert (
+            "Creating example 'new_example' not yet implemented"
+            in result.output
+        )
         assert "Would create example in: /tmp/examples" in result.output
 
     def test_create_command_with_relative_output(self, cli_runner):
@@ -121,7 +138,10 @@ class TestExamplesCLICommands:
         )
 
         assert result.exit_code == 0
-        assert "Creating example 'new_example' not yet implemented" in result.output
+        assert (
+            "Creating example 'new_example' not yet implemented"
+            in result.output
+        )
         assert "Would create example in: examples/my_project" in result.output
 
     def test_templates_command(self, cli_runner):
@@ -135,8 +155,14 @@ class TestExamplesCLICommands:
         assert "Available templates:" in result.output
         assert "basic-agent: Simple agent example" in result.output
         assert "team-coordination: Multi-agent team example" in result.output
-        assert "workflow-automation: Workflow orchestration example" in result.output
-        assert "tool-integration: External tool integration example" in result.output
+        assert (
+            "workflow-automation: Workflow orchestration example"
+            in result.output
+        )
+        assert (
+            "tool-integration: External tool integration example"
+            in result.output
+        )
 
     def test_hello_command_error_handling(self, cli_runner):
         """Test hello command error handling"""

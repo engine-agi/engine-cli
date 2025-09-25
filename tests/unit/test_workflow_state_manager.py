@@ -85,7 +85,9 @@ class TestWorkflowStateManager:
 
         # Verify the stored data
         call_args = mock_redis.setex.call_args
-        stored_data = json.loads(call_args[0][2])  # Third argument is the JSON data
+        stored_data = json.loads(
+            call_args[0][2]
+        )  # Third argument is the JSON data
         assert stored_data["workflow_id"] == "test_workflow"
         assert stored_data["workflow_name"] == "Test Workflow"
         assert stored_data["state"] == "pending"
@@ -222,7 +224,9 @@ class TestWorkflowStateManager:
         assert status.progress_percentage == 50.0
 
     @pytest.mark.asyncio
-    async def test_get_execution_status_not_found(self, state_manager, mock_redis):
+    async def test_get_execution_status_not_found(
+        self, state_manager, mock_redis
+    ):
         """Test getting status for non-existent execution."""
         mock_redis.get.return_value = None
 
@@ -334,7 +338,9 @@ class TestWorkflowStateManager:
         assert "end_time" in updated_data
 
     @pytest.mark.asyncio
-    async def test_cancel_execution_not_running(self, state_manager, mock_redis):
+    async def test_cancel_execution_not_running(
+        self, state_manager, mock_redis
+    ):
         """Test canceling a non-running execution."""
         existing_data = {
             "execution_id": "test_exec_123",

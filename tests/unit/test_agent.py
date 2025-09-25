@@ -348,7 +348,9 @@ class TestAgentCLI:
     @patch("engine_cli.commands.agent.agent_book_storage")
     def test_list_command_with_agents_yaml(self, mock_book_storage):
         """Test list command with agents in YAML format."""
-        agents = [{"id": "agent1", "name": "Agent One", "model": "claude-3.5-sonnet"}]
+        agents = [
+            {"id": "agent1", "name": "Agent One", "model": "claude-3.5-sonnet"}
+        ]
         mock_book_storage.list_agents.return_value = agents
 
         result = self.runner.invoke(cli, ["list", "--format", "yaml"])
@@ -394,7 +396,9 @@ class TestAgentCLI:
         }
         mock_book_storage.get_agent.return_value = agent
 
-        result = self.runner.invoke(cli, ["show", "test_agent", "--format", "table"])
+        result = self.runner.invoke(
+            cli, ["show", "test_agent", "--format", "table"]
+        )
         assert result.exit_code == 0
         assert "Test Agent" in result.output
         assert "Development" in result.output
@@ -411,7 +415,9 @@ class TestAgentCLI:
         }
         mock_book_storage.get_agent.return_value = agent
 
-        result = self.runner.invoke(cli, ["show", "test_agent", "--format", "json"])
+        result = self.runner.invoke(
+            cli, ["show", "test_agent", "--format", "json"]
+        )
         assert result.exit_code == 0
         assert '"id": "test_agent"' in result.output
         assert '"name": "Test Agent"' in result.output
@@ -426,7 +432,9 @@ class TestAgentCLI:
         }
         mock_book_storage.get_agent.return_value = agent
 
-        result = self.runner.invoke(cli, ["show", "test_agent", "--format", "yaml"])
+        result = self.runner.invoke(
+            cli, ["show", "test_agent", "--format", "yaml"]
+        )
         assert result.exit_code == 0
         assert "id: test_agent" in result.output
         assert "name: Test Agent" in result.output

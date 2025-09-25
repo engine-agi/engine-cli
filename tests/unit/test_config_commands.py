@@ -31,7 +31,9 @@ class TestConfigCommands:
     @pytest.fixture
     def mock_config_manager(self):
         """Mock config manager."""
-        with patch("engine_cli.commands.config.config_manager") as mock_manager:
+        with patch(
+            "engine_cli.commands.config.config_manager"
+        ) as mock_manager:
             yield mock_manager
 
     def test_show_command(self, runner, mock_config_manager):
@@ -59,28 +61,39 @@ class TestConfigCommands:
 
             result = runner.invoke(get, ["nonexistent.key"])
             assert result.exit_code == 0
-            assert "Configuration key 'nonexistent.key' not found" in result.output
+            assert (
+                "Configuration key 'nonexistent.key' not found"
+                in result.output
+            )
 
     def test_set_command(self, runner, mock_config_manager):
         """Test config set command."""
         with patch("engine_cli.commands.config.set_config_value") as mock_set:
             with patch("engine_cli.commands.config.load_config") as mock_load:
-                with patch("engine_cli.commands.config.save_config") as mock_save:
+                with patch(
+                    "engine_cli.commands.config.save_config"
+                ) as mock_save:
                     mock_config = MagicMock()
                     mock_load.return_value = mock_config
 
-                    result = runner.invoke(set, ["api.base_url", "http://test.com"])
+                    result = runner.invoke(
+                        set, ["api.base_url", "http://test.com"]
+                    )
                     assert result.exit_code == 0
                     assert (
                         "Configuration updated: api.base_url = http://test.com"
                         in result.output
                     )
-                    mock_set.assert_called_once_with("api.base_url", "http://test.com")
+                    mock_set.assert_called_once_with(
+                        "api.base_url", "http://test.com"
+                    )
                     mock_save.assert_called_once_with(mock_config, None)
 
     def test_init_command(self, runner, mock_config_manager):
         """Test config init command."""
-        with patch("engine_cli.commands.config.create_default_config") as mock_create:
+        with patch(
+            "engine_cli.commands.config.create_default_config"
+        ) as mock_create:
             with patch("pathlib.Path.exists", return_value=False):
                 mock_config = MagicMock()
                 mock_create.return_value = mock_config
@@ -100,7 +113,9 @@ class TestConfigCommands:
             assert result.exit_code == 0
             assert "Configuration file is valid" in result.output
 
-    def test_validate_command_file_not_found(self, runner, mock_config_manager):
+    def test_validate_command_file_not_found(
+        self, runner, mock_config_manager
+    ):
         """Test config validate command with non-existent file."""
         result = runner.invoke(validate, ["nonexistent.yaml"])
         assert result.exit_code == 2  # Click error for missing file
@@ -185,21 +200,29 @@ class TestConfigCommands:
 
     def test_reset_command_full_reset(self, runner, mock_config_manager):
         """Test config reset command for full configuration."""
-        with patch("engine_cli.commands.config.create_default_config") as mock_create:
+        with patch(
+            "engine_cli.commands.config.create_default_config"
+        ) as mock_create:
             with patch("engine_cli.commands.config.save_config") as mock_save:
                 mock_default_config = MagicMock()
                 mock_create.return_value = mock_default_config
 
                 result = runner.invoke(reset)
                 assert result.exit_code == 0
-                assert "Entire configuration reset to defaults" in result.output
+                assert (
+                    "Entire configuration reset to defaults" in result.output
+                )
                 mock_save.assert_called_once_with(mock_default_config)
 
     def test_reset_command_section_reset(self, runner, mock_config_manager):
         """Test config reset command for specific section."""
-        with patch("engine_cli.commands.config.create_default_config") as mock_create:
+        with patch(
+            "engine_cli.commands.config.create_default_config"
+        ) as mock_create:
             with patch("engine_cli.commands.config.load_config") as mock_load:
-                with patch("engine_cli.commands.config.save_config") as mock_save:
+                with patch(
+                    "engine_cli.commands.config.save_config"
+                ) as mock_save:
                     mock_default_config = MagicMock()
                     mock_current_config = MagicMock()
                     mock_default_config.api = "default_api"
@@ -213,17 +236,24 @@ class TestConfigCommands:
 
     def test_reset_command_unknown_section(self, runner, mock_config_manager):
         """Test config reset command with unknown section."""
-        with patch("engine_cli.commands.config.create_default_config") as mock_create:
+        with patch(
+            "engine_cli.commands.config.create_default_config"
+        ) as mock_create:
             with patch("engine_cli.commands.config.load_config") as mock_load:
                 mock_default_config = MagicMock()
                 # Remove the hasattr behavior by not setting the attribute
-                del mock_default_config.unknown_section  # Ensure hasattr returns False
+                del (
+                    mock_default_config.unknown_section
+                )  # Ensure hasattr returns False
                 mock_create.return_value = mock_default_config
                 mock_load.return_value = MagicMock()
 
                 result = runner.invoke(reset, ["unknown_section"])
                 assert result.exit_code == 0
-                assert "Unknown configuration section: unknown_section" in result.output
+                assert (
+                    "Unknown configuration section: unknown_section"
+                    in result.output
+                )
 
     def test_show_command_with_file(self, runner, mock_config_manager):
         """Test config show command with specific file."""
@@ -247,7 +277,9 @@ class TestConfigCommands:
         """Test config set command with specific file."""
         with patch("engine_cli.commands.config.set_config_value") as mock_set:
             with patch("engine_cli.commands.config.load_config") as mock_load:
-                with patch("engine_cli.commands.config.save_config") as mock_save:
+                with patch(
+                    "engine_cli.commands.config.save_config"
+                ) as mock_save:
                     mock_config = MagicMock()
                     mock_load.return_value = mock_config
 
@@ -262,7 +294,9 @@ class TestConfigCommands:
                     )
                     assert result.exit_code == 0
                     mock_load.assert_called_with("custom_config.yaml")
-                    mock_save.assert_called_with(mock_config, "custom_config.yaml")
+                    mock_save.assert_called_with(
+                        mock_config, "custom_config.yaml"
+                    )
 
     def test_set_command_error(self, runner, mock_config_manager):
         """Test config set command with error."""
@@ -286,13 +320,17 @@ class TestConfigCommands:
 
     def test_init_command_with_custom_path(self, runner, mock_config_manager):
         """Test config init command with custom path."""
-        with patch("engine_cli.commands.config.create_default_config") as mock_create:
+        with patch(
+            "engine_cli.commands.config.create_default_config"
+        ) as mock_create:
             with patch("pathlib.Path.exists", return_value=False):
                 with patch("pathlib.Path.home") as mock_home:
                     mock_config = MagicMock()
                     mock_create.return_value = mock_config
 
-                    result = runner.invoke(init, ["--file", "/custom/path/config.yaml"])
+                    result = runner.invoke(
+                        init, ["--file", "/custom/path/config.yaml"]
+                    )
                     assert result.exit_code == 0
                     # Should not call Path.home() when custom path is provided
                     mock_home.assert_not_called()
@@ -306,7 +344,10 @@ class TestConfigCommands:
             with patch("pathlib.Path.exists", return_value=False):
                 result = runner.invoke(init, ["--force"])
                 assert result.exit_code == 0
-                assert "Failed to create configuration: Create error" in result.output
+                assert (
+                    "Failed to create configuration: Create error"
+                    in result.output
+                )
 
     def test_reset_command_error(self, runner, mock_config_manager):
         """Test config reset command with error."""
@@ -316,4 +357,6 @@ class TestConfigCommands:
         ):
             result = runner.invoke(reset)
             assert result.exit_code == 0
-            assert "Failed to reset configuration: Reset error" in result.output
+            assert (
+                "Failed to reset configuration: Reset error" in result.output
+            )

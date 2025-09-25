@@ -9,7 +9,14 @@ import yaml
 
 from engine_cli.config import load_config  # type: ignore
 from engine_cli.config import save_config  # type: ignore
-from engine_cli.formatting import error, header, info, key_value, success, warning
+from engine_cli.formatting import (
+    error,
+    header,
+    info,
+    key_value,
+    success,
+    warning,
+)
 
 
 @click.group()
@@ -30,7 +37,9 @@ def bulk():
 @click.option("--model", default="claude-3.5-sonnet", help="Model for agents")
 @click.option("--stack", multiple=True, help="Tech stack items")
 @click.option("--parallel", is_flag=True, help="Create agents in parallel")
-def create_agents(names: List[str], model: str, stack: List[str], parallel: bool):
+def create_agents(
+    names: List[str], model: str, stack: List[str], parallel: bool
+):
     """Create multiple agents at once."""
     try:
         header(f"Creating {len(names)} agents")
@@ -60,7 +69,9 @@ def create_agents(names: List[str], model: str, stack: List[str], parallel: bool
 
 @bulk.command()
 @click.argument("pattern", required=True)
-@click.option("--action", type=click.Choice(["start", "stop", "delete"]), required=True)
+@click.option(
+    "--action", type=click.Choice(["start", "stop", "delete"]), required=True
+)
 @click.option(
     "--dry-run", is_flag=True, help="Show what would be done without executing"
 )
@@ -73,7 +84,9 @@ def agents(pattern: str, action: str, dry_run: bool):
             warning("DRY RUN MODE - No changes will be made")
 
         # Simulate finding agents
-        mock_agents = [f"agent_{i}" for i in range(1, 6) if pattern in f"agent_{i}"]
+        mock_agents = [
+            f"agent_{i}" for i in range(1, 6) if pattern in f"agent_{i}"
+        ]
 
         if not mock_agents:
             info(f"No agents found matching pattern '{pattern}'")
@@ -219,8 +232,12 @@ def import_config(input_file: str, merge: bool, dry_run: bool):
 
 # Enhanced Monitoring
 @cli.command()
-@click.option("--watch", is_flag=True, help="Watch mode - update every 2 seconds")
-@click.option("--json", "json_output", is_flag=True, help="Output in JSON format")
+@click.option(
+    "--watch", is_flag=True, help="Watch mode - update every 2 seconds"
+)
+@click.option(
+    "--json", "json_output", is_flag=True, help="Output in JSON format"
+)
 def monitor(watch: bool, json_output: bool):
     """Real-time system monitoring."""
     try:
@@ -276,7 +293,9 @@ def monitor(watch: bool, json_output: bool):
 
 @cli.command()
 @click.option("--component", help="Specific component to check")
-@click.option("--detailed", is_flag=True, help="Show detailed health information")
+@click.option(
+    "--detailed", is_flag=True, help="Show detailed health information"
+)
 def health(component: Optional[str], detailed: bool):
     """Comprehensive health check."""
     try:
@@ -318,19 +337,29 @@ def health(component: Optional[str], detailed: bool):
                 error(f"Component '{component}' not found")
         else:
             # Show overall status
-            overall_icon = "✓" if health_status["overall"] == "healthy" else "⚠"
-            key_value({"Overall Status": f"{overall_icon} {health_status['overall']}"})
+            overall_icon = (
+                "✓" if health_status["overall"] == "healthy" else "⚠"
+            )
+            key_value(
+                {
+                    "Overall Status": f"{overall_icon} {health_status['overall']}"
+                }
+            )
 
             if detailed:
                 click.echo()
                 click.echo("Component Details:")
-                for comp_name, comp_info in health_status["components"].items():
+                for comp_name, comp_info in health_status[
+                    "components"
+                ].items():
                     status_icon = (
                         "✓"
                         if comp_info["status"] == "healthy"
                         else "⚠" if comp_info["status"] == "warning" else "✗"
                     )
-                    click.echo(f"  {status_icon} {comp_name}: {comp_info['message']}")
+                    click.echo(
+                        f"  {status_icon} {comp_name}: {comp_info['message']}"
+                    )
 
     except Exception as e:
         error(f"Health check failed: {e}")
@@ -360,14 +389,16 @@ def logs(lines: int, level: Optional[str], component: Optional[str]):
 
         # Mock log entries
         mock_logs = [
-            "[2025-09-22 10:30:15] INFO  core.agent - " "Agent 'dev_assistant' started",
+            "[2025-09-22 10:30:15] INFO  core.agent - "
+            "Agent 'dev_assistant' started",
             "[2025-09-22 10:30:20] INFO  api.server - "
             "API server listening on port 8000",
             "[2025-09-22 10:31:05] WARNING database - "
             "High connection count detected",
             "[2025-09-22 10:31:10] INFO  workflow.engine - "
             "Workflow 'code_review' completed",
-            "[2025-09-22 10:31:15] ERROR api.request - " "Invalid request format",
+            "[2025-09-22 10:31:15] ERROR api.request - "
+            "Invalid request format",
             "[2025-09-22 10:31:20] INFO  core.agent - Agent 'tester' initialized",
         ]
 

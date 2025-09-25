@@ -29,7 +29,9 @@ class ToolStorage:
             for file in os.listdir(self.tools_dir):
                 if file.endswith(".yaml"):
                     try:
-                        with open(os.path.join(self.tools_dir, file), "r") as f:
+                        with open(
+                            os.path.join(self.tools_dir, file), "r"
+                        ) as f:
                             tool_data = yaml.safe_load(f)
                             if tool_data:
                                 tools.append(tool_data)
@@ -84,8 +86,12 @@ def cli():
 @click.option("--capabilities", help="Tool capabilities (comma-separated)")
 @click.option("--tags", help="Tool tags (comma-separated)")
 @click.option("--save", is_flag=True, help="Save tool to storage")
-@click.option("--output", type=click.Path(), help="Output file for tool configuration")
-def create(name, type, description, endpoint, config, capabilities, tags, save, output):
+@click.option(
+    "--output", type=click.Path(), help="Output file for tool configuration"
+)
+def create(
+    name, type, description, endpoint, config, capabilities, tags, save, output
+):
     """Create a new tool."""
     try:
         builder = ToolBuilder()
@@ -105,13 +111,17 @@ def create(name, type, description, endpoint, config, capabilities, tags, save, 
             config_dict = json.loads(config)
             # Apply configuration based on type
             if "authentication" in config_dict:
-                builder = builder.with_authentication(config_dict["authentication"])
+                builder = builder.with_authentication(
+                    config_dict["authentication"]
+                )
             if "headers" in config_dict:
                 builder = builder.with_headers(config_dict["headers"])
             if "timeout" in config_dict:
                 builder = builder.with_timeout(config_dict["timeout"])
             if "retry_attempts" in config_dict:
-                builder = builder.with_retry_attempts(config_dict["retry_attempts"])
+                builder = builder.with_retry_attempts(
+                    config_dict["retry_attempts"]
+                )
 
         if capabilities:
             caps_list = [cap.strip() for cap in capabilities.split(",")]
@@ -209,7 +219,9 @@ def list(format, type, tag):
             tools = [t for t in tools if tag in t.get("tags", [])]
 
         if not tools:
-            click.echo("No tools found. Create one with: engine tool create <name>")
+            click.echo(
+                "No tools found. Create one with: engine tool create <name>"
+            )
             return
 
         if format == "json":
@@ -218,7 +230,9 @@ def list(format, type, tag):
             click.echo(yaml.dump(tools, default_flow_style=False))
         else:
             # Table format
-            tool_table = table("Tools", ["ID", "Name", "Type", "Capabilities", "Tags"])
+            tool_table = table(
+                "Tools", ["ID", "Name", "Type", "Capabilities", "Tags"]
+            )
             for tool in tools:
                 caps = ", ".join(tool.get("capabilities", []))[:30]
                 if len(",".join(tool.get("capabilities", []))) > 30:
@@ -294,7 +308,9 @@ def show(name, format):
 
 @cli.command()
 @click.argument("name")
-@click.option("--force", is_flag=True, help="Force deletion without confirmation")
+@click.option(
+    "--force", is_flag=True, help="Force deletion without confirmation"
+)
 def delete(name, force):
     """Delete a tool."""
     try:
@@ -370,9 +386,13 @@ def test(name, input, method, params):
 
             click.echo(f"📡 Simulating {method} request to {endpoint}")
             if input_data:
-                click.echo(f"📤 Request body: {json.dumps(input_data, indent=2)}")
+                click.echo(
+                    f"📤 Request body: {json.dumps(input_data, indent=2)}"
+                )
             if query_params:
-                click.echo(f"🔍 Query params: {json.dumps(query_params, indent=2)}")
+                click.echo(
+                    f"🔍 Query params: {json.dumps(query_params, indent=2)}"
+                )
 
             # Mock response
             mock_response = {
@@ -390,7 +410,9 @@ def test(name, input, method, params):
             # Simulate CLI execution
             click.echo(f"💻 Simulating CLI execution for tool '{name}'")
             if input_data:
-                click.echo(f"📤 Input data: {json.dumps(input_data, indent=2)}")
+                click.echo(
+                    f"📤 Input data: {json.dumps(input_data, indent=2)}"
+                )
 
             mock_output = (
                 f"Tool '{name}' executed successfully with input: {input_data}"
