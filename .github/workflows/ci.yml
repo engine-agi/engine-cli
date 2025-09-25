@@ -55,7 +55,7 @@ jobs:
 
     - name: Update Poetry lock file
       run: |
-        poetry lock --no-update
+        poetry lock
 
     - name: Install dependencies
       if: steps.cache-deps.outputs.cache-hit != 'true'
