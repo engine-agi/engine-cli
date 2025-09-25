@@ -7,6 +7,10 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+permissions:
+  contents: read
+  packages: write
+
 env:
   POETRY_VERSION: "2.1.4"
 
