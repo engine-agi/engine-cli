@@ -11,12 +11,11 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    git \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# Install Poetry as root
+RUN pip install poetry==2.1.4
+
+# Configure Poetry
+RUN poetry config virtualenvs.create false
 
 # Create non-root user
 RUN useradd --create-home --shell /bin/bash app \
@@ -25,17 +24,11 @@ RUN useradd --create-home --shell /bin/bash app \
 USER app
 WORKDIR /home/app
 
-# Install Poetry
-RUN pip install poetry==2.1.4
-
-# Configure Poetry
-RUN poetry config virtualenvs.create false
-
 # Copy dependency files
 COPY --chown=app:app pyproject.toml poetry.lock ./
 
 # Install Python dependencies
-RUN poetry install --only=main --no-dev --no-interaction
+RUN poetry install --no-dev --no-interaction
 
 # Copy source code
 COPY --chown=app:app . .
