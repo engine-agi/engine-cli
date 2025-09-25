@@ -27,8 +27,8 @@ WORKDIR /home/app
 # Copy dependency files
 COPY --chown=app:app pyproject.toml poetry.lock README.md ./
 
-# Install Python dependencies (only main dependencies, not the package itself)
-RUN poetry install --no-interaction --no-root --only=main
+# Install Python dependencies
+RUN poetry install --no-root --no-interaction --no-ansi
 
 # Copy source code
 COPY --chown=app:app . .
