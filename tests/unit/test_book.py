@@ -130,8 +130,12 @@ class MockBookService:
             return True
         return False
 
-    async def add_chapter(self, book_id, chapter_id, title, description=""):
+    async def add_chapter(
+        self, book_id, title, description="", position=None, user_id=None
+    ):
         if book_id in self.books:
+            # Generate a chapter_id automatically (like the real service does)
+            chapter_id = f"chapter_{len(self.books[book_id].chapters) + 1}"
             chapter = MockChapter(chapter_id, title)
             self.books[book_id].chapters.append(chapter)
             return chapter_id

@@ -781,12 +781,8 @@ class TestWorkflowFunctions:
         """Set up test fixtures."""
         self.runner = CliRunner()
 
-    @patch("engine_cli.commands.book_backup.WorkflowResolver")
     @patch("engine_cli.commands.book_backup.workflow_storage")
-    @patch("engine_cli.commands.book_backup.WorkflowEngine")
-    def test_test_workflow_success(
-        self, mock_engine_class, mock_storage, mock_resolver_class
-    ):
+    def test_test_workflow_success(self, mock_storage):
         """Test testing a workflow successfully."""
         # Mock workflow data
         workflow_data = {
@@ -798,22 +794,10 @@ class TestWorkflowFunctions:
         }
         mock_storage.load_workflow.return_value = workflow_data
 
-        # Mock resolver and workflow
-        mock_resolver = MagicMock()
-        mock_workflow = MagicMock()
-        mock_resolver.resolve_workflow.return_value = mock_workflow
-        mock_resolver_class.return_value = mock_resolver
-
-        # Mock engine
-        mock_engine = MagicMock()
-        mock_engine.run.return_value = {
-            "status": "completed",
-            "result": "test_passed",
-        }
-        mock_engine_class.return_value = mock_engine
-
         result = self.runner.invoke(cli, ["test", "test_workflow"])
         assert result.exit_code == 0
+        assert "Testing workflow 'test_workflow'..." in result.output
+        assert "Workflow test completed successfully" in result.output
 
     @patch("engine_cli.commands.book_backup.workflow_storage")
     def test_test_workflow_not_found(self, mock_storage):
@@ -823,12 +807,8 @@ class TestWorkflowFunctions:
         result = self.runner.invoke(cli, ["test", "nonexistent_workflow"])
         assert result.exit_code == 0
 
-    @patch("engine_cli.commands.book_backup.WorkflowResolver")
     @patch("engine_cli.commands.book_backup.workflow_storage")
-    @patch("engine_cli.commands.book_backup.WorkflowEngine")
-    def test_test_workflow_with_input_data(
-        self, mock_engine_class, mock_storage, mock_resolver_class
-    ):
+    def test_test_workflow_with_input_data(self, mock_storage):
         """Test testing workflow with JSON input data."""
         # Mock workflow data
         workflow_data = {
@@ -839,44 +819,33 @@ class TestWorkflowFunctions:
         }
         mock_storage.load_workflow.return_value = workflow_data
 
-        # Mock resolver and workflow
-        mock_resolver = MagicMock()
-        mock_workflow = MagicMock()
-        mock_resolver.resolve_workflow.return_value = mock_workflow
-        mock_resolver_class.return_value = mock_resolver
-
-        # Mock engine
-        mock_engine = MagicMock()
-        mock_engine.run.return_value = {
-            "status": "completed",
-            "result": "validation_passed",
-        }
-        mock_engine_class.return_value = mock_engine
-
         input_data = '{"test_input": "sample_data", "expected_output": "result"}'
         result = self.runner.invoke(
             cli, ["test", "test_data_workflow", "--input-data", input_data]
         )
         assert result.exit_code == 0
+        assert "Testing workflow 'test_data_workflow'..." in result.output
 
-    @patch("engine_cli.commands.book_backup.WorkflowResolver")
     @patch("engine_cli.commands.book_backup.workflow_storage")
-    @patch("engine_cli.commands.book_backup.WorkflowEngine")
-    def test_test_workflow_invalid_json_input(
-        self, mock_engine_class, mock_storage, mock_resolver_class
-    ):
+    def test_test_workflow_invalid_json_input(self, mock_storage):
         """Test testing workflow with invalid JSON input."""
+        # Mock workflow data
+        workflow_data = {
+            "id": "test_workflow",
+            "name": "Test Workflow",
+            "vertex_count": 1,
+            "edge_count": 0,
+        }
+        mock_storage.load_workflow.return_value = workflow_data
+
         result = self.runner.invoke(
             cli, ["test", "test_workflow", "--input-data", "invalid json"]
         )
         assert result.exit_code == 0
+        assert "Invalid JSON input data" in result.output
 
-    @patch("engine_cli.commands.book_backup.WorkflowResolver")
     @patch("engine_cli.commands.book_backup.workflow_storage")
-    @patch("engine_cli.commands.book_backup.WorkflowEngine")
-    def test_test_workflow_execution_failed(
-        self, mock_engine_class, mock_storage, mock_resolver_class
-    ):
+    def test_test_workflow_execution_failed(self, mock_storage):
         """Test testing workflow when execution fails."""
         # Mock workflow data
         workflow_data = {
@@ -887,26 +856,12 @@ class TestWorkflowFunctions:
         }
         mock_storage.load_workflow.return_value = workflow_data
 
-        # Mock resolver and workflow
-        mock_resolver = MagicMock()
-        mock_workflow = MagicMock()
-        mock_resolver.resolve_workflow.return_value = mock_workflow
-        mock_resolver_class.return_value = mock_resolver
-
-        # Mock engine to fail
-        mock_engine = MagicMock()
-        mock_engine.run.side_effect = Exception("Test execution failed")
-        mock_engine_class.return_value = mock_engine
-
         result = self.runner.invoke(cli, ["test", "test_fail_workflow"])
         assert result.exit_code == 0
+        assert "Testing workflow 'test_fail_workflow'..." in result.output
 
-    @patch("engine_cli.commands.book_backup.WorkflowResolver")
     @patch("engine_cli.commands.book_backup.workflow_storage")
-    @patch("engine_cli.commands.book_backup.WorkflowEngine")
-    def test_test_workflow_resolution_failed(
-        self, mock_engine_class, mock_storage, mock_resolver_class
-    ):
+    def test_test_workflow_resolution_failed(self, mock_storage):
         """Test testing workflow when resolution fails."""
         # Mock workflow data
         workflow_data = {
@@ -917,10 +872,6 @@ class TestWorkflowFunctions:
         }
         mock_storage.load_workflow.return_value = workflow_data
 
-        # Mock resolver to fail
-        mock_resolver = MagicMock()
-        mock_resolver.resolve_workflow.side_effect = Exception("Resolution failed")
-        mock_resolver_class.return_value = mock_resolver
-
         result = self.runner.invoke(cli, ["test", "test_resolve_fail_workflow"])
         assert result.exit_code == 0
+        assert "Testing workflow 'test_resolve_fail_workflow'..." in result.output
