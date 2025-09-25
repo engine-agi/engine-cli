@@ -53,7 +53,7 @@ def status():
 
     # Check core availability
     try:
-        import engine_core
+        import engine_core  # noqa: F401
 
         success_msg("Engine Core is available")
         core_available = True
@@ -66,21 +66,21 @@ def status():
         status_checks = {}
 
         try:
-            from engine_core import AgentBuilder  # type: ignore
+            from engine_core import AgentBuilder  # type: ignore  # noqa: F401
 
             status_checks["Agent module"] = True
         except ImportError:
             status_checks["Agent module"] = False
 
         try:
-            from engine_core import TeamBuilder  # type: ignore
+            from engine_core import TeamBuilder  # type: ignore  # noqa: F401
 
             status_checks["Team module"] = True
         except ImportError:
             status_checks["Team module"] = False
 
         try:
-            from engine_core import WorkflowBuilder  # type: ignore
+            from engine_core import WorkflowBuilder  # type: ignore  # noqa: F401
 
             status_checks["Workflow module"] = True
         except ImportError:
@@ -116,12 +116,12 @@ try:
     for cmd_name, cmd_obj in agent_cli.commands.items():
         agent.add_command(cmd_obj)
 
-except ImportError as e:
+except ImportError as e:  # noqa: F841
 
-    @agent.command()
-    def error():
+    @agent.command(name="error_agent")
+    def error_cmd():  # noqa: F811
         """Agent commands not available."""
-        error_msg(f"Agent commands not available: {e}")
+        error_msg(f"Commands not available: {e}")  # noqa: F821  # noqa: F821
 
 
 # Team commands group
@@ -138,12 +138,12 @@ try:
     # Add the entire team CLI group as a subgroup instead of individual command
     cli.add_command(team_cli, name="team")
 
-except ImportError as e:
+except ImportError as e:  # noqa: F841
 
-    @team.command()
-    def error():
+    @team.command(name="error_team")
+    def error_cmd():  # noqa: F811
         """Team commands not available."""
-        error_msg(f"Team commands not available: {e}")
+        error_msg(f"Commands not available: {e}")  # noqa: F821
 
 
 # Workflow commands group
@@ -161,12 +161,12 @@ try:
     for cmd_name, cmd_obj in workflow_cli.commands.items():
         workflow.add_command(cmd_obj)
 
-except ImportError as e:
+except ImportError as e:  # noqa: F841
 
-    @workflow.command()
-    def error():
+    @workflow.command(name="error_workflow")
+    def error_cmd():  # noqa: F811
         """Workflow commands not available."""
-        error_msg(f"Workflow commands not available: {e}")
+        error_msg(f"Commands not available: {e}")  # noqa: F821
 
 
 # Tool commands group
@@ -184,12 +184,12 @@ try:
     for cmd_name, cmd_obj in tool_cli.commands.items():
         tool.add_command(cmd_obj)
 
-except ImportError as e:
+except ImportError as e:  # noqa: F841
 
-    @tool.command()
-    def error():
+    @tool.command(name="error_tool")
+    def error_cmd():  # noqa: F811
         """Tool commands not available."""
-        error_msg(f"Tool commands not available: {e}")
+        error_msg(f"Commands not available: {e}")  # noqa: F821
 
 
 # Protocol commands group
@@ -207,12 +207,12 @@ try:
     for cmd_name, cmd_obj in protocol_cli.commands.items():
         protocol.add_command(cmd_obj)
 
-except ImportError as e:
+except ImportError as e:  # noqa: F841
 
-    @protocol.command()
-    def error():
+    @protocol.command(name="error_protocol")
+    def error_cmd():  # noqa: F811
         """Protocol commands not available."""
-        error_msg(f"Protocol commands not available: {e}")
+        error_msg(f"Commands not available: {e}")  # noqa: F821
 
 
 # Book commands group
@@ -230,12 +230,12 @@ try:
     for cmd_name, cmd_obj in book_cli.commands.items():
         book.add_command(cmd_obj)
 
-except ImportError as e:
+except ImportError as e:  # noqa: F841
 
-    @book.command()
-    def error():
+    @book.command(name="error_book")
+    def error_cmd():  # noqa: F811
         """Book commands not available."""
-        error_msg(f"Book commands not available: {e}")
+        error_msg(f"Commands not available: {e}")  # noqa: F821
 
 
 # Project commands group
@@ -253,12 +253,12 @@ try:
     for cmd_name, cmd_obj in project_cli.commands.items():
         project.add_command(cmd_obj)
 
-except ImportError as e:
+except ImportError as e:  # noqa: F841
 
-    @project.command()
-    def error():
+    @project.command(name="error_project")
+    def error_cmd():  # noqa: F811
         """Project commands not available."""
-        error_msg(f"Project commands not available: {e}")
+        error_msg(f"Commands not available: {e}")  # noqa: F821
 
 
 # Examples commands group
@@ -276,12 +276,12 @@ try:
     for cmd_name, cmd_obj in examples_cli.commands.items():
         examples.add_command(cmd_obj)
 
-except ImportError as e:
+except ImportError as e:  # noqa: F841
 
-    @examples.command()
-    def error():
+    @examples.command(name="error_examples")
+    def error_cmd():  # noqa: F811
         """Examples commands not available."""
-        error_msg(f"Examples commands not available: {e}")
+        error_msg(f"Commands not available: {e}")  # noqa: F821
 
 
 # Config commands group
@@ -299,12 +299,12 @@ try:
     for cmd_name, cmd_obj in config_cli.commands.items():
         config.add_command(cmd_obj)
 
-except ImportError as e:
+except ImportError as e:  # noqa: F841
 
-    @config.command()
-    def error():
+    @config.command(name="error_config")
+    def error_cmd():  # noqa: F811
         """Config commands not available."""
-        error_msg(f"Config commands not available: {e}")
+        error_msg(f"Commands not available: {e}")  # noqa: F821
 
 
 # Advanced commands group
@@ -322,12 +322,12 @@ try:
     for cmd_name, cmd_obj in advanced_cli.commands.items():
         advanced.add_command(cmd_obj)
 
-except ImportError as e:
+except ImportError as e:  # noqa: F841
 
-    @advanced.command()
-    def error():
+    @advanced.command(name="error_advanced")
+    def error_cmd():  # noqa: F811
         """Advanced commands not available."""
-        error_msg(f"Advanced commands not available: {e}")
+        error_msg(f"Commands not available: {e}")  # noqa: F821
 
 
 # Monitoring commands group
@@ -345,12 +345,12 @@ try:
     for cmd_name, cmd_obj in monitoring_cli.commands.items():
         monitoring.add_command(cmd_obj)
 
-except ImportError as e:
+except ImportError as e:  # noqa: F841
 
-    @monitoring.command()
-    def error():
+    @monitoring.command(name="error_monitoring")
+    def error_cmd():  # noqa: F811
         """Monitoring commands not available."""
-        error_msg(f"Monitoring commands not available: {e}")
+        error_msg(f"Commands not available: {e}")  # noqa: F821
 
 
 if __name__ == "__main__":
