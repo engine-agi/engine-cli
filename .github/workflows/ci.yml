@@ -53,6 +53,10 @@ jobs:
         poetry config virtualenvs.create true
         poetry config virtualenvs.in-project true
 
+    - name: Update Poetry lock file
+      run: |
+        poetry lock --no-update
+
     - name: Install dependencies
       if: steps.cache-deps.outputs.cache-hit != 'true'
       run: |
