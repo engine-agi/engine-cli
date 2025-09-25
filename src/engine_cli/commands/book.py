@@ -26,11 +26,11 @@ from ..formatting import error, header, key_value, print_table, success, table
 # Import BookService and related components
 try:
     from engine_core import AccessLevel  # type: ignore
+    from engine_core import BookBuilder  # type: ignore
     from engine_core import ContentStatus  # type: ignore
     from engine_core import ContentType  # type: ignore
     from engine_core import SearchQuery  # type: ignore
     from engine_core import SearchScope  # type: ignore
-    from engine_core import BookBuilder
     from engine_core.services.book_service import BookService
 
     BOOK_SERVICE_AVAILABLE = True
