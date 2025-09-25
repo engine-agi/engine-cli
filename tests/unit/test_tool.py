@@ -14,32 +14,7 @@ from click.testing import CliRunner
 # Add src to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-try:
-    from engine_cli.commands.tool import (
-        ToolStorage,
-        cli,
-        get_tool_storage,
-        tool_storage,
-    )
-except ImportError:
-    # Fallback for test environment - create mock classes
-    class ToolStorage:
-        def __init__(self):
-            self.tools_dir = os.path.join(os.getcwd(), "tools")
-            os.makedirs(self.tools_dir, exist_ok=True)
-
-        def list_tools(self):
-            return []
-
-        def get_tool(self, tool_id):
-            return None
-
-        def delete_tool(self, tool_id):
-            return False
-
-    cli = MagicMock()
-    tool_storage = ToolStorage()
-    get_tool_storage = MagicMock(return_value=ToolStorage())
+from engine_cli.commands.tool import ToolStorage, cli, get_tool_storage, tool_storage
 
 
 class TestToolStorage:

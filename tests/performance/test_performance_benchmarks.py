@@ -14,9 +14,12 @@ from typing import Any, Dict, List
 import pytest
 
 # Import core components for performance testing
-from engine_core.core.agents.agent_builder import AgentBuilder
-from engine_core.core.teams.team_builder import TeamBuilder, TeamMemberRole
-from engine_core.core.workflows.workflow_builder import WorkflowBuilder
+from engine_core.core.agents.agent_builder import AgentBuilder  # type: ignore
+from engine_core.core.teams.team_builder import (  # type: ignore
+    TeamBuilder,
+    TeamMemberRole,
+)
+from engine_core.core.workflows.workflow_builder import WorkflowBuilder  # type: ignore
 
 
 @dataclass

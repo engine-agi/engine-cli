@@ -24,9 +24,9 @@ def test_package_import():
 def test_main_app_import():
     """Test that the main CLI app can be imported."""
     try:
-        from engine_cli.main import app
+        from engine_cli.main import cli
 
-        assert app is not None
+        assert cli is not None
     except ImportError:
         pytest.skip("CLI main app not yet implemented")
 

@@ -14,32 +14,12 @@ from click.testing import CliRunner
 # Add src to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-try:
-    from engine_cli.commands.agent import (
-        AgentStorage,
-        agent_book_storage,
-        agent_storage,
-        cli,
-    )
-except ImportError:
-    # Fallback for test environment - create mock classes
-    class AgentStorage:
-        def __init__(self):
-            self.agents_dir = os.path.join(os.getcwd(), "agents")
-            os.makedirs(self.agents_dir, exist_ok=True)
-
-        def list_agents(self):
-            return []
-
-        def get_agent(self, agent_id):
-            return None
-
-        def delete_agent(self, agent_id):
-            return False
-
-    cli = MagicMock()
-    agent_storage = AgentStorage()
-    agent_book_storage = MagicMock()
+from engine_cli.commands.agent import (
+    AgentStorage,
+    agent_book_storage,
+    agent_storage,
+    cli,
+)
 
 
 # Mock AgentBuilder for testing

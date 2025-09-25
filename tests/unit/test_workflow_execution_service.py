@@ -8,8 +8,11 @@ import pytest
 
 # Import the service and models
 try:
-    from engine_core.models.workflow import WorkflowExecution, WorkflowExecutionStatus
-    from engine_core.services.workflow_service import (
+    from engine_core.models.workflow import (  # type: ignore
+        WorkflowExecution,
+        WorkflowExecutionStatus,
+    )
+    from engine_core.services.workflow_service import (  # type: ignore
         MockWorkflowRepository,
         PostgreSQLWorkflowExecutionRepository,
         WorkflowExecutionService,

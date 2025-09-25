@@ -34,21 +34,6 @@ class TestConfigCommands:
         with patch("engine_cli.commands.config.config_manager") as mock_manager:
             yield mock_manager
 
-
-class TestConfigCommands:
-    """Test suite for configuration commands."""
-
-    @pytest.fixture
-    def runner(self):
-        """CLI runner fixture."""
-        return CliRunner()
-
-    @pytest.fixture
-    def mock_config_manager(self):
-        """Mock config manager."""
-        with patch("engine_cli.commands.config.config_manager") as mock_manager:
-            yield mock_manager
-
     def test_show_command(self, runner, mock_config_manager):
         """Test config show command."""
         # Mock the show_config function
