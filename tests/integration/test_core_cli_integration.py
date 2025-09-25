@@ -7,43 +7,6 @@ import json
 import os
 import tempfile
 from pathlib import Path
-
-import pytest
-import yaml
-
-# Import core components for validation
-from engine_core.core.agents.agent_builder import AgentBuilder
-from engine_core.core.teams.team_builder import TeamBuilder, TeamMemberRole
-from engine_core.core.workflows.workflow_builder import WorkflowBuilder
-
-
-class TestCoreCLIIntegration:
-    """Integration tests for complete CLI-Core workflows."""
-
-    @pytest.fixture
-    def temp_workspace(self):
-        """Create a temporary workspace for testing."""
-        with tempfile.TemporaryDirectory() as temp_dir:
-            # Change to temp directory
-            original_cwd = os.getcwd()
-            os.chdir(temp_dir)
-
-            # Create necessary directories
-            os.makedirs("agents", exist_ok=True)
-            os.makedirs("teams", exist_ok=True)
-            os.makedirs("workflows", exist_ok=True)
-            os.makedirs("books", exist_ok=True)
-
-            yield temp_dir
-
-            # Restore original directory
-            os.chdir(original_cwd)
-
-
-import json
-import os
-import tempfile
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
