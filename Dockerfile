@@ -28,7 +28,7 @@ WORKDIR /home/app
 COPY --chown=app:app pyproject.toml poetry.lock ./
 
 # Export dependencies to requirements.txt and install with pip
-RUN poetry export --without-hashes --format=requirements.txt > requirements.txt && \
+RUN poetry export --only=main --format=requirements.txt --output=requirements.txt --without-hashes && \
     pip install --no-cache-dir -r requirements.txt
 
 # Copy source code
