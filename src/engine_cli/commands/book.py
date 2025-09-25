@@ -344,8 +344,7 @@ def search(book_id: str, query: str, max_results: int = 10):
                     if result.content_snippet:
                         click.echo(
                             f"  Snippet: {result.content_snippet[:100]}"
-                            f"{'...' if len(result.content_snippet) > 100 else
-''}"
+                            f"{'...' if len(result.content_snippet) > 100 else ''}"
                         )
 
                     if result.highlights:

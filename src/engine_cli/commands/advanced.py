@@ -153,10 +153,14 @@ def export(output_file: str, format: str, sections: List[str]):
 @config_ops.command()
 @click.argument("input_file", type=click.Path(exists=True))
 @click.option(
-    "--merge", is_flag=True, help="Merge with existing config instead of replacing"
+    "--merge",
+    is_flag=True,
+    help="Merge with existing config instead of replacing",
 )
 @click.option(
-    "--dry-run", is_flag=True, help="Show what would be imported without applying"
+    "--dry-run",
+    is_flag=True,
+    help="Show what would be imported without applying",
 )
 def import_config(input_file: str, merge: bool, dry_run: bool):
     """Import configuration from file."""
@@ -233,7 +237,11 @@ def monitor(watch: bool, json_output: bool):
         metrics = {
             "agents": {"total": 5, "active": 3, "idle": 2},
             "workflows": {"running": 2, "completed": 15, "failed": 1},
-            "system": {"cpu_usage": "45%", "memory_usage": "2.1GB", "uptime": "2h 30m"},
+            "system": {
+                "cpu_usage": "45%",
+                "memory_usage": "2.1GB",
+                "uptime": "2h 30m",
+            },
             "api": {
                 "requests_total": 1250,
                 "avg_response_time": "120ms",
@@ -277,11 +285,23 @@ def health(component: Optional[str], detailed: bool):
         health_status = {
             "overall": "healthy",
             "components": {
-                "core": {"status": "healthy", "message": "All systems operational"},
-                "api": {"status": "healthy", "message": "API responding normally"},
-                "database": {"status": "warning", "message": "High connection count"},
+                "core": {
+                    "status": "healthy",
+                    "message": "All systems operational",
+                },
+                "api": {
+                    "status": "healthy",
+                    "message": "API responding normally",
+                },
+                "database": {
+                    "status": "warning",
+                    "message": "High connection count",
+                },
                 "cache": {"status": "healthy", "message": "Redis operational"},
-                "workers": {"status": "healthy", "message": "3/3 workers active"},
+                "workers": {
+                    "status": "healthy",
+                    "message": "3/3 workers active",
+                },
             },
         }
 

@@ -790,7 +790,8 @@ def run(name, input_data):
                             )
 
                             await execution_service.update_execution_status(
-                                execution_record.id, WorkflowExecutionStatus.RUNNING
+                                execution_record.id,
+                                WorkflowExecutionStatus.RUNNING,
                             )
                         except Exception as e:
                             warning(f"Could not update persistent execution: {e}")
@@ -816,7 +817,8 @@ def run(name, input_data):
                             )
 
                             await execution_service.update_execution_status(
-                                execution_record.id, WorkflowExecutionStatus.COMPLETED
+                                execution_record.id,
+                                WorkflowExecutionStatus.COMPLETED,
                             )
                         except Exception as e:
                             warning(f"Could not complete persistent execution: {e}")
@@ -838,7 +840,8 @@ def run(name, input_data):
                             )
 
                             await execution_service.update_execution_status(
-                                execution_record.id, WorkflowExecutionStatus.FAILED
+                                execution_record.id,
+                                WorkflowExecutionStatus.FAILED,
                             )
                         except Exception as e:
                             warning(f"Could not fail persistent execution: {e}")
