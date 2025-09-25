@@ -39,7 +39,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         if [ -f pyproject.toml ]; then
-          pip install poetry
+          pip install poetry==2.1.4
           poetry install --with dev
         elif [ -f requirements-dev.txt ]; then
           pip install -r requirements-dev.txt
@@ -50,14 +50,25 @@ jobs:
 
     - name: Run tests
       run: |
-        pytest --cov=src --cov-report=xml
+        if [ -f pyproject.toml ]; then
+          poetry run pytest --cov=src --cov-report=xml
+        else
+          pytest --cov=src --cov-report=xml
+        fi
 
     - name: Test CLI commands
       run: |
-        python -m engine_cli --help
-        python -m engine_cli agent --help
-        python -m engine_cli workflow --help
-        python -m engine_cli team --help
+        if [ -f pyproject.toml ]; then
+          poetry run python -m engine_cli --help
+          poetry run python -m engine_cli agent --help
+          poetry run python -m engine_cli workflow --help
+          poetry run python -m engine_cli team --help
+        else
+          python -m engine_cli --help
+          python -m engine_cli agent --help
+          python -m engine_cli workflow --help
+          python -m engine_cli team --help
+        fi
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
