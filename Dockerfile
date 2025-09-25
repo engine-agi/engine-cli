@@ -25,7 +25,10 @@ USER app
 WORKDIR /home/app
 
 # Copy dependency files
-COPY --chown=app:app pyproject.toml poetry.lock README.md ./
+COPY --chown=app:app pyproject.toml poetry.lock ./
+
+# Create a temporary pyproject.toml without readme for Docker build
+RUN sed -i '/^readme = "README.md"/d' pyproject.toml
 
 # Install Python dependencies
 RUN poetry install --no-root --no-interaction --no-ansi
