@@ -175,7 +175,8 @@ class TestConfigCommands:
         mock_config_manager.config_paths = [mock_path]
 
         with patch(
-            "subprocess.run", side_effect=subprocess.CalledProcessError(1, "nano")
+            "subprocess.run",
+            side_effect=subprocess.CalledProcessError(1, "nano"),
         ):
             with patch.dict(os.environ, {"EDITOR": "nano"}):
                 result = runner.invoke(edit)

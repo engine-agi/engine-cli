@@ -256,7 +256,10 @@ class TestWorkflowStateManager:
             "vertex_states": {},
         }
 
-        mock_redis.get.side_effect = [json.dumps(exec_data_1), json.dumps(exec_data_2)]
+        mock_redis.get.side_effect = [
+            json.dumps(exec_data_1),
+            json.dumps(exec_data_2),
+        ]
 
         executions = await state_manager.get_workflow_executions(
             "test_workflow", limit=5

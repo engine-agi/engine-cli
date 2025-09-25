@@ -18,7 +18,13 @@ class CLISchemaValidator:
     @staticmethod
     def validate_cli_config(data: Dict[str, Any]) -> bool:
         """Validate CLI configuration schema."""
-        required_keys = ["cli", "commands", "formatting", "storage", "features"]
+        required_keys = [
+            "cli",
+            "commands",
+            "formatting",
+            "storage",
+            "features",
+        ]
 
         # Check required top-level keys
         for key in required_keys:
@@ -445,6 +451,10 @@ class TestDataContractValidation:
         assert CLISchemaValidator.validate_team_schema(team_single_member)
 
         # Test tool with minimal config
-        minimal_tool = {"id": "minimal-tool", "name": "Minimal Tool", "type": "api"}
+        minimal_tool = {
+            "id": "minimal-tool",
+            "name": "Minimal Tool",
+            "type": "api",
+        }
 
         assert CLISchemaValidator.validate_tool_schema(minimal_tool)

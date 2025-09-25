@@ -24,7 +24,11 @@ class TestEngineCLICompleter:
         assert self.completer.commands is not None
         assert "agent" in self.completer.commands
         assert "workflow" in self.completer.commands
-        assert self.completer.agent_options == ["--model", "--speciality", "--stack"]
+        assert self.completer.agent_options == [
+            "--model",
+            "--speciality",
+            "--stack",
+        ]
         assert self.completer.workflow_options == [
             "--name",
             "--description",
@@ -252,7 +256,12 @@ class TestInteractiveCLI:
     @patch("engine_cli.formatting.print_table")
     @patch("engine_cli.interactive.separator")
     def test_show_help(
-        self, mock_separator, mock_print_table, mock_table, mock_info, mock_header
+        self,
+        mock_separator,
+        mock_print_table,
+        mock_table,
+        mock_info,
+        mock_header,
     ):
         """Test help display functionality."""
         # Mock table creation
@@ -263,7 +272,8 @@ class TestInteractiveCLI:
 
         # Verify header was called
         mock_header.assert_called_with(
-            "Engine CLI Interactive Mode", "Type commands or use Tab for auto-complete"
+            "Engine CLI Interactive Mode",
+            "Type commands or use Tab for auto-complete",
         )
 
         # Verify info calls
@@ -335,7 +345,9 @@ class TestInteractiveCLI:
     def test_run_exception(self, mock_error, mock_separator, mock_info, mock_header):
         """Test run method with general exception."""
         with patch.object(
-            self.interactive.session, "prompt", side_effect=Exception("Test error")
+            self.interactive.session,
+            "prompt",
+            side_effect=Exception("Test error"),
         ):
             result = self.interactive.run()
 

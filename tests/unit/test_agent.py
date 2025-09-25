@@ -364,7 +364,11 @@ class TestAgentCLI:
         """Test list command falls back to legacy storage when Book storage is empty."""
         mock_book_storage.list_agents.return_value = []
         mock_legacy_storage.list_agents.return_value = [
-            {"id": "legacy_agent", "name": "Legacy Agent", "model": "claude-3.5-sonnet"}
+            {
+                "id": "legacy_agent",
+                "name": "Legacy Agent",
+                "model": "claude-3.5-sonnet",
+            }
         ]
 
         result = self.runner.invoke(cli, ["list"])
@@ -400,7 +404,11 @@ class TestAgentCLI:
     @patch("engine_cli.commands.agent.agent_book_storage")
     def test_show_command_exists_json(self, mock_book_storage):
         """Test show command for existing agent in JSON format."""
-        agent = {"id": "test_agent", "name": "Test Agent", "model": "claude-3.5-sonnet"}
+        agent = {
+            "id": "test_agent",
+            "name": "Test Agent",
+            "model": "claude-3.5-sonnet",
+        }
         mock_book_storage.get_agent.return_value = agent
 
         result = self.runner.invoke(cli, ["show", "test_agent", "--format", "json"])
@@ -411,7 +419,11 @@ class TestAgentCLI:
     @patch("engine_cli.commands.agent.agent_book_storage")
     def test_show_command_exists_yaml(self, mock_book_storage):
         """Test show command for existing agent in YAML format."""
-        agent = {"id": "test_agent", "name": "Test Agent", "model": "claude-3.5-sonnet"}
+        agent = {
+            "id": "test_agent",
+            "name": "Test Agent",
+            "model": "claude-3.5-sonnet",
+        }
         mock_book_storage.get_agent.return_value = agent
 
         result = self.runner.invoke(cli, ["show", "test_agent", "--format", "yaml"])

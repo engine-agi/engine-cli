@@ -24,7 +24,11 @@ def cli():
 
 @cli.command()
 @click.option(
-    "--file", "-f", "config_file", type=click.Path(), help="Configuration file to load"
+    "--file",
+    "-f",
+    "config_file",
+    type=click.Path(),
+    help="Configuration file to load",
 )
 def show(config_file):
     """Show current configuration."""
@@ -138,7 +142,11 @@ def validate(config_file):
 
 @cli.command()
 @click.option(
-    "--file", "-f", "config_file", type=click.Path(), help="Configuration file to edit"
+    "--file",
+    "-f",
+    "config_file",
+    type=click.Path(),
+    help="Configuration file to edit",
 )
 def edit(config_file):
     """Edit configuration file in default editor."""

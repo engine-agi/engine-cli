@@ -278,7 +278,14 @@ class TestEndToEndPersistence:
         # First create an agent
         result = runner.invoke(
             cli,
-            ["agent", "create", agent_name, "--model", "claude-3.5-sonnet", "--save"],
+            [
+                "agent",
+                "create",
+                agent_name,
+                "--model",
+                "claude-3.5-sonnet",
+                "--save",
+            ],
         )
         assert result.exit_code == 0
 
@@ -341,7 +348,8 @@ class TestEndToEndPersistence:
 
         # Execute workflow - may fail due to missing dependencies, but should attempt
         result = runner.invoke(
-            cli, ["workflow", "run", workflow_name, "--input", '{"test": "data"}']
+            cli,
+            ["workflow", "run", workflow_name, "--input", '{"test": "data"}'],
         )
 
         # Execution might fail due to missing dependencies, but should attempt
@@ -442,7 +450,15 @@ class TestEndToEndPersistence:
 
         # Create agent first
         result = runner.invoke(
-            cli, ["agent", "create", agent_name, "--model", "claude-3-haiku", "--save"]
+            cli,
+            [
+                "agent",
+                "create",
+                agent_name,
+                "--model",
+                "claude-3-haiku",
+                "--save",
+            ],
         )
         assert result.exit_code == 0
 

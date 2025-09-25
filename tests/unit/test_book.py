@@ -88,7 +88,13 @@ class MockChapter:
         self.title = title
 
     def to_dict(self):
-        return {"statistics": {"page_count": 3, "section_count": 5, "word_count": 750}}
+        return {
+            "statistics": {
+                "page_count": 3,
+                "section_count": 5,
+                "word_count": 750,
+            }
+        }
 
 
 class MockSearchResult:

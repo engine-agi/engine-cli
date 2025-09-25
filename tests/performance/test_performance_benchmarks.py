@@ -391,7 +391,9 @@ class TestPerformanceBenchmarks:
             return workflow
 
         metric = self._measure_operation(
-            "Complex Workflow Creation (10 vertices)", 5, create_complex_workflow
+            "Complex Workflow Creation (10 vertices)",
+            5,
+            create_complex_workflow,
         )
         performance_reporter.add_metric(metric)
 
@@ -508,7 +510,10 @@ class TestPerformanceBenchmarks:
                     ),
                     "name": agent.name,
                     "speciality": f"Role {project_agents.index(agent)}",
-                    "stack": ["python", f"skill-{project_agents.index(agent)}"],
+                    "stack": [
+                        "python",
+                        f"skill-{project_agents.index(agent)}",
+                    ],
                     "created_at": "2025-09-23T10:00:00.000000",
                 }
                 agent_file = Path(f"agents/{agent.id}.yaml")
@@ -555,10 +560,16 @@ class TestPerformanceBenchmarks:
             with open(workflow_file, "w") as f:
                 json.dump(workflow_data, f)
 
-            return {"agents": project_agents, "team": team, "workflow": workflow}
+            return {
+                "agents": project_agents,
+                "team": team,
+                "workflow": workflow,
+            }
 
         metric = self._measure_operation(
-            "End-to-End Project Creation (10 agents/project)", 10, create_full_project
+            "End-to-End Project Creation (10 agents/project)",
+            10,
+            create_full_project,
         )
         performance_reporter.add_metric(metric)
 

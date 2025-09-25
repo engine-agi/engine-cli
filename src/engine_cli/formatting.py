@@ -53,7 +53,9 @@ class CLIRichFormatter:
             )
         else:
             panel = Panel(
-                f"[bold cyan]{title}[/bold cyan]", border_style="cyan", padding=(1, 2)
+                f"[bold cyan]{title}[/bold cyan]",
+                border_style="cyan",
+                padding=(1, 2),
             )
         console.print(panel)
 

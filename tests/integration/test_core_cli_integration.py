@@ -175,8 +175,16 @@ class TestCoreCLIIntegration:
             "name": "Integration Test Team",
             "description": "Team for integration testing",
             "members": [
-                {"id": "team-agent-1", "role": "leader", "name": "Team Agent 1"},
-                {"id": "team-agent-2", "role": "member", "name": "Team Agent 2"},
+                {
+                    "id": "team-agent-1",
+                    "role": "leader",
+                    "name": "Team Agent 1",
+                },
+                {
+                    "id": "team-agent-2",
+                    "role": "member",
+                    "name": "Team Agent 2",
+                },
             ],
             "created_at": "2025-09-23T10:00:00.000000",
         }
@@ -193,7 +201,11 @@ class TestCoreCLIIntegration:
                 "model": "claude-3.5-sonnet",
                 "name": "Team Agent 1",
             },
-            {"id": "team-agent-2", "model": "claude-3-haiku", "name": "Team Agent 2"},
+            {
+                "id": "team-agent-2",
+                "model": "claude-3-haiku",
+                "name": "Team Agent 2",
+            },
         ]:
             agent_file = Path(f"agents/{agent_data['id']}.yaml")
             with open(agent_file, "w") as f:
@@ -342,7 +354,9 @@ class TestCoreCLIIntegration:
             .with_id("dev-workflow")
             .with_name("Development Workflow")
             .add_agent_vertex(
-                "analysis", senior_dev, "Analyze requirements and design solution"
+                "analysis",
+                senior_dev,
+                "Analyze requirements and design solution",
             )
             .add_agent_vertex("implementation", senior_dev, "Implement the solution")
             .add_agent_vertex("testing", qa_engineer, "Test the implementation")
@@ -389,7 +403,11 @@ class TestCoreCLIIntegration:
             "id": "dev-team",
             "name": "Development Team",
             "members": [
-                {"id": "senior-dev", "role": "leader", "name": "Senior Developer"},
+                {
+                    "id": "senior-dev",
+                    "role": "leader",
+                    "name": "Senior Developer",
+                },
                 {"id": "qa-engineer", "role": "member", "name": "QA Engineer"},
             ],
         }
@@ -540,7 +558,7 @@ class TestCoreCLIIntegration:
         for i in range(5):
             agent_data = {
                 "id": f"bulk-agent-{i}",
-                "model": "claude-3.5-sonnet" if i % 2 == 0 else "claude-3-haiku",
+                "model": ("claude-3.5-sonnet" if i % 2 == 0 else "claude-3-haiku"),
                 "name": f"Bulk Agent {i}",
                 "speciality": f"Speciality {i}",
                 "stack": ["python", f"skill-{i}"],

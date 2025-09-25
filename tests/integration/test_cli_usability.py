@@ -183,7 +183,12 @@ class TestWorkflowUsability:
             # Set some configuration
             result = runner.invoke(
                 cli,
-                ["config", "set", "database.url", "postgresql://localhost:5432/engine"],
+                [
+                    "config",
+                    "set",
+                    "database.url",
+                    "postgresql://localhost:5432/engine",
+                ],
             )
             assert result.exit_code == 0
 

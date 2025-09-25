@@ -40,7 +40,11 @@ class AgentBookStorage:
                     "type": "agent_configuration",
                 },
             },
-            "tags": ["agent", "configuration", agent_data.get("model", "unknown")],
+            "tags": [
+                "agent",
+                "configuration",
+                agent_data.get("model", "unknown"),
+            ],
             "categories": ["agents"],
         }
 

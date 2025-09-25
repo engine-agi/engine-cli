@@ -9,7 +9,7 @@ import click
 import yaml
 
 # Import engine core components
-from engine_core import WorkflowBuilder
+from engine_core import WorkflowBuilder  # type: ignore
 
 # Import Rich formatting
 from engine_cli.formatting import (
@@ -24,8 +24,10 @@ from engine_cli.formatting import (
 
 # Import state manager
 from engine_cli.storage.workflow_state_manager import (
-    WorkflowExecutionState,
-    workflow_state_manager,
+    WorkflowExecutionState,  # type: ignore
+)
+from engine_cli.storage.workflow_state_manager import (
+    workflow_state_manager,  # type: ignore
 )
 
 
@@ -136,7 +138,10 @@ class WorkflowStorage:
             file_path = os.path.join(self.workflows_dir, f"{workflow.id}.yaml")
             with open(file_path, "w", encoding="utf-8") as f:
                 yaml.safe_dump(
-                    workflow_data, f, default_flow_style=False, allow_unicode=True
+                    workflow_data,
+                    f,
+                    default_flow_style=False,
+                    allow_unicode=True,
                 )
 
             return True
@@ -319,12 +324,19 @@ class CLIWorkflowBuilder:
     def add_agent_vertex(self, vertex_id: str, agent_id: str, instruction: str):
         """Add agent vertex spec for CLI - stores for later resolution."""
         self.agent_specs.append(
-            {"vertex_id": vertex_id, "agent_id": agent_id, "instruction": instruction}
+            {
+                "vertex_id": vertex_id,
+                "agent_id": agent_id,
+                "instruction": instruction,
+            }
         )
 
         # For CLI, add a placeholder function vertex that will be replaced during execution
         async def placeholder_function(input_data):
-            return {"result": f"Placeholder for agent {agent_id}", "input": input_data}
+            return {
+                "result": f"Placeholder for agent {agent_id}",
+                "input": input_data,
+            }
 
         self.workflow_builder = self.workflow_builder.add_function_vertex(
             vertex_id, placeholder_function
@@ -379,7 +391,9 @@ def cli():
 @click.option("--description", help="Workflow description")
 @click.option("--version", default="1.0.0", help="Workflow version")
 @click.option(
-    "--simple", is_flag=True, help="Create a simple workflow with one function vertex"
+    "--simple",
+    is_flag=True,
+    help="Create a simple workflow with one function vertex",
 )
 @click.option(
     "--agent",
@@ -403,7 +417,9 @@ def cli():
 )
 @click.option("--save", is_flag=True, help="Save workflow to storage")
 @click.option(
-    "--output", type=click.Path(), help="Output file for workflow configuration"
+    "--output",
+    type=click.Path(),
+    help="Output file for workflow configuration",
 )
 def create(name, description, version, simple, agent, team, edge, config, save, output):
     """Create a new workflow."""
@@ -498,7 +514,10 @@ def create(name, description, version, simple, agent, team, edge, config, save, 
             if simple and not agent and not team:
 
                 async def demo_function(input_data):
-                    return {"result": f"Executed by {name}", "input": input_data}
+                    return {
+                        "result": f"Executed by {name}",
+                        "input": input_data,
+                    }
 
                 builder = builder.add_function_vertex("demo_task", demo_function)
 
@@ -534,7 +553,10 @@ def create(name, description, version, simple, agent, team, edge, config, save, 
                 workflow_data = workflow.to_dict()
                 with open(output, "w", encoding="utf-8") as f:
                     yaml.safe_dump(
-                        workflow_data, f, default_flow_style=False, allow_unicode=True
+                        workflow_data,
+                        f,
+                        default_flow_style=False,
+                        allow_unicode=True,
                     )
                 success(f"Workflow configuration saved to {output}")
             except Exception as e:
@@ -556,7 +578,8 @@ def list():
 
         # Create table
         workflow_table = table(
-            "Workflows", ["ID", "Name", "Version", "Vertices", "Edges", "Created"]
+            "Workflows",
+            ["ID", "Name", "Version", "Vertices", "Edges", "Created"],
         )
         for workflow in workflows:
             created_date = (
@@ -726,7 +749,8 @@ def run(name, input_data):
             # Update state to running
             temp_loop.run_until_complete(
                 workflow_state_manager.update_execution_state(
-                    execution_id=execution_id, state=WorkflowExecutionState.RUNNING
+                    execution_id=execution_id,
+                    state=WorkflowExecutionState.RUNNING,
                 )
             )
 
@@ -800,7 +824,8 @@ def run(name, input_data):
                 except Exception as exec_error:
                     # Set error state
                     await workflow_state_manager.set_execution_error(
-                        execution_id=execution_id, error_message=str(exec_error)
+                        execution_id=execution_id,
+                        error_message=str(exec_error),
                     )
 
                     # Mark persistent execution as failed
@@ -948,11 +973,13 @@ def status(execution_id, workflow, active, limit):
                 status_table.add_row("State", status.state.value.upper())
                 status_table.add_row("Progress", f"{status.progress_percentage:.1f}%")
                 status_table.add_row(
-                    "Start Time", status.start_time.strftime("%Y-%m-%d %H:%M:%S")
+                    "Start Time",
+                    status.start_time.strftime("%Y-%m-%d %H:%M:%S"),
                 )
                 if status.end_time:
                     status_table.add_row(
-                        "End Time", status.end_time.strftime("%Y-%m-%d %H:%M:%S")
+                        "End Time",
+                        status.end_time.strftime("%Y-%m-%d %H:%M:%S"),
                     )
                 if status.current_vertex:
                     status_table.add_row("Current Vertex", status.current_vertex)
@@ -985,7 +1012,10 @@ def status(execution_id, workflow, active, limit):
                         "Vertex Execution Status",
                         ["Vertex ID", "State", "Last Update", "Output/Error"],
                     )
-                    for vertex_id, vertex_state in status.vertex_states.items():
+                    for (
+                        vertex_id,
+                        vertex_state,
+                    ) in status.vertex_states.items():
                         state = vertex_state.get("state", "unknown")
                         updated = vertex_state.get("updated_at", "unknown")
                         output = vertex_state.get("output_data", "")
@@ -1133,7 +1163,13 @@ def history(workflow_id, limit, status_filter):
 
                     history_table = table(
                         "Execution History",
-                        ["Execution ID", "Status", "Started", "Duration", "Success"],
+                        [
+                            "Execution ID",
+                            "Status",
+                            "Started",
+                            "Duration",
+                            "Success",
+                        ],
                     )
 
                     for execution in executions:

@@ -128,7 +128,7 @@ def team():
 try:
     from engine_cli.commands.team import cli as team_cli
 
-    # Add the entire team CLI group as a subgroup instead of individual commands
+    # Add the entire team CLI group as a subgroup instead of individual command
     cli.add_command(team_cli, name="team")
 
 except ImportError as e:

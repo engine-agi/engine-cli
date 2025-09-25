@@ -192,7 +192,8 @@ class TestProtocolStorage:
     def test_list_protocols(self, mock_protocol_storage):
         """Test listing protocols"""
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ):
             from engine_cli.commands.protocol import protocol_storage
 
@@ -204,7 +205,8 @@ class TestProtocolStorage:
     def test_get_protocol(self, mock_protocol_storage):
         """Test getting a specific protocol"""
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ):
             from engine_cli.commands.protocol import protocol_storage
 
@@ -217,7 +219,8 @@ class TestProtocolStorage:
         """Test getting a non-existent protocol"""
         mock_protocol_storage.get_protocol.return_value = None
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ):
             from engine_cli.commands.protocol import protocol_storage
 
@@ -227,7 +230,8 @@ class TestProtocolStorage:
     def test_delete_protocol(self, mock_protocol_storage):
         """Test deleting a protocol"""
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ):
             from engine_cli.commands.protocol import protocol_storage
 
@@ -238,7 +242,8 @@ class TestProtocolStorage:
         """Test deleting a non-existent protocol"""
         mock_protocol_storage.delete_protocol.return_value = False
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ):
             from engine_cli.commands.protocol import protocol_storage
 
@@ -250,7 +255,11 @@ class TestProtocolCLICommands:
     """Test CLI commands for protocol management"""
 
     def test_create_protocol_basic(
-        self, cli_runner, mock_protocol_enums, mock_protocol_builder, mock_imports
+        self,
+        cli_runner,
+        mock_protocol_enums,
+        mock_protocol_builder,
+        mock_imports,
     ):
         """Test creating a basic protocol"""
         with patch("engine_cli.commands.protocol.success"), patch(
@@ -266,13 +275,23 @@ class TestProtocolCLICommands:
             from engine_cli.commands.protocol import create
 
             result = cli_runner.invoke(
-                create, ["test_protocol", "--description", "A test protocol", "--save"]
+                create,
+                [
+                    "test_protocol",
+                    "--description",
+                    "A test protocol",
+                    "--save",
+                ],
             )
 
             assert result.exit_code == 0
 
     def test_create_protocol_full_options(
-        self, cli_runner, mock_protocol_enums, mock_protocol_builder, mock_imports
+        self,
+        cli_runner,
+        mock_protocol_enums,
+        mock_protocol_builder,
+        mock_imports,
     ):
         """Test creating a protocol with all options"""
         with patch("engine_cli.commands.protocol.success"), patch(
@@ -328,7 +347,8 @@ class TestProtocolCLICommands:
     def test_list_protocols_table_format(self, cli_runner, mock_protocol_storage):
         """Test listing protocols in table format"""
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ), patch("engine_cli.commands.protocol.table"), patch(
             "engine_cli.commands.protocol.print_table"
         ), patch(
@@ -344,7 +364,8 @@ class TestProtocolCLICommands:
     def test_list_protocols_json_format(self, cli_runner, mock_protocol_storage):
         """Test listing protocols in JSON format"""
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ):
             from engine_cli.commands.protocol import list
 
@@ -357,7 +378,8 @@ class TestProtocolCLICommands:
     def test_list_protocols_yaml_format(self, cli_runner, mock_protocol_storage):
         """Test listing protocols in YAML format"""
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ):
             from engine_cli.commands.protocol import list
 
@@ -370,7 +392,8 @@ class TestProtocolCLICommands:
     def test_list_protocols_with_filters(self, cli_runner, mock_protocol_storage):
         """Test listing protocols with tag and author filters"""
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ), patch("engine_cli.commands.protocol.table"), patch(
             "engine_cli.commands.protocol.print_table"
         ), patch(
@@ -401,7 +424,8 @@ class TestProtocolCLICommands:
     def test_show_protocol_table_format(self, cli_runner, mock_protocol_storage):
         """Test showing protocol details in table format"""
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ), patch("engine_cli.commands.protocol.key_value"):
 
             from engine_cli.commands.protocol import show
@@ -413,7 +437,8 @@ class TestProtocolCLICommands:
     def test_show_protocol_json_format(self, cli_runner, mock_protocol_storage):
         """Test showing protocol details in JSON format"""
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ):
             from engine_cli.commands.protocol import show
 
@@ -425,7 +450,8 @@ class TestProtocolCLICommands:
     def test_show_protocol_yaml_format(self, cli_runner, mock_protocol_storage):
         """Test showing protocol details in YAML format"""
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ):
             from engine_cli.commands.protocol import show
 
@@ -452,7 +478,8 @@ class TestProtocolCLICommands:
     def test_delete_protocol_success(self, cli_runner, mock_protocol_storage):
         """Test deleting a protocol successfully"""
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ), patch("engine_cli.commands.protocol.success"):
 
             from engine_cli.commands.protocol import delete
@@ -479,7 +506,8 @@ class TestProtocolCLICommands:
     def test_delete_protocol_with_confirmation(self, cli_runner, mock_protocol_storage):
         """Test deleting a protocol with user confirmation"""
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ), patch("engine_cli.commands.protocol.success"), patch(
             "click.confirm", return_value=True
         ):
@@ -493,7 +521,8 @@ class TestProtocolCLICommands:
     def test_delete_protocol_cancelled(self, cli_runner, mock_protocol_storage):
         """Test cancelling protocol deletion"""
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ), patch("click.confirm", return_value=False):
 
             from engine_cli.commands.protocol import delete
@@ -508,7 +537,8 @@ class TestProtocolCLICommands:
     ):
         """Test testing a protocol with command"""
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ), patch("engine_cli.commands.protocol.success"):
 
             from engine_cli.commands.protocol import test
@@ -544,7 +574,8 @@ class TestProtocolCLICommands:
     def test_test_protocol_no_command(self, cli_runner, mock_protocol_storage):
         """Test testing a protocol without providing command"""
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ):
 
             from engine_cli.commands.protocol import test
@@ -560,7 +591,8 @@ class TestProtocolCLICommands:
     def test_test_protocol_invalid_context(self, cli_runner, mock_protocol_storage):
         """Test testing a protocol with invalid JSON context"""
         with patch(
-            "engine_cli.commands.protocol.protocol_storage", mock_protocol_storage
+            "engine_cli.commands.protocol.protocol_storage",
+            mock_protocol_storage,
         ):
 
             from engine_cli.commands.protocol import test

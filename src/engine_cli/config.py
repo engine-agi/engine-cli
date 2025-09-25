@@ -279,7 +279,9 @@ class ConfigManager:
             self._set_nested_value(config_dict[keys[0]], keys[1:], value)
 
     def save_config(
-        self, config: EngineConfig, file_path: Optional[Union[str, Path]] = None
+        self,
+        config: EngineConfig,
+        file_path: Optional[Union[str, Path]] = None,
     ):
         """Save configuration to file."""
         if file_path is None:
@@ -361,7 +363,11 @@ class ConfigManager:
         default_config = EngineConfig(
             core={"version": "1.0.1", "debug": False, "log_level": "INFO"},
             cli={"interactive": True, "colors": True, "history_size": 1000},
-            api={"base_url": "http://localhost:8000", "timeout": 30, "retries": 3},
+            api={
+                "base_url": "http://localhost:8000",
+                "timeout": 30,
+                "retries": 3,
+            },
             database={
                 "url": "sqlite:///engine.db",
                 "pool_size": 10,
@@ -394,7 +400,9 @@ class ConfigManager:
 config_manager = ConfigManager()
 
 
-def load_config(config_file: Optional[Union[str, Path]] = None) -> EngineConfig:
+def load_config(
+    config_file: Optional[Union[str, Path]] = None,
+) -> EngineConfig:
     """Load configuration (convenience function)."""
     return config_manager.load_config(config_file)
 
@@ -419,6 +427,8 @@ def show_config():
     config_manager.show_config()
 
 
-def create_default_config(file_path: Optional[Union[str, Path]] = None) -> EngineConfig:
+def create_default_config(
+    file_path: Optional[Union[str, Path]] = None,
+) -> EngineConfig:
     """Create default configuration (convenience function)."""
     return config_manager.create_default_config(file_path)

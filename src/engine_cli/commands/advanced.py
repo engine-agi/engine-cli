@@ -7,7 +7,8 @@ from typing import List, Optional
 import click
 import yaml
 
-from engine_cli.config import load_config, save_config
+from engine_cli.config import load_config  # type: ignore
+from engine_cli.config import save_config  # type: ignore
 from engine_cli.formatting import error, header, info, key_value, success, warning
 
 

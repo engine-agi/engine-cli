@@ -21,7 +21,14 @@ class EngineCLICompleter(Completer):
             "version": [],
             "status": [],
             "agent": ["create", "delete", "list", "show"],
-            "team": ["create", "delete", "list", "show", "add-agent", "remove-agent"],
+            "team": [
+                "create",
+                "delete",
+                "list",
+                "show",
+                "add-agent",
+                "remove-agent",
+            ],
             "workflow": ["create", "delete", "list", "show", "run", "status"],
             "tool": ["create", "delete", "list", "show", "execute"],
             "protocol": ["create", "delete", "list", "show"],
@@ -37,7 +44,12 @@ class EngineCLICompleter(Completer):
 
         self.agent_options = ["--model", "--speciality", "--stack"]
         self.team_options = ["--name", "--description", "--agents"]
-        self.workflow_options = ["--name", "--description", "--vertices", "--edges"]
+        self.workflow_options = [
+            "--name",
+            "--description",
+            "--vertices",
+            "--edges",
+        ]
         self.tool_options = ["--name", "--type", "--config"]
         self.protocol_options = ["--name", "--commands"]
         self.book_options = ["--name", "--description", "--chapters"]
@@ -158,7 +170,8 @@ class InteractiveCLI:
     def show_help(self):
         """Show interactive help."""
         header(
-            "Engine CLI Interactive Mode", "Type commands or use Tab for auto-complete"
+            "Engine CLI Interactive Mode",
+            "Type commands or use Tab for auto-complete",
         )
 
         info("Available commands:")

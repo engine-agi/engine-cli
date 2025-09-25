@@ -808,7 +808,10 @@ class TestWorkflowFunctions:
 
         # Mock engine
         mock_engine = MagicMock()
-        mock_engine.run.return_value = {"status": "completed", "result": "test_passed"}
+        mock_engine.run.return_value = {
+            "status": "completed",
+            "result": "test_passed",
+        }
         mock_engine_class.return_value = mock_engine
 
         result = self.runner.invoke(cli, ["test", "test_workflow"])

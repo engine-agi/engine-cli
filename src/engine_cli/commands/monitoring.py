@@ -52,6 +52,7 @@ def health(component):
     try:
         if component:
             click.echo(f"⚠ Health check for '{component}' not yet implemented")
+
         else:
             click.echo("⚠ System health check not yet implemented")
         click.echo("This will perform health checks on all components")

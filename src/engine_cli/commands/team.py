@@ -108,7 +108,10 @@ def create(name, agents, leader, strategy, description, save, output):
             return
 
         # Convert string to enum
-        strategy_enum = TeamCoordinationStrategy(strategy.lower())  # type: ignore
+        if not TEAM_BUILDER_AVAILABLE or TeamCoordinationStrategy is None:
+            error("Engine Core not available. Please install engine-core first.")
+            return
+        strategy_enum = TeamCoordinationStrategy(strategy.lower())
 
         # Build the team using TeamBuilder
         builder = TeamBuilder()  # type: ignore
@@ -166,7 +169,11 @@ def create(name, agents, leader, strategy, description, save, output):
         team_table.add_row("Strategy", team.coordination_strategy)
         team_table.add_row(
             "Agents",
-            ", ".join([a.id for a in team.agents.values()]) if team.agents else "None",
+            (
+                ", ".join([a.id for a in team.agents.values()])
+                if team.agents
+                else "None"
+            ),
         )
         team_table.add_row("Leader", leader or "None")
         team_table.add_row("Description", description or "None")

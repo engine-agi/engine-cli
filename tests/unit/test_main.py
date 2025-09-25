@@ -164,7 +164,10 @@ class TestMainCLI:
         assert result.exit_code == 0
         assert "Monitoring and observability commands" in result.output
 
-    @patch("engine_cli.commands.agent.cli", side_effect=ImportError("Module not found"))
+    @patch(
+        "engine_cli.commands.agent.cli",
+        side_effect=ImportError("Module not found"),
+    )
     def test_agent_group_import_error(self, mock_import, runner):
         """Test agent group when import fails."""
         result = runner.invoke(cli, ["agent", "--help"])
@@ -174,7 +177,10 @@ class TestMainCLI:
         result = runner.invoke(cli, ["agent"])
         assert "Agent commands not available" in result.output or result.exit_code == 0
 
-    @patch("engine_cli.commands.team.cli", side_effect=ImportError("Module not found"))
+    @patch(
+        "engine_cli.commands.team.cli",
+        side_effect=ImportError("Module not found"),
+    )
     def test_team_group_import_error(self, mock_import, runner):
         """Test team group when import fails."""
         result = runner.invoke(cli, ["team", "--help"])
@@ -185,7 +191,8 @@ class TestMainCLI:
         assert "Team commands not available" in result.output or result.exit_code == 0
 
     @patch(
-        "engine_cli.commands.workflow.cli", side_effect=ImportError("Module not found")
+        "engine_cli.commands.workflow.cli",
+        side_effect=ImportError("Module not found"),
     )
     def test_workflow_group_import_error(self, mock_import, runner):
         """Test workflow group when import fails."""
@@ -196,7 +203,10 @@ class TestMainCLI:
             "Workflow commands not available" in result.output or result.exit_code == 0
         )
 
-    @patch("engine_cli.commands.tool.cli", side_effect=ImportError("Module not found"))
+    @patch(
+        "engine_cli.commands.tool.cli",
+        side_effect=ImportError("Module not found"),
+    )
     def test_tool_group_import_error(self, mock_import, runner):
         """Test tool group when import fails."""
         result = runner.invoke(cli, ["tool", "--help"])
@@ -205,7 +215,8 @@ class TestMainCLI:
         assert "Tool commands not available" in result.output or result.exit_code == 0
 
     @patch(
-        "engine_cli.commands.protocol.cli", side_effect=ImportError("Module not found")
+        "engine_cli.commands.protocol.cli",
+        side_effect=ImportError("Module not found"),
     )
     def test_protocol_group_import_error(self, mock_import, runner):
         """Test protocol group when import fails."""
@@ -216,7 +227,10 @@ class TestMainCLI:
             "Protocol commands not available" in result.output or result.exit_code == 0
         )
 
-    @patch("engine_cli.commands.book.cli", side_effect=ImportError("Module not found"))
+    @patch(
+        "engine_cli.commands.book.cli",
+        side_effect=ImportError("Module not found"),
+    )
     def test_book_group_import_error(self, mock_import, runner):
         """Test book group when import fails."""
         result = runner.invoke(cli, ["book", "--help"])
@@ -225,7 +239,8 @@ class TestMainCLI:
         assert "Book commands not available" in result.output or result.exit_code == 0
 
     @patch(
-        "engine_cli.commands.project.cli", side_effect=ImportError("Module not found")
+        "engine_cli.commands.project.cli",
+        side_effect=ImportError("Module not found"),
     )
     def test_project_group_import_error(self, mock_import, runner):
         """Test project group when import fails."""
@@ -237,7 +252,8 @@ class TestMainCLI:
         )
 
     @patch(
-        "engine_cli.commands.examples.cli", side_effect=ImportError("Module not found")
+        "engine_cli.commands.examples.cli",
+        side_effect=ImportError("Module not found"),
     )
     def test_examples_group_import_error(self, mock_import, runner):
         """Test examples group when import fails."""
@@ -249,7 +265,8 @@ class TestMainCLI:
         )
 
     @patch(
-        "engine_cli.commands.config.cli", side_effect=ImportError("Module not found")
+        "engine_cli.commands.config.cli",
+        side_effect=ImportError("Module not found"),
     )
     def test_config_group_import_error(self, mock_import, runner):
         """Test config group when import fails."""
@@ -259,7 +276,8 @@ class TestMainCLI:
         assert "Config commands not available" in result.output or result.exit_code == 0
 
     @patch(
-        "engine_cli.commands.advanced.cli", side_effect=ImportError("Module not found")
+        "engine_cli.commands.advanced.cli",
+        side_effect=ImportError("Module not found"),
     )
     def test_advanced_group_import_error(self, mock_import, runner):
         """Test advanced group when import fails."""

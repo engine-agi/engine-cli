@@ -362,7 +362,11 @@ class TestWorkflowResolver:
                     },
                 ],
                 "team_specs": [
-                    {"vertex_id": "v3", "team_id": "team1", "tasks": ["task1", "task2"]}
+                    {
+                        "vertex_id": "v3",
+                        "team_id": "team1",
+                        "tasks": ["task1", "task2"],
+                    }
                 ],
                 "edges": [
                     {"from_vertex": "v1", "to_vertex": "v2"},

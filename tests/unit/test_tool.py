@@ -73,7 +73,11 @@ class TestToolStorage:
         """Test getting an existing tool."""
         storage = ToolStorage()
 
-        tool_data = {"tool_id": "test_tool", "name": "Test Tool", "type": "api"}
+        tool_data = {
+            "tool_id": "test_tool",
+            "name": "Test Tool",
+            "type": "api",
+        }
 
         tool_path = os.path.join("tools", "test_tool.yaml")
         with open(tool_path, "w") as f:
@@ -305,7 +309,11 @@ class TestToolCLI:
     @patch("engine_cli.commands.tool.tool_storage")
     def test_test_command_generic_tool(self, mock_storage):
         """Test test command for generic tool."""
-        tool = {"tool_id": "generic_tool", "name": "Generic Tool", "type": "generic"}
+        tool = {
+            "tool_id": "generic_tool",
+            "name": "Generic Tool",
+            "type": "generic",
+        }
         mock_storage.get_tool.return_value = tool
 
         result = self.runner.invoke(

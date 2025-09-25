@@ -109,7 +109,8 @@ class TestBulkOperations:
     def test_bulk_agents_operation(self, runner):
         """Test bulk agents operation command."""
         result = runner.invoke(
-            advanced_cli, ["bulk", "agents", "test*", "--action", "start", "--dry-run"]
+            advanced_cli,
+            ["bulk", "agents", "test*", "--action", "start", "--dry-run"],
         )
         assert result is not None
 
@@ -126,7 +127,10 @@ class TestConfigOperations:
     def temp_config_file(self, tmp_path):
         """Create a temporary config file."""
         config_file = tmp_path / "test_config.yaml"
-        config_data = {"api": {"base_url": "http://test.com"}, "core": {"debug": True}}
+        config_data = {
+            "api": {"base_url": "http://test.com"},
+            "core": {"debug": True},
+        }
         with open(config_file, "w") as f:
             yaml.dump(config_data, f)
         return config_file
@@ -152,7 +156,12 @@ class TestConfigOperations:
         """Test config import command with dry run."""
         result = runner.invoke(
             advanced_cli,
-            ["config-ops", "import-config", str(temp_config_file), "--dry-run"],
+            [
+                "config-ops",
+                "import-config",
+                str(temp_config_file),
+                "--dry-run",
+            ],
         )
         assert result is not None
 
@@ -165,6 +174,11 @@ class TestConfigOperations:
 
                 result = runner.invoke(
                     advanced_cli,
-                    ["config-ops", "import-config", str(temp_config_file), "--merge"],
+                    [
+                        "config-ops",
+                        "import-config",
+                        str(temp_config_file),
+                        "--merge",
+                    ],
                 )
                 assert result is not None

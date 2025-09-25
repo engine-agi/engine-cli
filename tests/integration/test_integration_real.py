@@ -131,7 +131,9 @@ async def test_workflow_execution_real():
 
             # Update execution state
             await manager.update_execution_state(
-                execution_id=execution_id, state="running", current_vertex="task1"
+                execution_id=execution_id,
+                state="running",
+                current_vertex="task1",
             )
 
             # Verify state change

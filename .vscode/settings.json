@@ -9,5 +9,13 @@
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
         "source.organizeImports": "explicit"
-    }
+    },
+    "python.analysis.extraPaths": [
+        "./src",
+        "/home/mau/engine/engine-core/src",
+        "/home/mau/engine/engine-core"
+    ],
+    "python.analysis.include": [
+        "/home/mau/engine/engine-core/src"
+    ]
 }

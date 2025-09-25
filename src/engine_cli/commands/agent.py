@@ -78,7 +78,9 @@ def cli():
 @click.option("--persona", help="Agent behavioral characteristics")
 @click.option("--stack", help="Technology stack (comma-separated)")
 @click.option(
-    "--tools", multiple=True, help="Available tools (can be used multiple times)"
+    "--tools",
+    multiple=True,
+    help="Available tools (can be used multiple times)",
 )
 @click.option("--protocol", help="Agent protocol ID")
 @click.option("--workflow", help="Agent workflow ID")

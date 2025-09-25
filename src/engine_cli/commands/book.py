@@ -1,7 +1,8 @@
 """
 Book Management Commands - Integration with BookService.
 
-This module provides CLI commands for managing books, chapters, pages, and sections
+This module provides CLI commands for managing books, chapters, pages, and sect
+ions
 through the BookService, which handles hierarchical memory management in the
 Engine Framework.
 
@@ -69,7 +70,8 @@ def format_book_table(books: List[Any]) -> None:
         return
 
     tbl = table(
-        "Books", ["ID", "Title", "Chapters", "Pages", "Sections", "Status", "Created"]
+        "Books",
+        ["ID", "Title", "Chapters", "Pages", "Sections", "Status", "Created"],
     )
 
     for book in books:
@@ -106,7 +108,10 @@ book = cli
 @click.option("--description", "-d", help="Book description")
 @click.option("--author", "-a", help="Book author")
 def create(
-    book_id: str, title: str, description: str = "", author: Optional[str] = None
+    book_id: str,
+    title: str,
+    description: str = "",
+    author: Optional[str] = None,
 ):
     """Create a new book."""
 
@@ -115,7 +120,10 @@ def create(
             service = get_book_service()
 
             book = await service.create_book(
-                book_id=book_id, title=title, description=description, author=author
+                book_id=book_id,
+                title=title,
+                description=description,
+                author=author,
             )
 
             if book:
@@ -336,7 +344,8 @@ def search(book_id: str, query: str, max_results: int = 10):
                     if result.content_snippet:
                         click.echo(
                             f"  Snippet: {result.content_snippet[:100]}"
-                            f"{'...' if len(result.content_snippet) > 100 else ''}"
+                            f"{'...' if len(result.content_snippet) > 100 else
+''}"
                         )
 
                     if result.highlights:

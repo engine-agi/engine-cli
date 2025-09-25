@@ -55,6 +55,7 @@ class ProtocolStorage:
     def get_protocol(self, protocol_id: str) -> Optional[dict]:
         """Get protocol by ID."""
         protocol_file = os.path.join(self.protocols_dir, f"{protocol_id}.yaml")
+
         if os.path.exists(protocol_file):
             try:
                 with open(protocol_file, "r") as f:
@@ -66,6 +67,7 @@ class ProtocolStorage:
     def delete_protocol(self, protocol_id: str) -> bool:
         """Delete protocol by ID."""
         protocol_file = os.path.join(self.protocols_dir, f"{protocol_id}.yaml")
+
         if os.path.exists(protocol_file):
             try:
                 os.remove(protocol_file)
@@ -107,7 +109,9 @@ def cli():
 @click.option("--strict-validation", is_flag=True, help="Enable strict validation")
 @click.option("--save", is_flag=True, help="Save protocol to storage")
 @click.option(
-    "--output", type=click.Path(), help="Output file for protocol configuration"
+    "--output",
+    type=click.Path(),
+    help="Output file for protocol configuration",
 )
 def create(
     name,
@@ -236,10 +240,14 @@ def create(
                     "supported_command_types": [
                         ct.value
                         for ct in getattr(
-                            protocol.configuration, "supported_command_types", []
+                            protocol.configuration,
+                            "supported_command_types",
+                            [],
                         )
                     ],
-                    "default_scope": default_scope.value if default_scope else "global",
+                    "default_scope": (
+                        default_scope.value if default_scope else "global"
+                    ),
                     "strict_validation": getattr(
                         protocol.configuration, "strict_validation", False
                     ),
@@ -461,7 +469,11 @@ def test(name, command, context):
             "intent_category": "development",
             "confidence": 0.85,
             "command_type": "task_execution",
-            "parameters": {"action": "analyze", "target": "codebase", "scope": "full"},
+            "parameters": {
+                "action": "analyze",
+                "target": "codebase",
+                "scope": "full",
+            },
             "validation_errors": [],
             "suggestions": ["Consider specifying the analysis depth"],
             "execution_plan": {

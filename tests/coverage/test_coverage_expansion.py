@@ -248,9 +248,17 @@ class TestAgentCommandsCoverage:
         """Test different agent listing formats."""
         # Create multiple agents
         agents = [
-            {"id": "agent-1", "model": "claude-3.5-sonnet", "name": "Agent One"},
+            {
+                "id": "agent-1",
+                "model": "claude-3.5-sonnet",
+                "name": "Agent One",
+            },
             {"id": "agent-2", "model": "gpt-4", "name": "Agent Two"},
-            {"id": "agent-3", "model": "claude-3-haiku", "name": "Agent Three"},
+            {
+                "id": "agent-3",
+                "model": "claude-3-haiku",
+                "name": "Agent Three",
+            },
         ]
 
         for agent in agents:
@@ -532,7 +540,12 @@ class TestBookCommandsCoverage:
         }
 
         # Test metadata field validation
-        assert valid_metadata["status"] in ["active", "draft", "published", "archived"]
+        assert valid_metadata["status"] in [
+            "active",
+            "draft",
+            "published",
+            "archived",
+        ]
         assert isinstance(valid_metadata["created_at"], datetime)
         assert valid_metadata["version"].count(".") >= 1  # Should have at least one dot
 
@@ -545,7 +558,11 @@ class TestBookCommandsCoverage:
             assert level in ["book", "chapter", "page", "section"]
 
         # Test parent-child relationships
-        relationships = [("book", "chapter"), ("chapter", "page"), ("page", "section")]
+        relationships = [
+            ("book", "chapter"),
+            ("chapter", "page"),
+            ("page", "section"),
+        ]
 
         for parent, child in relationships:
             assert parent in hierarchy_levels
@@ -656,7 +673,14 @@ class TestBookCommandsCoverage:
         for role, perms in permissions_matrix.items():
             assert len(perms) > 0
             for perm in perms:
-                assert perm in ["read", "write", "delete", "share", "manage", "comment"]
+                assert perm in [
+                    "read",
+                    "write",
+                    "delete",
+                    "share",
+                    "manage",
+                    "comment",
+                ]
 
     def test_book_performance_metrics(self, temp_workspace):
         """Test book performance and metrics tracking."""
@@ -888,9 +912,17 @@ class TestTeamCommandsCoverage:
         """Test team hierarchy validation."""
         # Create agents first
         agents = [
-            {"id": "leader-agent", "model": "claude-3.5-sonnet", "name": "Leader"},
+            {
+                "id": "leader-agent",
+                "model": "claude-3.5-sonnet",
+                "name": "Leader",
+            },
             {"id": "member-agent-1", "model": "gpt-4", "name": "Member 1"},
-            {"id": "member-agent-2", "model": "claude-3-haiku", "name": "Member 2"},
+            {
+                "id": "member-agent-2",
+                "model": "claude-3-haiku",
+                "name": "Member 2",
+            },
         ]
 
         for agent in agents:
@@ -969,7 +1001,11 @@ class TestToolCommandsCoverage:
                 "endpoint": "https://api.example.com",
                 "auth": {"type": "bearer", "token": "test-token"},
             },
-            "capabilities": ["data_fetching", "web_scraping", "api_integration"],
+            "capabilities": [
+                "data_fetching",
+                "web_scraping",
+                "api_integration",
+            ],
         }
 
         # Test tool file operations
@@ -1013,7 +1049,8 @@ class TestToolCommandsCoverage:
 
         # Test successful execution
         result = execute_tool(
-            "simulated-tool", {"input_file": "test.txt", "output_file": "result.txt"}
+            "simulated-tool",
+            {"input_file": "test.txt", "output_file": "result.txt"},
         )
         assert result["status"] == "success"
         assert "test.txt" in result["result"]
