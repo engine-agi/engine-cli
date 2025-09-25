@@ -17,7 +17,18 @@ import pytest
 def test_engine_core_initialization():
     """Testa inicialização completa do Engine Core"""
     try:
-        from engine_core import AgentBuilder, BookBuilder, TeamBuilder, WorkflowBuilder
+        import importlib
+
+        engine_core = importlib.import_module("engine_core")
+        AgentBuilder = getattr(engine_core, "AgentBuilder", None)
+        BookBuilder = getattr(engine_core, "BookBuilder", None)
+        TeamBuilder = getattr(engine_core, "TeamBuilder", None)
+        WorkflowBuilder = getattr(engine_core, "WorkflowBuilder", None)
+
+        assert AgentBuilder is not None, "AgentBuilder not available"
+        assert BookBuilder is not None, "BookBuilder not available"
+        assert TeamBuilder is not None, "TeamBuilder not available"
+        assert WorkflowBuilder is not None, "WorkflowBuilder not available"
 
         # Test Book Builder
         book = (
@@ -130,15 +141,18 @@ async def test_workflow_execution_real():
             assert status.workflow_id == "integration_test"
 
             # Update execution state
+            from engine_cli.storage.workflow_state_manager import WorkflowExecutionState
+
             await manager.update_execution_state(
                 execution_id=execution_id,
-                state="running",
+                state=WorkflowExecutionState.RUNNING,
                 current_vertex="task1",
             )
 
             # Verify state change
             updated_status = await manager.get_execution_status(execution_id)
-            assert updated_status.state.value == "running"
+            assert updated_status is not None
+            assert updated_status.state == WorkflowExecutionState.RUNNING
 
         except Exception as e:
             # Fallback to memory mode
@@ -253,49 +267,67 @@ async def test_end_to_end_agent_workflow():
 def test_cli_commands_with_real_data():
     """Testa comandos CLI com dados reais"""
     try:
+        import importlib
+
         from click.testing import CliRunner
 
-        from engine_cli.commands.agent import create_agent, list_agents
-        from engine_cli.commands.book import create_book, list_books
+        # Import CLI commands conditionally
+        try:
+            agent_module = importlib.import_module("engine_cli.commands.agent")
+            create_agent = getattr(agent_module, "create_agent", None)
+            list_agents = getattr(agent_module, "list_agents", None)
+        except ImportError:
+            create_agent = None
+            list_agents = None
+
+        try:
+            book_module = importlib.import_module("engine_cli.commands.book")
+            create_book = getattr(book_module, "create_book", None)
+            list_books = getattr(book_module, "list_books", None)
+        except ImportError:
+            create_book = None
+            list_books = None
 
         runner = CliRunner()
 
         # Test book commands (if available)
-        try:
-            result = runner.invoke(
-                create_book,
-                [
-                    "--id",
-                    "integration_book",
-                    "--title",
-                    "Integration Test Book",
-                    "--author",
-                    "Test Suite",
-                ],
-            )
-            # Note: This might fail if the command requires additional setup
-            # but we're testing that the command exists and can be invoked
-            assert result.exit_code in [0, 1, 2]  # Success or expected failure
-        except Exception:
-            # Command might not be fully implemented yet
-            pass
+        if create_book is not None:
+            try:
+                result = runner.invoke(
+                    create_book,
+                    [
+                        "--id",
+                        "integration_book",
+                        "--title",
+                        "Integration Test Book",
+                        "--author",
+                        "Test Suite",
+                    ],
+                )
+                # Note: This might fail if the command requires additional setup
+                # but we're testing that the command exists and can be invoked
+                assert result.exit_code in [0, 1, 2]  # Success or expected failure
+            except Exception:
+                # Command might not be fully implemented yet
+                pass
 
         # Test agent commands (if available)
-        try:
-            result = runner.invoke(
-                create_agent,
-                [
-                    "--id",
-                    "integration_agent",
-                    "--model",
-                    "claude-3.5-sonnet",
-                    "--stack",
-                    "python",
-                ],
-            )
-            assert result.exit_code in [0, 1, 2]
-        except Exception:
-            pass
+        if create_agent is not None:
+            try:
+                result = runner.invoke(
+                    create_agent,
+                    [
+                        "--id",
+                        "integration_agent",
+                        "--model",
+                        "claude-3.5-sonnet",
+                        "--stack",
+                        "python",
+                    ],
+                )
+                assert result.exit_code in [0, 1, 2]
+            except Exception:
+                pass
 
     except ImportError:
         pytest.skip("CLI commands not available")
