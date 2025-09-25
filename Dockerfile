@@ -31,7 +31,7 @@ COPY --chown=app:app pyproject.toml poetry.lock README.md ./
 RUN sed 's/^readme = "README.md"//' pyproject.toml > pyproject.tmp && mv pyproject.tmp pyproject.toml
 
 # Install Python dependencies
-RUN poetry install --no-interaction
+RUN poetry install --no-interaction --no-root
 
 # Copy source code
 COPY --chown=app:app . .
