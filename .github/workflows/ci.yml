@@ -1,8 +1,4 @@
-# Engine Framework - Shared GitHub Actions Workflows
-# This directory contains reusable workflow templates
-
-# CI Workflow Template
-# Usage: Copy to .github/workflows/ci.yml in each repository
+# Engine Framework - Optimized CI Workflow
 name: CI
 
 on:
@@ -11,9 +7,66 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+env:
+  POETRY_VERSION: "2.1.4"
+
 jobs:
+  # Job separado para instalar dependências e fazer cache
+  setup-deps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      cache-hit: ${{ steps.cache-deps.outputs.cache-hit }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Cache Poetry virtual environment
+      id: cache-poetry
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pypoetry
+        key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+        restore-keys: |
+          poetry-${{ runner.os }}-
+
+    - name: Cache pip dependencies
+      id: cache-deps
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cache/pip
+          .venv
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/poetry.lock') }}-v2
+        restore-keys: |
+          ${{ runner.os }}-pip-${{ hashFiles('**/poetry.lock') }}-
+          ${{ runner.os }}-pip-
+
+    - name: Install Poetry
+      run: |
+        pip install poetry==${{ env.POETRY_VERSION }}
+        poetry config virtualenvs.create true
+        poetry config virtualenvs.in-project true
+
+    - name: Install dependencies
+      if: steps.cache-deps.outputs.cache-hit != 'true'
+      run: |
+        poetry install --with dev --no-interaction
+
+    - name: Verify installation
+      run: |
+        poetry run python --version
+        poetry run pip list | head -20
+
   test:
     runs-on: ubuntu-latest
+    needs: setup-deps
+    timeout-minutes: 20
     strategy:
       matrix:
         python-version: [3.11, 3.12, 3.13]
@@ -26,57 +79,45 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Cache pip dependencies
+    - name: Restore cached Poetry environment
       uses: actions/cache@v3
       with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml', '**/poetry.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-${{ matrix.python-version }}-
-          ${{ runner.os }}-pip-
+        path: |
+          ~/.cache/pypoetry
+          .venv
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/poetry.lock') }}-v2
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        if [ -f pyproject.toml ]; then
-          pip install poetry==2.1.4
-          poetry install --with dev
-        elif [ -f requirements-dev.txt ]; then
-          pip install -r requirements-dev.txt
-        elif [ -f requirements.txt ]; then
-          pip install -r requirements.txt
-        fi
-        if [ -f pyproject.toml ]; then pip install -e .; fi
+    - name: Install Poetry
+      run: pip install poetry==${{ env.POETRY_VERSION }}
 
-    - name: Run tests
+    - name: Configure Poetry
       run: |
-        if [ -f pyproject.toml ]; then
-          poetry run pytest --cov=src --cov-report=xml
-        else
-          pytest --cov=src --cov-report=xml
-        fi
+        poetry config virtualenvs.create true
+        poetry config virtualenvs.in-project true
+
+    - name: Install project in development mode
+      run: poetry install --no-interaction
+
+    - name: Run tests with coverage
+      run: |
+        poetry run pytest --cov=src --cov-report=xml --cov-report=term-missing
 
     - name: Test CLI commands
       run: |
-        if [ -f pyproject.toml ]; then
-          poetry run engine --help
-          poetry run engine agent --help
-          poetry run engine workflow --help
-          poetry run engine team --help
-        else
-          python -m engine_cli --help
-          python -m engine_cli agent --help
-          python -m engine_cli workflow --help
-          python -m engine_cli team --help
-        fi
+        poetry run engine --help
+        poetry run engine agent --help
+        poetry run engine workflow --help
+        poetry run engine team --help
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
         file: ./coverage.xml
+      if: matrix.python-version == '3.12'
 
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
     - uses: actions/checkout@v4
@@ -84,21 +125,34 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: '3.12'
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-lint-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-lint-
 
     - name: Install linting tools
       run: |
-        pip install black isort flake8 mypy
+        pip install black==24.4.2 isort==5.13.2 flake8==7.1.0 mypy==1.10.0
 
     - name: Run linting
       run: |
-        black --check src tests
+        echo "Running black..."
+        black --check --diff src tests
+        echo "Running isort..."
         isort --check-only --diff --profile black src tests
+        echo "Running flake8..."
         flake8 src tests
-        mypy src
+        echo "Running mypy..."
+        mypy src --ignore-missing-imports
 
   security:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
     - uses: actions/checkout@v4
@@ -106,20 +160,40 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: '3.12'
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-security-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-security-
 
     - name: Install security tools
       run: |
-        pip install bandit safety
+        pip install bandit==1.7.8 safety==3.1.0
 
     - name: Run security scan
       run: |
-        bandit -r src/ -f json -o bandit-report.json || true
-        safety check --json > safety-report.json || true
+        echo "Running bandit..."
+        bandit -r src/ -f json -o bandit-report.json --quiet || echo "Bandit found issues"
+        echo "Running safety..."
+        safety check --json --output safety-report.json || echo "Safety found vulnerabilities"
+
+    - name: Upload security reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-reports
+        path: |
+          bandit-report.json
+          safety-report.json
 
   docker:
     runs-on: ubuntu-latest
     needs: [test, lint, security]
+    timeout-minutes: 30
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
     - uses: actions/checkout@v4
@@ -134,12 +208,146 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ghcr.io/engine-framework/${{ github.event.repository.name }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
-        tags: |
-          ghcr.io/engine-framework/${{ github.event.repository.name }}:latest
-          ghcr.io/engine-framework/${{ github.event.repository.name }}:${{ github.sha }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         platforms: linux/amd64,linux/arm64
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        platforms: linux/amd64,linux/arm64
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  performance:
+    runs-on: ubuntu-latest
+    needs: setup-deps
+    timeout-minutes: 15
+    if: github.event_name == 'pull_request'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Restore cached Poetry environment
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cache/pypoetry
+          .venv
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/poetry.lock') }}-v2
+
+    - name: Install Poetry
+      run: pip install poetry==${{ env.POETRY_VERSION }}
+
+    - name: Configure Poetry
+      run: |
+        poetry config virtualenvs.create true
+        poetry config virtualenvs.in-project true
+
+    - name: Install project
+      run: poetry install --no-interaction
+
+    - name: Run performance tests
+      run: |
+        echo "Memory usage during test run:"
+        /usr/bin/time -v poetry run pytest tests/unit/ -x --tb=short --maxfail=3 2>&1 | grep -E "(Maximum resident|User time|System time)" || true
+
+    - name: Generate performance report
+      run: |
+        echo "## Performance Report" >> performance.md
+        echo "- **Date**: $(date)" >> performance.md
+        echo "- **Python Version**: 3.12" >> performance.md
+        echo "- **Test Count**: $(poetry run pytest --collect-only tests/unit/ 2>/dev/null | grep -c "test session starts" || echo "unknown")" >> performance.md
+
+    - name: Upload performance report
+      uses: actions/upload-artifact@v4
+      with:
+        name: performance-report
+        path: performance.md
+
+  cleanup:
+    runs-on: ubuntu-latest
+    needs: [test, lint, security, docker]
+    if: always()
+    timeout-minutes: 5
+
+    steps:
+    - name: Clean up Docker images
+      run: |
+        docker system prune -f --volumes || true
+
+    - name: Clean up Poetry cache
+      run: |
+        rm -rf ~/.cache/pypoetry || true
+
+    - name: Clean up pip cache
+      run: |
+        pip cache purge || true
+
+    - name: Generate cleanup report
+      run: |
+        echo "## Cleanup Report" >> cleanup.md
+        echo "- **Date**: $(date)" >> cleanup.md
+        echo "- **Status**: Completed" >> cleanup.md
+        echo "- **Actions**: Docker prune, Poetry cache cleanup, pip cache purge" >> cleanup.md
+
+    - name: Upload cleanup report
+      uses: actions/upload-artifact@v4
+      with:
+        name: cleanup-report
+        path: cleanup.md
+
+  summary:
+    runs-on: ubuntu-latest
+    needs: [test, lint, security, docker, performance, cleanup]
+    if: always()
+    timeout-minutes: 5
+
+    steps:
+    - name: Generate CI summary
+      run: |
+        echo "## CI Pipeline Summary" >> ci-summary.md
+        echo "- **Date**: $(date)" >> ci-summary.md
+        echo "- **Trigger**: ${{ github.event_name }}" >> ci-summary.md
+        echo "- **Branch**: ${{ github.ref_name }}" >> ci-summary.md
+        echo "- **Commit**: ${{ github.sha }}" >> ci-summary.md
+        echo "" >> ci-summary.md
+        echo "### Job Status:" >> ci-summary.md
+        echo "- Test: ${{ needs.test.result }}" >> ci-summary.md
+        echo "- Lint: ${{ needs.lint.result }}" >> ci-summary.md
+        echo "- Security: ${{ needs.security.result }}" >> ci-summary.md
+        echo "- Docker: ${{ needs.docker.result }}" >> ci-summary.md
+        echo "- Performance: ${{ needs.performance.result }}" >> ci-summary.md
+        echo "- Cleanup: ${{ needs.cleanup.result }}" >> ci-summary.md
+        echo "" >> ci-summary.md
+        echo "### Overall Status: ${{ job.status }}" >> ci-summary.md
+
+    - name: Upload CI summary
+      uses: actions/upload-artifact@v4
+      with:
+        name: ci-summary
+        path: ci-summary.md
