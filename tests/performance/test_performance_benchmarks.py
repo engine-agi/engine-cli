@@ -15,10 +15,8 @@ import pytest
 
 # Import core components for performance testing
 from engine_core.core.agents.agent_builder import AgentBuilder  # type: ignore
-from engine_core.core.teams.team_builder import (  # type: ignore
-    TeamBuilder,
-    TeamMemberRole,
-)
+from engine_core.core.teams.team_builder import TeamBuilder  # type: ignore
+from engine_core.core.teams.team_builder import TeamMemberRole
 from engine_core.core.workflows.workflow_builder import WorkflowBuilder  # type: ignore
 
 

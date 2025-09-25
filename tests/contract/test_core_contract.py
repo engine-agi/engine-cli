@@ -25,11 +25,9 @@ try:
     from engine_core import WorkflowBuilder  # type: ignore
     from engine_core import WorkflowEngine  # type: ignore
     from engine_core import __version__ as core_version  # type: ignore
-    from engine_core.core.teams.team_builder import (
-        TeamCoordinationStrategy,  # type: ignore
-    )
-    from engine_core.core.teams.team_builder import (
-        TeamMemberRole,  # type: ignore; type: ignore
+    from engine_core.core.teams.team_builder import (  # type: ignore; type: ignore; type: ignore
+        TeamCoordinationStrategy,
+        TeamMemberRole,
     )
     from engine_core.models.tool import ToolType  # type: ignore
 

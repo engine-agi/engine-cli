@@ -23,11 +23,9 @@ from engine_cli.formatting import (
 )
 
 # Import state manager
-from engine_cli.storage.workflow_state_manager import (
-    WorkflowExecutionState,  # type: ignore
-)
-from engine_cli.storage.workflow_state_manager import (
-    workflow_state_manager,  # type: ignore
+from engine_cli.storage.workflow_state_manager import (  # type: ignore
+    WorkflowExecutionState,
+    workflow_state_manager,
 )
 
 
@@ -36,10 +34,10 @@ def _get_workflow_execution_service():
     """Lazy import of WorkflowExecutionService."""
     try:
         # For now, use mock repository since full PostgreSQL setup is complex
-        from engine_core.services.workflow_service import (
-            WorkflowExecutionService,  # type: ignore
+        from engine_core.services.workflow_service import (  # type: ignore
+            MockWorkflowRepository,
+            WorkflowExecutionService,
         )
-        from engine_core.services.workflow_service import MockWorkflowRepository
 
         mock_repo = MockWorkflowRepository()
         return WorkflowExecutionService(mock_repo)
