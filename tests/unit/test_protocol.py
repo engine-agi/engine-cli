@@ -588,7 +588,12 @@ class TestProtocolCLICommands:
         with patch(
             "engine_cli.commands.protocol.protocol_storage",
             mock_protocol_storage,
-        ):
+        ), patch(
+            "engine_cli.commands.protocol.PROTOCOL_BUILDER_AVAILABLE",
+            True,
+        ), patch(
+            "engine_cli.commands.protocol.CommandContext"
+        ) as mock_command_context:
 
             from engine_cli.commands.protocol import test
 

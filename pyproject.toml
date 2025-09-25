@@ -34,6 +34,7 @@ pydantic = "^2.0.0"
 [tool.poetry.group.dev.dependencies]
 pytest = "8.4.2"
 pytest-cov = "^4.1.0"
+pytest-asyncio = "^0.23.0"
 
 [tool.poetry.scripts]
 engine = "engine_cli.main:cli"
