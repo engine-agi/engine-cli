@@ -28,8 +28,7 @@ WORKDIR /home/app
 COPY --chown=app:app pyproject.toml poetry.lock ./
 
 # Create requirements.txt manually for main dependencies
-RUN echo "engine-core>=1.0.1,<2.0.0" > requirements.txt && \
-    echo "click>=8.1.7,<9.0.0" >> requirements.txt && \
+RUN echo "click>=8.1.7,<9.0.0" > requirements.txt && \
     echo "pyyaml>=6.0.1,<7.0.0" >> requirements.txt && \
     echo "rich>=12.6.0,<13.0.0" >> requirements.txt && \
     echo "prompt-toolkit>=3.0.39,<4.0.0" >> requirements.txt && \
