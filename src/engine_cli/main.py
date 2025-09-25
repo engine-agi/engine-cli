@@ -15,16 +15,8 @@ from engine_cli.interactive import start_interactive
 
 # Import engine core components for type checking
 if TYPE_CHECKING:
-    try:
-        from engine_core import (  # type: ignore
-            AgentBuilder,
-            TeamBuilder,
-            WorkflowBuilder,
-        )
-        from engine_core import __version__ as core_version_type  # type: ignore
-    except ImportError:
-        # Type stubs not available
-        pass
+    # Type checking imports handled individually in methods
+    pass
 
 
 @click.group()
