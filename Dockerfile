@@ -27,9 +27,16 @@ WORKDIR /home/app
 # Copy dependency files
 COPY --chown=app:app pyproject.toml poetry.lock ./
 
-# Export dependencies to requirements.txt and install with pip
-RUN poetry export --only=main --format=requirements.txt --output=requirements.txt --without-hashes && \
-    pip install --no-cache-dir -r requirements.txt
+# Create requirements.txt manually for main dependencies
+RUN echo "engine-core>=1.0.1,<2.0.0" > requirements.txt && \
+    echo "click>=8.1.7,<9.0.0" >> requirements.txt && \
+    echo "pyyaml>=6.0.1,<7.0.0" >> requirements.txt && \
+    echo "rich>=12.6.0,<13.0.0" >> requirements.txt && \
+    echo "prompt-toolkit>=3.0.39,<4.0.0" >> requirements.txt && \
+    echo "pydantic>=2.0.0,<3.0.0" >> requirements.txt
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy source code
 COPY --chown=app:app . .
