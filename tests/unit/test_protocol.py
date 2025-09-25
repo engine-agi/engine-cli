@@ -94,12 +94,10 @@ class MockCommandContext:
 def mock_protocol_enums():
     # Import enums directly from engine_core instead of using _get_protocol_enums
     try:
-        from engine_core import (
-            CommandContext,
-            CommandType,
-            ContextScope,
-            IntentCategory,
-        )
+        from engine_core import CommandContext  # type: ignore
+        from engine_core import CommandType  # type: ignore
+        from engine_core import ContextScope  # type: ignore
+        from engine_core import IntentCategory  # type: ignore
 
         yield IntentCategory, CommandType, ContextScope, CommandContext
     except ImportError:
@@ -618,12 +616,10 @@ class TestProtocolUtilityFunctions:
     def test_protocol_enums_import(self):
         """Test that protocol enums can be imported from engine_core"""
         try:
-            from engine_core import (
-                CommandContext,
-                CommandType,
-                ContextScope,
-                IntentCategory,
-            )
+            from engine_core import CommandContext  # type: ignore
+            from engine_core import CommandType  # type: ignore
+            from engine_core import ContextScope  # type: ignore
+            from engine_core import IntentCategory  # type: ignore
 
             assert IntentCategory is not None
             assert CommandType is not None
