@@ -203,11 +203,12 @@ def test_workflow_state_manager():
 def test_book_command_import():
     """Testa se o módulo book command pode ser importado"""
     try:
-        from engine_cli.commands.book import create_book, get_book, list_books
+        import importlib
 
-        assert create_book is not None
-        assert list_books is not None
-        assert get_book is not None
+        book_module = importlib.import_module("engine_cli.commands.book")
+        cli = getattr(book_module, "cli", None)
+
+        assert cli is not None
     except ImportError:
         pytest.skip("Book commands not available")
 
@@ -215,9 +216,12 @@ def test_book_command_import():
 def test_examples_command_import():
     """Testa se o módulo examples command pode ser importado"""
     try:
-        from engine_cli.commands.examples import show_examples
+        import importlib
 
-        assert show_examples is not None
+        examples_module = importlib.import_module("engine_cli.commands.examples")
+        cli = getattr(examples_module, "cli", None)
+
+        assert cli is not None
     except ImportError:
         pytest.skip("Examples commands not available")
 
@@ -225,9 +229,12 @@ def test_examples_command_import():
 def test_monitoring_command_import():
     """Testa se o módulo monitoring command pode ser importado"""
     try:
-        from engine_cli.commands.monitoring import show_status
+        import importlib
 
-        assert show_status is not None
+        monitoring_module = importlib.import_module("engine_cli.commands.monitoring")
+        cli = getattr(monitoring_module, "cli", None)
+
+        assert cli is not None
     except ImportError:
         pytest.skip("Monitoring commands not available")
 
@@ -235,8 +242,11 @@ def test_monitoring_command_import():
 def test_project_command_import():
     """Testa se o módulo project command pode ser importado"""
     try:
-        from engine_cli.commands.project import init_project
+        import importlib
 
-        assert init_project is not None
+        project_module = importlib.import_module("engine_cli.commands.project")
+        cli = getattr(project_module, "cli", None)
+
+        assert cli is not None
     except ImportError:
         pytest.skip("Project commands not available")
