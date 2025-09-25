@@ -59,10 +59,10 @@ jobs:
     - name: Test CLI commands
       run: |
         if [ -f pyproject.toml ]; then
-          poetry run python -m engine_cli --help
-          poetry run python -m engine_cli agent --help
-          poetry run python -m engine_cli workflow --help
-          poetry run python -m engine_cli team --help
+          poetry run engine --help
+          poetry run engine agent --help
+          poetry run engine workflow --help
+          poetry run engine team --help
         else
           python -m engine_cli --help
           python -m engine_cli agent --help
