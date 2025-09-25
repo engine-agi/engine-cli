@@ -25,11 +25,17 @@ RUN useradd --create-home --shell /bin/bash app \
 USER app
 WORKDIR /home/app
 
-# Copy requirements first for better caching
-COPY --chown=app:app requirements*.txt ./
+# Install Poetry
+RUN pip install poetry==2.1.4
+
+# Configure Poetry
+RUN poetry config virtualenvs.create false
+
+# Copy dependency files
+COPY --chown=app:app pyproject.toml poetry.lock ./
 
 # Install Python dependencies
-RUN pip install --user -r requirements.txt
+RUN poetry install --only=main --no-dev --no-interaction
 
 # Copy source code
 COPY --chown=app:app . .
@@ -39,4 +45,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import sys; sys.exit(0)" || exit 1
 
 # Default command
-CMD ["python", "-m", "src.main"]
+CMD ["engine"]
