@@ -1,12 +1,10 @@
 """Tests for book_backup.py module."""
 
-import json
 import os
 import sys
 import tempfile
 from unittest.mock import MagicMock, mock_open, patch
 
-import pytest
 import yaml
 from click.testing import CliRunner
 

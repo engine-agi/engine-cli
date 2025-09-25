@@ -383,7 +383,6 @@ class CLIWorkflowBuilder:
 @click.group()
 def cli():
     """Manage workflows."""
-    pass
 
 
 @cli.command()

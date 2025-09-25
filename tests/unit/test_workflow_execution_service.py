@@ -1,6 +1,5 @@
 """Unit tests for WorkflowExecutionService and PostgreSQL repository."""
 
-import asyncio
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -9,7 +8,7 @@ import pytest
 
 # Import the service and models only for type checking
 if TYPE_CHECKING:
-    from engine_core.models.workflow import (  # type: ignore
+    from engine_core.models.workflow import (  # type: ignore  # noqa: F401
         WorkflowExecution,
         WorkflowExecutionStatus,
     )
@@ -21,10 +20,7 @@ if TYPE_CHECKING:
 
 # Try to import at runtime, skip tests if not available
 try:
-    from engine_core.models.workflow import (  # type: ignore
-        WorkflowExecution,
-        WorkflowExecutionStatus,
-    )
+    from engine_core.models.workflow import WorkflowExecutionStatus  # type: ignore
     from engine_core.services.workflow_service import (  # type: ignore
         MockWorkflowRepository,
         PostgreSQLWorkflowExecutionRepository,

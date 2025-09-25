@@ -5,8 +5,6 @@ import os
 import tempfile
 from unittest.mock import patch
 
-import pytest
-
 from engine_cli.storage.agent_book_storage import AgentBookStorage
 
 

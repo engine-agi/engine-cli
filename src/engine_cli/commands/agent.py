@@ -68,7 +68,6 @@ agent_book_storage = AgentBookStorage()  # New Book-based storage
 @click.group()
 def cli():
     """Manage AI agents."""
-    pass
 
 
 @cli.command()

@@ -5,8 +5,6 @@ import os
 
 # Import the actual CLI
 import sys
-import tempfile
-from pathlib import Path
 
 import pytest
 from click.testing import CliRunner
@@ -75,7 +73,7 @@ class TestConfigCLIIntegration:
             assert "Default configuration created" in result.output
 
             # Check if config file was created
-            config_file = Path.home() / ".engine" / "config.yaml"
+            # config_file = Path.home() / ".engine" / "config.yaml"
             # Note: In isolated filesystem, this might not work as expected
             # Just check that the command completed successfully
 

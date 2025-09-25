@@ -89,7 +89,6 @@ def get_protocol_storage():
 @click.group()
 def cli():
     """Manage protocols."""
-    pass
 
 
 @cli.command()

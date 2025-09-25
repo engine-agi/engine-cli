@@ -6,7 +6,6 @@ import click
 @click.group()
 def cli():
     """Manage projects."""
-    pass
 
 
 @cli.command()

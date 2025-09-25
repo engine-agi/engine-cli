@@ -8,9 +8,7 @@ import os
 import tempfile
 from datetime import datetime
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
 
-import click
 import pytest
 import yaml
 

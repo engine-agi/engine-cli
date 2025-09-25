@@ -1,12 +1,9 @@
 """Unit tests for interactive CLI module."""
 
-import os
-import sys
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, call, patch
+from unittest.mock import Mock, patch
 
 import pytest
-from prompt_toolkit.completion import Completion
 from prompt_toolkit.document import Document
 
 from engine_cli.interactive import EngineCLICompleter, InteractiveCLI, start_interactive

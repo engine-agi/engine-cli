@@ -81,7 +81,6 @@ def get_team_storage():
 @click.group()
 def cli():
     """Manage agent teams."""
-    pass
 
 
 @cli.command()

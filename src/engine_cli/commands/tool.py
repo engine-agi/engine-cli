@@ -72,7 +72,6 @@ def get_tool_storage():
 @click.group()
 def cli():
     """Manage tools and integrations."""
-    pass
 
 
 @cli.command()

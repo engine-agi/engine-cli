@@ -159,7 +159,7 @@ class InteractiveCLI:
 
             cli(args=args, standalone_mode=False)
 
-        except SystemExit as e:
+        except SystemExit:
             # Click uses SystemExit for --help etc., ignore it
             pass
         except Exception as e:

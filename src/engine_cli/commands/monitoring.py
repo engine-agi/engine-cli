@@ -6,7 +6,6 @@ import click
 @click.group()
 def cli():
     """System monitoring."""
-    pass
 
 
 @cli.command()

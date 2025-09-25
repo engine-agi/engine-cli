@@ -19,7 +19,6 @@ from engine_cli.formatting import error, header, info, key_value, success
 @click.group()
 def cli():
     """Manage Engine CLI configuration."""
-    pass
 
 
 @cli.command()

@@ -6,7 +6,6 @@ import click
 @click.group()
 def cli():
     """Example commands."""
-    pass
 
 
 @cli.command()

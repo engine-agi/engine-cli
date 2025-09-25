@@ -1,11 +1,9 @@
 """Tests for agent.py module."""
 
-import asyncio
-import json
 import os
 import sys
 import tempfile
-from unittest.mock import AsyncMock, MagicMock, mock_open, patch
+from unittest.mock import patch
 
 import pytest
 import yaml
@@ -14,12 +12,7 @@ from click.testing import CliRunner
 # Add src to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-from engine_cli.commands.agent import (
-    AgentStorage,
-    agent_book_storage,
-    agent_storage,
-    cli,
-)
+from engine_cli.commands.agent import AgentStorage, cli
 
 
 # Mock AgentBuilder for testing

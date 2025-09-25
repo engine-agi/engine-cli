@@ -508,7 +508,6 @@ class TestWorkflowCLI:
         """Test workflow creation from config file."""
         # Skip this test for now due to file handling issues
         # TODO: Fix file mocking for config file test
-        pass
 
     @patch("engine_cli.commands.workflow.CLIWorkflowBuilder")
     def test_create_manual_agent_vertices(self, mock_builder_class):
@@ -573,14 +572,12 @@ class TestWorkflowCLI:
         """Test simple workflow creation."""
         # Skip this test for now - Rich table rendering issues with mocks
         # TODO: Fix table rendering issues with mock objects
-        pass
 
     @patch("engine_cli.commands.workflow.CLIWorkflowBuilder")
     def test_create_invalid_agent_spec(self, mock_builder_class):
         """Test workflow creation with invalid agent specification."""
         # Skip this test for now - validation logic is hard to test with mocks
         # TODO: Fix validation testing with proper mocking
-        pass
 
     @patch("engine_cli.commands.workflow.workflow_storage")
     def test_list_workflows_empty(self, mock_storage):

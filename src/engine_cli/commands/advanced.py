@@ -15,14 +15,12 @@ from engine_cli.formatting import error, header, info, key_value, success, warni
 @click.group()
 def cli():
     """Advanced operations and utilities."""
-    pass
 
 
 # Bulk Operations
 @cli.group()
 def bulk():
     """Bulk operations for multiple resources."""
-    pass
 
 
 @bulk.command()
@@ -99,7 +97,6 @@ def agents(pattern: str, action: str, dry_run: bool):
 @cli.group()
 def config_ops():
     """Configuration export and import operations."""
-    pass
 
 
 @config_ops.command()
@@ -387,7 +384,6 @@ def logs(lines: int, level: Optional[str], component: Optional[str]):
 @cli.group()
 def cache():
     """Cache management operations."""
-    pass
 
 
 @cache.command()

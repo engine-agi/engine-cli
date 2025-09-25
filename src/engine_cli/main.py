@@ -23,7 +23,6 @@ if TYPE_CHECKING:
 @click.version_option("1.1.0", prog_name="Engine CLI")
 def cli():
     """Engine Framework CLI - AI Agent Orchestration System."""
-    pass
 
 
 @cli.command()
@@ -105,7 +104,6 @@ def interactive():
 @cli.group()
 def agent():
     """Agent management commands."""
-    pass
 
 
 # Import and add agent commands directly
@@ -128,7 +126,6 @@ except ImportError as e:  # noqa: F841
 @cli.group()
 def team():
     """Team management commands."""
-    pass
 
 
 # Import and add team commands directly
@@ -150,7 +147,6 @@ except ImportError as e:  # noqa: F841
 @cli.group()
 def workflow():
     """Workflow management commands."""
-    pass
 
 
 # Import and add workflow commands directly
@@ -173,7 +169,6 @@ except ImportError as e:  # noqa: F841
 @cli.group()
 def tool():
     """Tool management commands."""
-    pass
 
 
 # Import and add tool commands directly
@@ -196,7 +191,6 @@ except ImportError as e:  # noqa: F841
 @cli.group()
 def protocol():
     """Protocol management commands."""
-    pass
 
 
 # Import and add protocol commands directly
@@ -219,7 +213,6 @@ except ImportError as e:  # noqa: F841
 @cli.group()
 def book():
     """Book management commands."""
-    pass
 
 
 # Import and add book commands directly
@@ -242,7 +235,6 @@ except ImportError as e:  # noqa: F841
 @cli.group()
 def project():
     """Project management commands."""
-    pass
 
 
 # Import and add project commands directly
@@ -265,7 +257,6 @@ except ImportError as e:  # noqa: F841
 @cli.group()
 def examples():
     """Examples management commands."""
-    pass
 
 
 # Import and add examples commands directly
@@ -288,7 +279,6 @@ except ImportError as e:  # noqa: F841
 @cli.group()
 def config():
     """Configuration management commands."""
-    pass
 
 
 # Import and add config commands directly
@@ -311,7 +301,6 @@ except ImportError as e:  # noqa: F841
 @cli.group()
 def advanced():
     """Advanced operations and utilities."""
-    pass
 
 
 # Import and add advanced commands directly
@@ -334,7 +323,6 @@ except ImportError as e:  # noqa: F841
 @cli.group()
 def monitoring():
     """Monitoring and observability commands."""
-    pass
 
 
 # Import and add monitoring commands directly

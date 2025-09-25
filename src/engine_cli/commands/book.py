@@ -95,7 +95,6 @@ def format_book_table(books: List[Any]) -> None:
 @click.group()
 def cli():
     """Book management commands."""
-    pass
 
 
 # Alias for backward compatibility

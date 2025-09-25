@@ -3,11 +3,7 @@ Testes de Integração - Framework Engine Completo
 Testes que inicializam o framework completo com dependências reais
 """
 
-import asyncio
-import os
 import tempfile
-from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -82,7 +78,7 @@ def test_cli_with_real_dependencies():
         with tempfile.TemporaryDirectory() as temp_dir:
             # Test Cache com Redis real (se disponível)
             try:
-                import redis
+                pass
 
                 cache = CLICache(cache_dir=temp_dir)
                 # Redis operations would be tested here
@@ -166,9 +162,7 @@ async def test_workflow_execution_real():
 def test_database_integration():
     """Testa integração com PostgreSQL"""
     try:
-        import sqlalchemy
-        from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-        from sqlalchemy.orm import sessionmaker
+        from sqlalchemy.ext.asyncio import create_async_engine
 
         # Test database connection (would need actual schema)
         # This is a placeholder for real database integration tests

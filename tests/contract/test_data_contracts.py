@@ -5,11 +5,10 @@ Tests for validating JSON/YAML schemas and data contracts between CLI and core c
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import pytest
 import yaml
-from pydantic import BaseModel, ValidationError
 
 
 class CLISchemaValidator:

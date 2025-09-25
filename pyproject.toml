@@ -40,5 +40,23 @@ engine = "engine_cli.main:cli"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
 [tool.black]
 line-length = 79
+
+[tool.flake8]
+max-line-length = 79
+extend-ignore = ["E203", "W503"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    "*.egg-info",
+    ".venv",
+    "venv",
+]
+
+[tool.mypy]
+ignore_missing_imports = true
+disable_error_code = ["import-untyped", "attr-defined", "index"]
