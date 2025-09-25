@@ -12,7 +12,7 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # Install Poetry as root
-RUN pip install poetry==2.1.4
+RUN pip install poetry==1.8.3
 
 # Configure Poetry
 RUN poetry config virtualenvs.create false
@@ -27,11 +27,9 @@ WORKDIR /home/app
 # Copy dependency files
 COPY --chown=app:app pyproject.toml poetry.lock ./
 
-# Create a temporary pyproject.toml without readme for Docker build
-RUN sed -i '/^readme = "README.md"/d' pyproject.toml
-
-# Install Python dependencies
-RUN poetry install --no-root --no-interaction --no-ansi
+# Export dependencies to requirements.txt and install with pip
+RUN poetry export --without-hashes --format=requirements.txt > requirements.txt && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Copy source code
 COPY --chown=app:app . .
