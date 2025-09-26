@@ -66,7 +66,11 @@ class PerformanceReporter:
         for metric in self.metrics:
             status = "✅ <100ms" if metric.p95_time < 0.1 else "❌ >100ms"
             report.append(
-                f"| {metric.operation} | {metric.count} | {metric.avg_time:.4f}s | {metric.p95_time:.4f}s | {status} |"
+                f"| {
+    metric.operation} | {
+        metric.count} | {
+            metric.avg_time:.4f}s | {
+                metric.p95_time:.4f}s | {status} |"
             )
 
         report.append("")
@@ -400,8 +404,8 @@ class TestPerformanceBenchmarks:
 
         # Assert performance requirement: P95 < 100ms
         assert (
-            metric.p95_time < 0.1
-        ), f"Workflow creation P95 time {metric.p95_time:.4f}s exceeds 100ms requirement"
+    metric.p95_time < 0.1 ), f"Workflow creation P95 time {
+        metric.p95_time:.4f}s exceeds 100ms requirement"
 
     @pytest.mark.performance
     def test_bulk_operations_1000_items(self, temp_workspace, performance_reporter):

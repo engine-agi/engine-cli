@@ -91,7 +91,8 @@ class TestCLIUsability:
             assert result.exit_code == 0
             outputs.append(result.output)
 
-        # Check for consistent patterns (this is subjective but helps catch major issues)
+        # Check for consistent patterns (this is subjective but helps catch major
+        # issues)
         for output in outputs:
             # Should not have obvious formatting errors
             assert not output.startswith("\n\n")  # No double newlines at start

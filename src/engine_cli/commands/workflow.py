@@ -268,7 +268,9 @@ class WorkflowResolver:
                             processed.add(to_vertex)
 
                 execution_info["result"] = (
-                    f"Simulated execution of workflow '{workflow_data.get('name', 'unknown')}' completed successfully"
+                    f"Simulated execution of workflow '{
+    workflow_data.get(
+        'name', 'unknown')}' completed successfully"
                 )
                 return execution_info
 
@@ -329,7 +331,8 @@ class CLIWorkflowBuilder:
             }
         )
 
-        # For CLI, add a placeholder function vertex that will be replaced during execution
+        # For CLI, add a placeholder function vertex that will be replaced during
+        # execution
         async def placeholder_function(input_data):
             return {
                 "result": f"Placeholder for agent {agent_id}",
@@ -349,13 +352,15 @@ class CLIWorkflowBuilder:
             {"vertex_id": vertex_id, "team_id": team_id, "tasks": tasks}
         )
 
-        # For CLI, add a placeholder function vertex that will be replaced during execution
+        # For CLI, add a placeholder function vertex that will be replaced during
+        # execution
         async def placeholder_function(input_data):
             task_names = [t.get("task", "unknown") for t in tasks]
             return {
-                "result": f"Placeholder for team {team_id} with tasks: {', '.join(task_names)}",
-                "input": input_data,
-            }
+    "result": f"Placeholder for team {team_id} with tasks: {
+        ', '.join(task_names)}",
+        "input": input_data,
+         }
 
         self.workflow_builder = self.workflow_builder.add_function_vertex(
             vertex_id, placeholder_function
@@ -479,8 +484,7 @@ def create(name, description, version, simple, agent, team, edge, config, save, 
                 parts = agent_spec.split(":", 2)
                 if len(parts) < 3:
                     error(
-                        f"Invalid agent specification: {agent_spec}. Use format: vertex_id:agent_id:instruction"
-                    )
+     f"Invalid agent specification: {agent_spec}. Use format: vertex_id:agent_id:instruction" )
                     return
                 vertex_id, agent_id, instruction = parts
                 builder = builder.add_agent_vertex(vertex_id, agent_id, instruction)
@@ -490,8 +494,7 @@ def create(name, description, version, simple, agent, team, edge, config, save, 
                 parts = team_spec.split(":", 2)
                 if len(parts) < 3:
                     error(
-                        f"Invalid team specification: {team_spec}. Use format: vertex_id:team_id:task1,task2"
-                    )
+     f"Invalid team specification: {team_spec}. Use format: vertex_id:team_id:task1,task2" )
                     return
                 vertex_id, team_id, tasks_str = parts
                 tasks = [{"task": task.strip()} for task in tasks_str.split(",")]
@@ -501,13 +504,13 @@ def create(name, description, version, simple, agent, team, edge, config, save, 
             for edge_spec in edge:
                 if ":" not in edge_spec:
                     error(
-                        f"Invalid edge specification: {edge_spec}. Use format: from_vertex:to_vertex"
-                    )
+     f"Invalid edge specification: {edge_spec}. Use format: from_vertex:to_vertex" )
                     return
                 from_vertex, to_vertex = edge_spec.split(":", 1)
                 builder = builder.add_edge(from_vertex, to_vertex)
 
-            # Add a simple function vertex if requested (and no other vertices specified)
+            # Add a simple function vertex if requested (and no other vertices
+            # specified)
             if simple and not agent and not team:
 
                 async def demo_function(input_data):
@@ -539,7 +542,9 @@ def create(name, description, version, simple, agent, team, edge, config, save, 
         if save:
             if workflow_storage.save_workflow(workflow, builder):
                 success(
-                    f"Workflow saved to {workflow_storage.workflows_dir}/{workflow.id}.yaml"
+                    f"Workflow saved to {
+    workflow_storage.workflows_dir}/{
+        workflow.id}.yaml"
                 )
             else:
                 error("Failed to save workflow")
@@ -639,13 +644,16 @@ def show(name):
                 vertex_id = vertex.get("id", "unknown")
                 if vertex_type == "agent":
                     click.echo(
-                        f"  {vertex_id} (agent): {vertex.get('agent_id', 'unknown')} - {vertex.get('instruction', '')}"
+                        f"  {vertex_id} (agent): {vertex.get('agent_id',
+    'unknown')} - {vertex.get('instruction',
+     '')}"
                     )
                 elif vertex_type == "team":
                     tasks = vertex.get("tasks", [])
                     task_names = [t.get("task", "") for t in tasks]
                     click.echo(
-                        f"  {vertex_id} (team): {vertex.get('team_id', 'unknown')} - tasks: {', '.join(task_names)}"
+                        f"  {vertex_id} (team): {vertex.get('team_id',
+     'unknown')} - tasks: {', '.join(task_names)}"
                     )
                 else:
                     click.echo(f"  {vertex_id} ({vertex_type})")
@@ -1164,7 +1172,8 @@ def history(workflow_id, limit, status_filter):
                         return
 
                     success(
-                        f"Execution History for Workflow '{workflow_id}' ({len(executions)})"
+                        f"Execution History for Workflow '{workflow_id}' ({
+    len(executions)})"
                     )
 
                     history_table = table(

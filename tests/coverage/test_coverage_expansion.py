@@ -771,6 +771,7 @@ class TestWorkflowCommandsCoverage:
 
         # Create workflow state manager
         manager = WorkflowStateManager()
+        assert manager is not None  # Ensure manager is created successfully
 
         # Test state transitions
         states = ["pending", "running", "completed", "failed"]
@@ -1033,16 +1034,23 @@ class TestToolCommandsCoverage:
                 "parameters": ["input_file", "output_file"],
             },
         }
+        assert tool["id"] == "simulated-tool"  # Ensure tool structure is correct
 
         # Simulate tool execution
         def execute_tool(tool_id, parameters):
             if tool_id == "simulated-tool":
                 # Simulate processing
                 return {
-                    "status": "success",
-                    "result": f"Processed {parameters.get('input_file', 'unknown')} to {parameters.get('output_file', 'unknown')}",
+    "status": "success",
+    "result": f"Processed {
+        parameters.get(
+            'input_file',
+            'unknown')} to {
+                parameters.get(
+                    'output_file',
+                    'unknown')}",
                     "execution_time": 0.5,
-                }
+                     }
             return {"status": "error", "message": "Tool not found"}
 
         # Test successful execution

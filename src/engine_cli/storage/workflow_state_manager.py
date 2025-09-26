@@ -157,7 +157,8 @@ class WorkflowStateManager:
         """Set data in Redis or memory fallback."""
         if self._connected and self.redis_client:
             if expire_seconds:
-                await self.redis_client.setex(key, expire_seconds, value)  # type: ignore
+                # type: ignore
+                await self.redis_client.setex(key, expire_seconds, value)
             else:
                 await self.redis_client.set(key, value)  # type: ignore
         elif self.enable_fallback:
@@ -400,7 +401,8 @@ class WorkflowStateManager:
         if status.state == WorkflowExecutionState.RUNNING:
             status.state = WorkflowExecutionState.CANCELLED
             status.end_time = datetime.now()
-            await self.redis_client.setex(key, 86400, json.dumps(status.to_dict()))  # type: ignore
+            # type: ignore
+            await self.redis_client.setex(key, 86400, json.dumps(status.to_dict()))
             return True
 
         return False
