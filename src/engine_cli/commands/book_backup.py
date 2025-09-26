@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from engine_core import WorkflowBuilder
 else:
     try:
-        from engine_core import WorkflowBuilder
+        from engine_core import WorkflowBuilder  # type: ignore
     except ImportError:
         WorkflowBuilder = None  # type: ignore
 
@@ -331,10 +331,10 @@ class CLIWorkflowBuilder:
         async def placeholder_function(input_data):
             task_names = [t.get("task", "unknown") for t in tasks]
             return {
-    "result": f"Placeholder for team {team_id} with tasks: {
+                "result": f"Placeholder for team {team_id} with tasks: {
         ', '.join(task_names)}",
-        "input": input_data,
-         }
+                "input": input_data,
+            }
 
         self.workflow_builder = self.workflow_builder.add_function_vertex(
             vertex_id, placeholder_function
@@ -460,7 +460,8 @@ def create(name, description, version, simple, agent, team, edge, config, save, 
                 parts = agent_spec.split(":", 2)
                 if len(parts) < 3:
                     error(
-     f"Invalid agent specification: {agent_spec}. Use format: vertex_id:agent_id:instruction" )
+                        f"Invalid agent specification: {agent_spec}. Use format: vertex_id:agent_id:instruction"
+                    )
                     return
                 vertex_id, agent_id, instruction = parts
                 builder = builder.add_agent_vertex(vertex_id, agent_id, instruction)
@@ -470,7 +471,8 @@ def create(name, description, version, simple, agent, team, edge, config, save, 
                 parts = team_spec.split(":", 2)
                 if len(parts) < 3:
                     error(
-     f"Invalid team specification: {team_spec}. Use format: vertex_id:team_id:task1,task2" )
+                        f"Invalid team specification: {team_spec}. Use format: vertex_id:team_id:task1,task2"
+                    )
                     return
                 vertex_id, team_id, tasks_str = parts
                 tasks = [{"task": task.strip()} for task in tasks_str.split(",")]
@@ -480,7 +482,8 @@ def create(name, description, version, simple, agent, team, edge, config, save, 
             for edge_spec in edge:
                 if ":" not in edge_spec:
                     error(
-     f"Invalid edge specification: {edge_spec}. Use format: from_vertex:to_vertex" )
+                        f"Invalid edge specification: {edge_spec}. Use format: from_vertex:to_vertex"
+                    )
                     return
                 from_vertex, to_vertex = edge_spec.split(":", 1)
                 builder = builder.add_edge(from_vertex, to_vertex)
