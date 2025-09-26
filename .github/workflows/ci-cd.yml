@@ -87,21 +87,21 @@ jobs:
     - name: Run tests with coverage
       run: |
         echo "Starting tests..."
-        python -m pytest --version
+        poetry run python -m pytest --version
         echo "Running test suite..."
-        coverage run -m pytest tests/ -v --tb=short
+        poetry run coverage run -m pytest tests/ -v --tb=short
         echo "Generating coverage report..."
-        coverage report --fail-under=80
-        coverage xml
+        poetry run coverage report --fail-under=80
+        poetry run coverage xml
         echo "Tests completed successfully"
 
     - name: Test CLI commands
       run: |
         echo "Testing CLI commands..."
-        python -m engine_cli --help || echo "CLI help failed"
-        python -m engine_cli agent --help || echo "Agent command failed"
-        python -m engine_cli workflow --help || echo "Workflow command failed"
-        python -m engine_cli team --help || echo "Team command failed"
+        poetry run python -m engine_cli --help || echo "CLI help failed"
+        poetry run python -m engine_cli agent --help || echo "Agent command failed"
+        poetry run python -m engine_cli workflow --help || echo "Workflow command failed"
+        poetry run python -m engine_cli team --help || echo "Team command failed"
         echo "CLI tests completed"
 
   deploy:
