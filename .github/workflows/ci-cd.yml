@@ -119,8 +119,8 @@ jobs:
 
     - name: Configure Poetry
       run: |
-        poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
-        poetry config pypi-token.testpypi ${{ secrets.TEST_PYPI_API_TOKEN }}
+        poetry config pypi-token.pypi "${{ secrets.PYPI_API_TOKEN }}"
+        poetry config pypi-token.testpypi "${{ secrets.TEST_PYPI_API_TOKEN }}"
 
     - name: Build package
       run: poetry build
@@ -136,4 +136,3 @@ jobs:
 
     - name: Publish to PyPI
       run: poetry publish
-        python -m engine.cli --help
