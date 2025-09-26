@@ -46,9 +46,9 @@ jobs:
         path: |
           ~/.cache/pip
           .venv
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/poetry.lock') }}-v2
+        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
         restore-keys: |
-          ${{ runner.os }}-pip-${{ hashFiles('**/poetry.lock') }}-
+          ${{ runner.os }}-pip-${{ matrix.python-version }}-
           ${{ runner.os }}-pip-
 
     - name: Install Poetry
@@ -93,7 +93,7 @@ jobs:
         path: |
           ~/.cache/pypoetry
           .venv
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/poetry.lock') }}-v2
+        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
     - name: Install Poetry
       run: pip install poetry==${{ env.POETRY_VERSION }}
@@ -104,18 +104,30 @@ jobs:
         poetry config virtualenvs.in-project true
 
     - name: Install project in development mode
-      run: poetry install --no-interaction
+      run: |
+        poetry install --no-interaction --with dev
+
+    - name: Verify installation
+      run: |
+        echo "Python version: $(python --version)"
+        echo "Poetry version: $(poetry --version)"
+        poetry run python --version
+        poetry run pip list | grep -E "(engine-core|click|pyyaml|rich)" || echo "Core dependencies not found"
 
     - name: Run tests with coverage
       run: |
-        poetry run pytest --cov=src --cov-report=xml --cov-report=term-missing
+        echo "Starting tests..."
+        poetry run pytest --version
+        poetry run pytest --cov=src --cov-report=xml --cov-report=term-missing --tb=short
 
     - name: Test CLI commands
       run: |
+        echo "Testing CLI commands..."
         poetry run engine --help
         poetry run engine agent --help
         poetry run engine workflow --help
         poetry run engine team --help
+        echo "CLI tests completed successfully"
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
